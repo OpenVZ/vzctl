@@ -1,0 +1,66 @@
+.\" $Id$
+.TH arpsend 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+arpsend \- utility to send ARP requests.
+.\" to detect or update neighbours ARP caches with given IP.
+.SH SYNOPSIS
+arpsend <\fB-U\fR \fB-i\fR\ \fIsource_ip\fR |\ \fB-D\fR\
+\fB-e\fR\ \fItarget_ip\fR [\fB-e\fR\ \fItarget_ip\fR]\ ...>
+[\fB-c\fR \fIcount\fR] [\fB-w\fR \fItimeout\fR]
+\fIinterface\fR
+.SH DESCRIPTION
+Utility \fBarpsend\fR send ARP packets on device \fIinterface\fR to detect
+or update neighbours' ARP caches with a given IP.
+This utility is called by \fBvz-net_add\fR(5) script.
+.SH COMMANDS
+Run utility with one of the following commands:
+.TP
+\fB-D\fR
+Send broadcast ARP request to detect neighbours with
+\fItarget_ip\fR. You have to specify \fItarget_ip\fR (\fB-e\fR option).
+.TP
+\fB-U\fR
+Send broadcast ARP request to update neighbours' ARP caches with
+\fIsource_ip\fR. You have to specify \fIsource_ip\fR (\fB-i\fR option).
+.SH OPTIONS
+.TP
+\fB-c\fR \fIcount\fR
+Number of packets to send. Default is infinity.
+.TP
+\fB-w\fR \fItimeout\fR
+Timeout between packets sends, in seconds. Default is 1 sec.
+.TP
+\fB-i\fR \fIsource_ip_address\fR
+Set source IP address field in ARP packet.
+.TP
+\fB-e\fR \fItarget_ip_address\fR
+Set target IP address field in ARP packet. Note that you can use
+\fB-e\fR multiplly to detect many IP addresses in one utility call.
+.SH DIAGNOSTICS
+\fBarpsend\fR returns 0 upon sucessful execution. If something goes wrong, it
+returns an appropriate error code.
+.IP "1	EXC_USAGE"
+Usage error
+.IP "2	EXC_SYSTEM"
+System error
+.IP "3	EXC_RECV"
+ARP reply was received
+.SH EXAMPLES
+To send request on interface \fIeth0\fR to detect any neighbour
+computers with IP \fI192.168.10.200\fR:
+.br
+\f(CR	arpsend -D -e 192.168.10.200 eth0
+\fR
+To send request on interface \fIeth0\fR to update neighbours'
+ARP caches with IP \fI192.168.10.200\fR:
+.br
+\f(CR	arpsend -U -i 192.168.10.200 eth0\fR
+.SH NOTES
+Interface you use have to be arpable and not be loopback (i.e.
+\fB/sbin/ip link show <interface>\fR should not show NOARP or LOOPBACK
+flags in interface parameters).
+.SH SEE ALSO
+.BR vzctl (8),
+.BR vz-net_add (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

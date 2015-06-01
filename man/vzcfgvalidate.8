@@ -1,0 +1,23 @@
+.\" $Id$
+.TH vzcfgvalidate 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzcfgvalidate \- validate the CT configuration file
+.SH SYNOPSIS
+vzcfgvalidate [\fB-r\fR | \fB-i\fR] \fIconfigfile\fR
+.SH DESCRIPTION
+This utility checks validity of resource control parameters in the CT configuration \fIconfigfile\fR file. Configurations where resources allowed for a Container exceed the system capacity are not valid and are dangerous from the stability point of view.
+There are three severity levels in the output: Error, Warning, Recommendation.
+.SH OPTIONS
+.TP
+\fB-r\fR
+Enter the correction mode to fix the wrong resources configuration.
+.TP
+\fB-i\fR
+Enter the interactive correction mode.
+.SH DIAGNOSTICS
+Normally, the exit status is 0. On a program execution error, the exit status is 1.
+If the validation fails, the exit status is 2.
+.SH SEE ALSO
+.BR ve.conf (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

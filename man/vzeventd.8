@@ -1,0 +1,19 @@
+.\" $Id$
+.TH vzevent 8 "21 Oct 2014" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzeventd \- Virtuozzo Container events daemon
+.SH SYNOPSIS
+vzeventd
+.SH DESCRIPTION
+vzeventd listens to the Virtuozzo kernel for Container events and executes appropriate event scripts.
+Each script must be named after the corresponding event and placed in the folder \fB/etc/vz/vzevent.d\fR.
+.P
+The supported event scripts are:
+.br
+.B ve-start
+.br
+.B ve-stop
+.br
+.B ve-reboot
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

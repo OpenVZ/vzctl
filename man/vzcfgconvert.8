@@ -1,0 +1,93 @@
+.\" $Id$
+.TH vzcfgconvert 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzcfgconvert \- convert the CT configuration file from Virtuozzo
+\fI2.0.2\fR to \fI3.0.0\fR or from \fI2.6.2\fR to \fI3.0.0\fR.
+.SH SYNOPSIS
+vzcfgconvert [\fIveid\fR]
+.SH DESCRIPTION
+This utility converts the CT configuration file from the old \fI2.0.2\fR or \fI2.6.2\fR
+Virtuozzo to the latest Virtuozzo update of \fI3.0.0\fR format and saves the updated
+configuration file. After upgrading a Hardware Node or migrating a Container
+from Virtuozzo 2.0.2 Hardware Node to a Virtuozzo 3.0.0 Hardware
+Node, the Container configuration file remains in the old format.
+@PRODUCT_NAME_LONG@ can use the old format files to start and run the Container. However, for validation and scaling utilities the file has to be in the
+Virtuozzo \fI3.0.0\fR format.
+.SS \fBConversion\ formulas from 2.0.2 to 2.6.2\fR
+kmemsize.bar = old.kmemsize.bar * 1.44
+.br
+kmemsize.lim = old.kmemsize.lim * 1.44
+.br
+kmem = kmemsize.bar / PAGE_SIZE
+.br
+vmguarpages.bar = 0.002754 * kmem * kmem + 8.22 * kmem - 503.53
+.br
+vmguarpages.lim = 2147483647
+.br
+k = (classid != 1) ? max(3.67, old.totvmpages.bar / 71429) : max(2.33,
+old.totvmpages.bar / 58777)
+.br
+privvmpages.bar = vmguarpages.bar * k
+.br
+privvmpages.lim = vmguarpages.bar * k * 1.11
+.br
+k = (classid != 1) ? k = 10.67 : k = 1.5
+.br
+shmpages.bar = shmpages.lim = old.ipcshmpages.bar + old.anonshpages.bar) * k
+.br
+physpages.bar = 0
+.br
+physpages.lim = 2147483647
+.br
+oomguarpages.bar = old.oomguar.bar
+.br
+oomguarpages.lim = 2147483647
+.br
+numtcpsock.bar = old.numsock.bar
+.br
+numtcpsock.lim = old.numsock.lim
+.br
+tcpsndbuf.bar = old.tcpsendbuf.bar
+.br
+tcpsndbuf.lim = old.tcpsendbuf.lim * 2
+.br
+tcprcvbuf.bar = old.tcprcvbuf.bar
+.br
+tcprcvbuf.lim = old.tcprcvbuf.lim * 2
+.br
+othersockbuf.bar = old.unixsockbuf.bar
+.br
+othersockbuf.lim = old.unixsockbuf.lim * 2.67
+.br
+dgramrcvbuf.bar = old.sockrcvbuf.bar
+.br
+dgramrcvbuf.lim = old.sockrcvbuf.lim
+.br
+numothersock.bar = old.numunixsock.bar * 2.67
+.br
+numothersock.lim = old.numunixsock.lim * 2.67
+.br
+numfile.bar = numfile.lim = old.numproc.bar * 20.48
+.br
+avnumproc.bar = avnumproc.lim = kmemsize.bar / 67584
+.br
+dcachesize.bar = dcachesize.lim = numfile.bar * 512
+.SS \fBConversion\ formulas from 2.6.2 to 3.0.0\fR
+kmemside.bar *= 1.2
+.br
+kmemside.lim *= 1.2
+.br
+numfile.bar *= 1.6
+.br
+numfile.lim *= 1.6
+.br
+dcachesize.lim *= 2
+.SH BUGS
+Conversation should be done once, otherwise result can be inconsistent.
+.SH DIAGNOSTICS
+Normally, the exit status is 0. On error, the exit status is 1.
+.SH SEE ALSO
+.BR ve.conf (5),
+.BR vzcfgvalidate (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

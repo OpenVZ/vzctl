@@ -1,0 +1,27 @@
+# This is an example configuration file for so-called "basic" Container.
+#<agent>: Configuration file for allocating 256 Mb of memory.
+#
+# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+
+VERSION="2"
+
+ONBOOT="yes"
+
+PHYSPAGES="65536:65536"
+SWAPPAGES="65536"
+# Virtual memory overcommitment
+# privvmpages = (ram + swap) * VM_OVERCOMMIT (unlimited if not specified)
+#VM_OVERCOMMIT="1.5"
+
+CPUUNITS="1000"
+
+NETFILTER="stateless"
+
+DISKSPACE="10485760:10485760"
+DISKINODES="655360:655360"
+
+QUOTATIME="0"
+IP_ADDRESS="0.0.0.0"
+
+ARCH="x86"
+PLATFORM="linux"

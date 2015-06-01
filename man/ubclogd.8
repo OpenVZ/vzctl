@@ -1,0 +1,72 @@
+.\" $Id$
+.TH ubclogd 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+ubclogd \- utility for periodical logging of selected user beancounters.
+.SH SYNOPSIS
+ubclogd [\fB-i\fR \fIseconds\fR] [\fB-r\fR \fIkilobytes\fR]
+[\fB-o\fR \fIlogfile\fR] [\fB-n\fR]
+.PP
+ubclogd \fB-h\fR
+.SH DESCRIPTION
+The purpose of this utility is to log snapshots of some selected user
+beancounter parameters.
+.PP
+Upon startup, \fBubclogd\fR checks that it is run under root account, and that
+\fB\f(CW/proc/user_beancounters\fR is accessible. It when opens and acquires
+an exclusive lock on its log file. Then, it tries to grab some disk space
+by adding blocks of zeroes to the end of file. This space is used to write
+the log file, so in case of filesystem space shortage log will still
+be available.
+.PP
+Then it forks a daemon, which task is to periodically wake up and
+log current values of some user beancounters, reading it from
+\fB\f(CW/proc/user_beancounters\fR file. It also maintains free space
+at the end of file by periodically writing blocks of zeroes to it.
+.PP
+Logged beancounters are: \fBkmemsize\fR, \fBnumproc\fR, \fBprivvmpages\fR,
+\fBphyspages\fR, and \fBoomguarpages\fR. This list is compiled in and can
+not be changed from command line.
+.PP
+Log file format is similar to this of \fB\f(CW/proc/user_beancounters\fR,
+separated by lines with time stamps.
+.SH OPTIONS
+.IP "\fB-i\fR \fIseconds\fR"
+Parameters gather interval, in seconds. Default is \fI60\fR seconds.
+.IP "\fB-r\fR \fIkilobytes\fR"
+Amount of space to reserve for log file, in kilobytes. Default is \fI512\fR KB.
+.IP "\fB-o\fR \fIlogfile\fR"
+Name of log file to write log to. Default is
+\f(CW/var/log/ubc\fR.
+.IP \fB-n\fR
+Do not fork into background.
+.IP \fB-h\fR
+Outputs a short help message, including compiled in defaults
+for above command line parameters.
+.SH SIGNALS
+Below is the list of signals for which \fBubclogd\fR has a special handlers.
+.IP \fBSIGUSR1\fR
+Upon receiving the signal, extra space in log file is truncated, and
+\fBubclogd\fR enters \fI"do not maintain extra space"\fR mode. This
+can be used either before rotating \fBubclogd\fR's log file, or before
+stopping it, if you do not want to have many zero-filled blocks
+at end of file.
+.IP \fBSIGHUP\fR
+Makes \fBubclogd\fR to reopen its log file, and restore
+\fI"maintain extra space"\fR mode. This is used after log rotation.
+.SH RETURN VALUE
+Returns 0 upon success. If some operation before forking into background
+failed, returns 1.
+.SH FILES
+.BR \f(CW/proc/user_beancounters\fR ,
+.BR \f(CW/var/log/ubc .
+.SH CAVEATS
+It is not convenient to read the log file, because it contains a lot
+of null characters at the end. This is the price you have to pay for
+\fBubclogd\fR ability to reserve free space.
+.PP
+Log rotating is a bit complex: you have to send \fBSIGUSR1\fR to
+process, when rename its log file, and at last send \fBSIGHUP\fR.
+.SH SEE ALSO
+.BR kill (1).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

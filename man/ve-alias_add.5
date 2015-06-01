@@ -1,0 +1,30 @@
+.TH ve-alias_add 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+ve-alias_add \- Container's script for adding an IP alias
+.SH SYNOPSIS
+/etc/sysconfig/vz-scripts/ve-alias_add
+.SH DESCRIPTION
+The \fBve-alias_add\fR shell script is  called by \fBvzctl(8)\fR when it gets
+called with \fI--ipadd\fR option.
+.P
+This script is executed inside CT. It adds IP alias by creating/modifying CT
+configuration files /etc/sysconfig/network-scripts/ifcfg-venet0:\fINNN\fR).
+.SH OPTIONS
+Parameters are passed to the script in the form of environment
+variables. The following variables can be defined:
+.IP IP_ADDR 12
+IP address(es) to add as an alias to CT. Several addresses are divided
+by space.
+.IP DIST 12
+Name of the distribution this CT runs (like \fBredhat-7.1\fR). Used for script
+to do distribution-dependent setup.
+.IP VE_STATE 12
+This (optional) variable is telling the state of CT and can be one of the
+following: \fIrunning\fR, \fIstarting\fR, \fIstopping\fR, \fIstopped\fR.
+.SH DIAGNOSTICS
+The script is expected to return 0 on success, any other return code
+will be printed by \fBvzctl\fR.
+.SH SEE ALSO
+.BR vzctl (8).
+.SH COPYRIGHT
+Copyright (C) 2000-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

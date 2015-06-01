@@ -1,0 +1,4 @@
+DEVICE=venet0
+ONBOOT=yes
+STARTMODE='onboot'
+TYPE=venet

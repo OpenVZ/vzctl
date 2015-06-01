@@ -1,0 +1,26 @@
+.TH vz-stop 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vz-stop \- Container's shutdown configuration script
+.SH SYNOPSIS
+/etc/sysconfig/vz-scripts/vz-stop
+.SH DESCRIPTION
+The \fBvz-stop\fR script is called by \fBvzctl(8)\fR just after
+the CT is shut down. The script can be any executable file
+and is usually a shell script. It can be used to perform any
+additional cleanup of the CT such as
+network cleanup.
+.P
+Parameters are passed to the script in the form of environment
+variables.
+.IP VEID 12
+Numeric id of CT.
+.IP IP_ADDR 12
+IP address(es) assigned to the CT. Several addresses should
+be divided by spaces.
+.SH DIAGNOSTICS
+The script is expected to return 0 on success, any other return code
+will be printed by \fBvzctl(8)\fR.
+.SH SEE ALSO
+.BR vzctl (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

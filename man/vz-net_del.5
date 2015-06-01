@@ -1,0 +1,37 @@
+.TH vz-net_del 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vz-net_del \- Container's script for removing an IP alias
+.SH SYNOPSIS
+/etc/sysconfig/vz-scripts/vz-net_del
+.SH DESCRIPTION
+The \fBvz-net_del\fR script is called by \fBvzctl(8)\fR. The script can be any
+ executable file and is usually a shell script.
+.P
+First, it removes source routing for this IP, by executing command
+"\fB/sbin/ip\fR route del \fIaddr\fR dev venet0", where \fIaddr\fR is
+given IP address.
+.P
+Then, it removes ARP records for given IP from all
+interfaces, excluding those with LOOBBACK or NOARP flags set, by executing
+command  "\fB/sbin/ip\fR neigh del proxy \fIaddr\fR dev \fIdevice\fR",
+where \fRaddr\fR is IP address and \fIdevice\fR is network interface
+device name (like \fIeth0\fR).
+.SH OPTIONS
+Parameters are passed to the script in the form of environment
+variables. The following variables can be defined:
+.IP VEID 12
+Numeric id of CT.
+.IP IP_ADDR 12
+IP address(es) to remove from CT. Several addresses are divided by space.
+.IP DIST 12
+Name of the distribution this CT runs (like \fBredhat-7.1\fR). Used for script
+to do distribution-dependent setup.
+.IP VZ_LOG 12
+Location of log file to write log to (optional).
+.SH DIAGNOSTICS
+The script is expected to return 0 on success, any other return code
+will be printed by \fBvzctl\fR.
+.SH SEE ALSO
+.BR vzctl (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

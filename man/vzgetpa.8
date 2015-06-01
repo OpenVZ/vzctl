@@ -1,0 +1,17 @@
+.\" $Id$
+.TH vzgetpa 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzgetpa \- utility that prints location of CT private area.
+.SH SYNOPSIS
+vzgetpa \fIveid\fR
+.SH DESCRIPTION
+This script prints the location of CT private area for CT with id \fIveid\fR,
+using global configuration file, and per-CT configuration file (if it exist).
+.SH DIAGNOSTICS
+Returns 0 upon success. If CT id given as an argument is empty or invalid
+(not a number), script returns 1.
+.SH SEE ALSO
+.BR vz (5),
+.BR ve.conf (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

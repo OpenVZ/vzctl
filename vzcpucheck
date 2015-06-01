@@ -1,0 +1,119 @@
+#!/bin/bash
+# Copyright (C) SWsoft, 1999-2007. All rights reserved.
+#
+# Script that prints cpu utilization information
+# Usage: vzcpucheck [-v]
+# See also vzcpucheck(8) man page
+
+VERBOSE=0
+XML=0
+CPUINFO=/proc/cpuinfo
+VEINFO=/proc/vz/veinfo
+FRSHD=/proc/fairsched
+
+function usage()
+{
+	echo "Usage: vzcpucheck [-v]"
+	exit 2
+}
+
+if [ $# -eq 1 ]; then
+	case $1 in
+		"-v")
+			VERBOSE=1
+			;;
+		"-x")
+			XML=1
+			;;
+		*)
+			usage
+			;;
+	esac
+elif [ $# -gt 1 ]; then
+	usage
+fi
+
+if [ ! -r $FRSHD ]; then
+	echo "Can't read $FRSHD: Permission denied" 1>&2
+	exit 1;
+fi
+if [ ! -r $CPUINFO ]; then
+	echo "Can't read $CPUINFO: Permission denied" 1>&2
+	exit 1;
+fi
+
+CPUUTL=`cat  ${CPUINFO} | awk '
+{
+        if ($1 == "bogomips" || $1 == "BogoMIPS") {
+		sum += $3;
+	}
+}
+END {
+	print(sum * 25);
+}'`
+
+cat ${FRSHD} | awk -v totunits="$CPUUTL" -v verbose="$VERBOSE" -v xml="$XML" '
+BEGIN {
+        sum = 0;
+	fail = 0;
+	weight=-1
+	id=-1
+	getline
+	if ($1 == "Version:"){
+		getline;
+	}
+	for (i = 0; i < NF; i++) {
+		if ($i == "weight") {
+			weight = i;
+		}
+		if ($i == "id") {
+			id = i;
+		}
+	}
+	if (weight == -1) {
+		print("ERROR: Unknown format of '$FRSHD' column: weight not found");
+		fail = 1
+		exit
+	}
+	if (id == -1) {
+		print("ERROR: Unknown format of '$FRSHD' column: id not found");
+		fail = 1;
+		exit
+	}
+	if (verbose) {
+		print("veid\t\tunits");
+		print("-----------------------");
+	}
+}
+{
+	if ($1 == 0 && $id != 0) {
+		if ($weight){
+			units = int(500000/$weight);
+		} else {
+			units = 500000;
+		}
+		if (verbose) {
+			if ($id == 2147483647) {
+				print("0\t\t" units);
+			} else {
+				print($id "\t\t" units);
+			}
+		}
+		sum += units;
+	}
+}
+END {
+	if (fail)
+		exit 1
+	if (xml) {
+		print("<cpu><utilization>" sum / totunits "</utilization></cpu>");
+		exit 0;
+	}
+	print("Current CPU utilization: " sum);
+	print("Power of the node: " int(totunits));
+	if (sum > totunits) {
+		print("Warning: hardware node is overcommited");
+	}
+}'
+
+

@@ -1,0 +1,209 @@
+#! /bin/bash
+# Copyright (C) 2012. Parallels IP Holdings GmbH.
+# All rights reserved.
+
+KERNEL=
+LOCKFILE=/dev/shm/vzreboot.lck
+FILE_LIST=/tmp/ct_file.lst
+PRECACHE_LOOKUP=/usr/libexec/vzprecache_lookup
+USE_PREALLOC=yes
+USE_PRECACHE=yes
+USE_REBOOT=yes
+
+usage()
+{
+	echo "Usage: $(basename "${0}") [kernel]"
+	exit 0
+}
+
+parse_args()
+{
+while [ "${#}" -gt 0 ]; do
+	case "${1}" in
+		"-h" | "--help")
+		usage
+		shift
+		;;
+		"--noprealloc")
+		USE_PREALLOC=no
+		shift
+		;;
+		"--noprecache")
+		USE_PRECACHE=no
+		shift
+		;;
+		"--noreboot")
+		USE_REBOOT=no
+		shift
+		;;
+		*)
+		[ -n "$KERNEL" ] && usage
+		KERNEL=$1
+		KERNEL_PATH="/boot/vmlinuz-${KERNEL}"
+		if [ ! -f "${KERNEL_PATH}" ]; then
+			echo "Incorrect kernel version: $1"
+			exit 1
+		fi
+		shift
+		;;
+	esac
+done
+}
+
+get_open_files()
+{
+	ls -l /proc/$1/fd 2>/dev/null; cat /proc/$1/maps 2>/dev/null
+}
+
+get_mount_by_dev()
+{
+	awk '( "'$1'" == $1 ) { print $2; exit 0}' /proc/mounts
+}
+
+do_prealloc()
+{
+	local banned_mem=`cat /sys/kernel/pram_banned`
+	local total_mem=`grep -m1 MemTotal /proc/meminfo | awk '{print $2/4}'`
+	local prealloc_mem=$[banned_mem+total_mem/200]
+	echo -n "Preallocating $prealloc_mem pages for PRAM... "
+	echo $prealloc_mem > /sys/kernel/pram_prealloc 2>/dev/null && \
+		echo "DONE" || echo -e "FAILED\nProceeding without prealloc (may be slower)"
+}
+
+do_precache()
+{
+	local veid dev mnt pid
+
+	echo -n "Precache CTs: "
+	for veid in $(vzlist -Ho veid 2>/dev/null); do
+		echo -n "$veid "
+
+		dev=$(vzlist -Ho device $veid)
+		[ -z "$dev" ] && continue
+		mnt=$(get_mount_by_dev $dev)
+		[ -z "$mnt" ] && continue
+
+		rm -f $FILE_LIST 2>/dev/null
+		for pid in `vzps axh -opid -E $veid 2>/dev/null`; do
+			get_open_files $pid | \
+				awk -F ' /' '{print substr($2, length("'$mnt'"));}' >> $FILE_LIST
+		done
+		cat "$FILE_LIST" | sort -u | $PRECACHE_LOOKUP $dev 2>/dev/null
+	done
+	echo
+}
+
+set_pramcache_features()
+{
+	local config=/boot/config-${KERNEL}
+
+	if [ ! -r "${config}" ]; then
+		echo "Cannot read $config"
+		return
+	fi
+
+	awk -F= '/CONFIG_PRAMCACHE_FEATURE_/ {
+        	feature=$1
+	        gsub("CONFIG_PRAMCACHE_FEATURE_", "", feature)
+        	fname="/proc/sys/fs/pramcache/" tolower(feature)
+	        if (system("test -w " fname) == 0)
+        	        print $2 > fname
+	}' ${config} 
+}
+
+run_kexec()
+{
+	local initrd low_mem append root args addr
+
+	if [ -z "${KERNEL}" ]; then
+		KERNEL_PATH=`grubby --default-kernel`
+		KERNEL=`echo "$KERNEL_PATH" | sed -e "s/[^-]*-\(.*\)/\1/g"`
+	fi
+
+	if ! lockfile -r 0 $LOCKFILE > /dev/null 2>&1 ; then
+		echo "vzreboot in progress..."
+		exit 1
+	fi
+
+	set_pramcache_features
+
+	initrd="/boot/initramfs-${KERNEL}.img"
+	test -f $initrd || initrd="/boot/initrd-${KERNEL}.img"
+
+	low_mem=`cat /sys/kernel/pram_low`
+
+	# read configured kernel boot args
+	append=`grubby --info=${KERNEL_PATH}`
+	if [ $? -eq 0 ]; then
+		root=`echo "$append" | grep '^root='`
+		args=`echo "$append" | \
+			sed -n -e 's/^args=\"\(.*\)\( pram=[^ ]*\)\?\(.*\)\"/\1\3/p'`
+		append="$args $root"
+	else
+		# fail to get configured kernel args, will use running ones
+		append=`cat /proc/cmdline | sed -e 's/ pram=[^ ]*//g'`
+	fi
+	append="${append} pram=$(cat /sys/kernel/pram)"
+	if [ -f /sys/firmware/efi/systab ]; then
+		if grep -q '^ACPI20=' /sys/firmware/efi/systab;	then
+			addr=$(awk -F'=' '/^ACPI20=/ {print $2}' /sys/firmware/efi/systab)
+		else
+			addr=$(awk -F'=' '/^ACPI=/ {print $2}' /sys/firmware/efi/systab)
+		fi
+		append="$append noefi acpi_rsdp=$addr"
+	fi
+
+	[ "$USE_PREALLOC" = "yes" ] && do_prealloc
+	[ "$USE_PRECACHE" = "yes" ] && do_precache
+
+	# Check for pram_low is enough (128Mb)
+	PRAM_LOW=`cat /sys/kernel/pram_low`
+	if [ $PRAM_LOW -lt 134217728 ]; then
+		echo "The new kernel might fail to load due to too low memory that is reserved for"
+		echo "it by the 'pram_low' parameter specified in the kernel command line. Make"
+		echo "sure that the 'pram_low' parameter is set correctly in the kernel command"
+		echo "line (recommended: pram_low=128M)."
+	fi
+
+	echo "Booting to the $KERNEL"
+	# The '--unload --load' is trick to skip sync()
+	kexec --unload --load "/boot/vmlinuz-${KERNEL}" --initrd="${initrd}" --append="$append" --mem-max="$low_mem" >/dev/null
+	if [ $? -ne 0 ]; then
+		echo 0 > /sys/kernel/pram_prealloc 2>/dev/null
+		rm -f $LOCKFILE
+		echo "kexec failed" >&2
+		exit 1
+	fi
+
+	if [ "$USE_REBOOT" = "no" ]; then
+		rm -f $LOCKFILE
+		return
+	fi
+	/sbin/reboot
+	if [ $? -ne 0 ]; then
+		echo 0 > /sys/kernel/pram_prealloc 2>/dev/null
+		rm -f $LOCKFILE
+		echo "reboot failed" >&2
+		exit 1
+	fi
+}
+
+parse_args "${@}"
+
+if [ $(id -u) -ne 0 ]; then
+    echo "Insufficient privileges"
+    exit 1
+fi
+
+mes=`vzlicview`
+if [ $? -ne 0 ]; then
+	echo "Unable to get license info."
+	exit 1
+fi
+
+if ! echo "$mes" | grep -q 'rku_allowed=1'; then
+    echo "Your license does not support using the vzreboot utility."
+    exit 1
+fi
+
+run_kexec

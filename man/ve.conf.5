@@ -1,0 +1,120 @@
+.\" $Id$
+.TH ve.conf 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+ve.conf \- configuration file for a Container.
+.SH SYNOPSIS
+/etc/vz/conf/XXX.conf
+.SH DESCRIPTION
+This is a configuration file for a CT. It is stored as
+\fB/etc/vz/conf/\fR\fIXXX\fB.conf\fR, where \fIXXX\fR
+is the ID of the given CT.
+.PP
+Configuration file consists of lines arrayed in a column.
+.PP
+\fBPARAMETER\fR="\fIvalue\fR"
+.PP
+All parameter names and values are case-sensitive. Quotes surrounding a \fIvalue\fR are required if the value contains spaces, and are optional otherwise.
+Extra spaces are not allowed. All unrecognized lines will be ignored.
+.PP
+Please note that the file is created/modified by the \fBvzctl(8)\fR command with the \fIset --save\fR arguments, therefore changes to this file made otherwise than by \fBvzctl(8)\fR can be lost during the next \fBvzctl\fR run.
+.PP
+The meaning of each parameter is described in \fBvzctl(8)\fR, so here only
+the appropriate \fBvzctl set\fR option is given.
+.SS Miscellaneous parameters
+.IP \fBONBOOT\fR="\fByes|no\fR"
+Specifies whether this CT will be started during the system boot. The default value is \fBno\fR, meaning the CT will not be started if the \fBONBOOT\fR parameter is omitted.
+Corresponds to the \fB--onboot\fR option.
+.IP \fBBOOTORDER\fR="\fInumber\fR"
+Specifies the CT boot order priority. Corresponds to the
+\fB--bootorder\fR option.
+.IP \fBOSTEMPLATE\fR="\fItmpl_name[/version]\fR"
+Corresponds to the \fB--pkgset\fR option.
+.IP \fBTEMPLATES\fR="\fIapp_name[/version]\ ...\fR"
+This is a list of the templates installed inside a CT by the
+\fBvzpkgadd\fR command.
+.IP \fBVE_ROOT\fR="\fIdirectory\fR"
+Corresponds to the \fB--root\fR option.
+.IP \fBVE_PRIVATE\fR="\fIdirectory\fR"
+Corresponds to the \fB--private\fR option.
+.IP \fBDISABLED\fR="\fByes\fR|\fBno\fR"
+Corresponds to the \fB--disabled\fR option.
+.IP \fBORIGIN_SAMPLE\fR="\fIname\fR"
+Name of the CT sample the CT is based on.
+.IP \fBCONFIG_CUSTOMIZED\fR="\fByes\fR|\fBno\fR"
+Set to \fByes\fR if the CT configuration file has been modified.
+.SS Resource management parameters
+.IP \fBNUMPROC\fR
+Corresponds to the \fB--numproc\fR options.
+.IP \fBNUMFILE\fR
+Corresponds to the \fB--numfile\fR options.
+.IP \fBNUMFLOCK\fR
+Corresponds to the \fB--numflock\fR options.
+.IP \fBNUMPTY\fR
+Corresponds to the \fB--numpty\fR options.
+.IP \fBNUMSIGINFO\fR
+Corresponds to the \fB--numsiginfo\fR options.
+.IP \fBNUMTCPSOCK\fR
+Corresponds to the \fB--numtcpsock\fR options.
+.IP \fBNUMOTHERSOCK\fR
+Corresponds to the \fB--numothersock\fR options.
+.IP \fBPRIVVMPAGES\fR
+Corresponds to the \fB--privvmpages\fR options.
+.IP \fBVMMGUARPAGES\fR
+Corresponds to the \fB--vmguarpages\fR options.
+.IP \fBOOMGUARPAGES\fR
+Corresponds to the \fB--oomguarpages\fR options.
+.IP \fBLOCKEDPAGES\fR
+Corresponds to the \fB--lockedpages\fR options.
+.IP \fBSHMPAGES\fR
+Corresponds to the \fB--shmpages\fR options.
+.IP \fBKMEMSIZE\fR
+Corresponds to the \fB--kmemsize\fR options.
+.IP \fBTCPSNDBUF\fR
+Corresponds to the \fB--tcpsndbuf\fR options.
+.IP \fBTCPRCVBUF\fR
+Corresponds to the \fB--tcprcvbuf\fR options.
+.IP \fBOTHERSOCKBUF\fR
+Corresponds to the \fB--othersockbuf\fR options.
+.IP \fBDGRAMRCVBUF\fR
+Corresponds to the \fB--dgramrcvbuf\fR options.
+.IP \fBDCACHESIZE\fR
+Corresponds to the \fB--dcachesize\fR options.
+.IP \fBNUMIPTENT\fR
+Corresponds to the \fB--numiptent\fR options.
+.IP \fBCPUUNITS\fR
+Corresponds to the \fB--cpuunits\fR option.
+.IP \fBDISKSPACE\fR="\fIsoftlimit\fR[:\fIhardlimit\fR]"
+Corresponds to the \fB--diskspace\fR parameter.
+.IP \fBDISKINODES\fR="\fIsoftlimit\fR[:\fIhardlimit\fR]"
+Corresponds to the \fB--diskinodes\fR parameter.
+.IP \fBQUOTATIME\fR="\fIseconds\fR"
+Corresponds to the \fB--quotatime\fR parameter.
+.IP \fBQUOTAUGIDLIMIT\fR="\fInum\fR"
+Corresponds to the \fB--quotaugidlimit\fR parameter.
+.IP \fBNOATIME\fR="\fByes\fR|\fBno\fR"
+Corresponds to the \fB--noatime\fR option.
+.IP \fBRATE\fR="\fIinterface:class:rate\fR\ [\fIinterface:class:rate\fR\ ...]"
+Corresponds to the \fB--rate\fR option.
+.IP \fBRATEBOUND\fR="\fIyse|no\fR"
+Corresponds to the \fB--ratebound\fR option.
+.IP \fBCAPABILITY\fR="\fIcapname\fR:\fBon\fR|\fBoff\fR\ [\fIcapname:\fBon\fR|\fBoff\fR\ ...]"
+Corresponds to the \fB--capability\fR option
+.SS Network related parameters
+.IP \fBIP_ADDRESS\fR="\fIaddress\ [address]\fR"
+Specifies the \fIaddress\fR the CT will be assigned. Several addresses
+are divided by spaces.
+Corresponds to the \fB--ipadd\fR option.
+.IP \fBHOSTNAME\fR="\fIname\fR"
+Corresponds to the \fB--hostname\fR option.
+.IP \fBNAMESERVER\fR="\fIip\fR\ [\fIip\fR]"
+Corresponds to the \fB--nameserver\fR option. Several name server addresses
+are set off by spaces.
+.IP \fBSEARCHDOMAIN\fR="\fIdomain\fR\ [\fIdomain\fR]"
+Corresponds to the \fB--searchdomain\fR option. Several search domains
+are separated by spaces.
+.PP
+.SH SEE ALSO
+.BR vzctl (8),
+.BR vz (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

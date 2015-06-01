@@ -1,0 +1,38 @@
+.nh \" no hyphenation
+.ls 3 \" line spacing
+.ad c \" centered
+.br
+.sp 2v
+.\" .PSPIC -I -11 i_virtuozzo.eps
+.PSPIC -I -13 vz_logo_big.eps
+.sp 2v
+.ps +16 \" point size
+.fam H "\ helvetica
+\fBvzctl manual pages\fR
+.br
+.ps -15
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+.br
+.fam T
+.sp 3v
+.ad l
+.ps +7
+Table of Contents
+.br
+.ta 6iR
+.ls 3
+.tc
+.ps -2
+Name 	 Page
+.br
+.ps -3
+.vs 8
+.ls 2
+.tc .
+.br
+@TOC@
+.\" fix the defaults to not screw up next pages
+.ls 1
+.ad n
+.hy
+.tc

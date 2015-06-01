@@ -1,0 +1,25 @@
+.\" $Id$
+.TH vzmemcheck 8 "April 2012" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzmemcheck \- display information on the host server memory parameters.
+.SH SYNOPSIS
+vzmemcheck [\fB-v\fR] [\fB-A\fR] [\fB-x\fR]
+.SH OPTIONS
+.IP \fB-v\fR 4
+Display the information for each CT (in percent).
+.IP \fB-A\fR 4
+Display the absolute values (in megabytes).
+.IP \fB-x\fR 4
+Output in XML format.
+.SH DESCRIPTION
+This utility shows the following host server memory parameters:
+\fBlow memory utilization\fR, \fBlow memory commitment\fR, \fBRAM utilization\fR
+,\fBmem+swap utilization\fR, \fBmem+swap commitment\fR,
+\fBallocmem utilization\fR, \fBallocmem commitment\fR, \fBallocmem limit\fR.
+.P
+With the \fB-A\fR option it shows the absolute values (in megabytes).
+Without the \fB-v\fR option, the output displays the bottom line percentage values for each parameter.
+.SH DIAGNOSTICS
+Normally, the exit status is 0. On error, the exit status is 1.
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

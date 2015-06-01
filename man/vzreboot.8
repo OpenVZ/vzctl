@@ -1,0 +1,15 @@
+.TH vzreboot 8 "April 2012" "@PRODUCT_NAME_LONG@"
+.SH NAME
+\fBvzreboot\fR \- Parallels fast reboot utility.
+.SH SYNOPSIS
+\fBvzreboot\fR [\fIkernel_version\fR]
+.SH DESCRIPTION
+vzreboot is a wrapper for the kexec utility. This utility uses the default kernel from
+/etc/grub.conf to directly load it into memory (skipping the hardware initialization phase)
+and then boots the new kernel.
+With \fIkernel_version\fR, the utility boots the specified kernel.
+.TP
+.SH SEE ALSO
+.BR kexec (8).
+.SH COPYRIGHT
+Copyright (c) 2012-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

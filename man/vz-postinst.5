@@ -1,0 +1,31 @@
+.TH vz-postinst 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vz-postinst \- Container's script to perform postinstall tasks
+.SH SYNOPSIS
+/etc/sysconfig/vz-scripts/vz-postinst
+.SH DESCRIPTION
+The \fBvz-postinst\fR script is called by \fBvzctl(8)\fR after CT private
+area is created and mounted.
+.P
+This script performs various postinstall tasks.
+.P
+It randomizes times in \fIVE_ROOT\fR/etc/crontab file to prevent starting cron
+jobs in all VEs in the same time.
+.P
+It also disables root password if the password field is empty in
+\fIVE_ROOT\fR/etc/passwd file.
+.SH OPTIONS
+Parameters are passed to the script in the form of environment
+variables. The following variables can be defined:
+.IP VE_ROOT 12
+Root directory of CT.
+.IP DIST 12
+Name of the distribution this CT runs (like \fBredhat-7.1\fR). Used for script
+to do distribution-dependent setup.
+.SH DIAGNOSTICS
+The script is expected to return 0 on success, any other return code
+will be printed by \fBvzctl\fR.
+.SH SEE ALSO
+.BR vzctl (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

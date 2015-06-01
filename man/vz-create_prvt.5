@@ -1,0 +1,31 @@
+.TH vz-create_prvt 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vz-create_prvt \- Container's script for creating CT private area
+.SH SYNOPSIS
+/etc/sysconfig/vz-scripts/vz-create_prvt
+.SH DESCRIPTION
+The \fBvz-create_prvt\fR script is called by \fBvzctl(8)\fR when it gets
+called with \fIcreate\fR command.
+The script can be any executable file and is usually a shell script.
+.P
+This script is expected to create CT private area from
+private area template, and randomize its crontab.
+.P
+Parameters are passed to the script in the form of environment
+variables. The following variables can be defined:
+.IP VEID 12
+Numeric id of CT.
+.IP PRIVATE_TEMPLATE
+Path to private area template, used as a source.
+.IP VE_PRIVATE 12
+Path to root of CT private areas.
+.IP DIR 12
+Suffix to CT private area path, used as a destination.
+Full path is VE_PRIVATE/tmp/DIR.
+.SH DIAGNOSTICS
+The script is expected to return 0 on success, any other return code
+will be printed by \fBvzctl\fR.
+.SH SEE ALSO
+.BR vzctl (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

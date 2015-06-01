@@ -1,0 +1,57 @@
+#!/bin/bash
+# Copyright (C) SWsoft, 1999-2007. All rights reserved.
+# All rights reserved.
+#
+# See also vzpid(8) man page
+
+
+veidmark='envID:'
+namemark='Name:'
+
+function usage()
+{
+	echo "Usage: vzpid [pid ...] [-h]"
+}
+
+function header()
+{
+	echo "Pid	VEID	Name"
+}
+
+function getveid()
+{
+	local pid=$1
+
+	[ -f /proc/${pid}/status ] || return
+	cat /proc/${pid}/status | \
+awk -v pid=${pid} 'BEGIN{veid=0} /^'${namemark}'|^'${veidmark}'/{
+	if ($1 == "'${namemark}'") {
+		name = $2;
+	} else if ($1 == "'${veidmark}'") {
+		veid = $2;
+	}
+}
+END{
+	printf("%d\t%s\t%s\n", pid, veid, name);
+}'
+}
+
+pidlist=
+if [ $# -eq 0 ]; then
+	usage
+	exit 1
+elif [ $# -eq 1 -a "x$1" = "x-" ]; then
+	while read pid; do
+		pidlist="${pidlist} ${pid}"
+	done
+elif [ $# -eq 1 -a "x$1" = "x-h" ]; then
+	usage
+	exit 0
+else
+	pidlist=$*
+fi
+header
+for i in ${pidlist}; do
+	getveid ${i}
+done
+

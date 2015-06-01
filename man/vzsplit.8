@@ -1,0 +1,39 @@
+.\" $Id$
+.TH vzsplit 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzsplit \- generate a sample CT configuration file with a certain set of system resource control parameters.
+.SH SYNOPSIS
+vzsplit [\fB-n\fR \fInumve\fR] [\fB-f\fR \fIconf_name\fR] [\fB-s\fR \fIswapsize\fR] [\fB-p\fR \fIpath\fR]
+.SH DESCRIPTION
+The \fBvzsplit\fR utility is used to split the host server into equal parts.
+It generates a full set of system resource control parameters for the given
+number of Containers. The values are calculated from the total physical memory of
+the host server the utility runs on and the number of Containers the host server\
+shall be able to run even if the given number of Containers consume all resources
+available.
+Without any option \fBvzsplit\fR prompts for the desired number of Containers and outputs the resulting resource control parameters to the screen.
+If there is not enough system resources to run the specified number of
+CTs, an appropriate message is shown and the sample configuration file is not generated.
+.SH OPTIONS
+.TP
+\fB-n\fR \fInumve\fR
+Specify the number of CTs.
+.TP
+\fB-f\fR \fIconf_name\fR
+Specify the configuration file name. The program output is placed to
+/etc/vz/conf/ve-\fIconf_name\fR.conf-sample.
+.TP
+\fB-s\fR \fIswapsize\fR
+Specify the swap size in Kbytes. If not provided in the option, the swap size will be read from /proc/meminfo.
+.TP
+\fB-p\fR \fIpath\fR
+Specify path where CTs will reside. By default /vz used.
+.TP
+.SH DIAGNOSTICS
+\fBvzsplit\fR returns 0 upon a sucessful execution. If anything goes wrong, it
+returns 1.
+.SH SEE ALSO
+.BR ve.conf (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+

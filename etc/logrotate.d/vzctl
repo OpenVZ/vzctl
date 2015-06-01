@@ -1,0 +1,8 @@
+/var/log/vzctl.log {
+    monthly
+    rotate 6
+    copytruncate
+    notifempty
+    missingok
+}
+

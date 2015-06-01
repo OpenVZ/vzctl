@@ -1,0 +1,4 @@
+.depend
+*.diff
+vzctl
+.stamp-all

@@ -1,0 +1,62 @@
+#!/bin/sh
+#  Copyright (C) 2000-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+# This script executed after moving PCI devices in/from CT
+#
+# Parameters are passed in environment variables.
+# Required parameters:
+#   VEID	- container ID
+#   PCI		- list of pci devices
+#   ADD		- boolean flag (1 - add, 0 -del)
+
+NVIDIA_PROC=/proc/driver/nvidia/
+VZCTL=vzctl
+
+# Prepare nVidia vidoa cards for using in CT
+handle_nvidia_device()
+{
+	local pci major minor dev card dev_num PCI
+	PCI=$1
+
+	lspci -s $PCI | grep -qi 'VGA.*nvidia' || return;
+
+	modprobe nvidia &> /dev/null
+	if [ $? -ne 0 ]; then
+		echo "Can't load module nvidia"
+		exit 1
+	fi
+}
+
+for dev in $PCI; do
+	handle_nvidia_device $dev
+	cmd='-'
+	if [ "$ADD" = 1 ]; then
+		cmd='+'
+		sort=""
+		SYSFS_PATH="/sys"
+	else
+		sort=-r
+		SYSFS_PATH="/$VE_ROOT/sys/"
+	fi
+	for i in `find $SYSFS_PATH/bus/pci/devices/$dev/ -name ve_device_add  -printf '%d %p\n'| sort -n $sort | while read n f; do echo $f; done`; do
+		echo $cmd$VEID > $i || exit 1
+	done
+done
+
+exit 0
+

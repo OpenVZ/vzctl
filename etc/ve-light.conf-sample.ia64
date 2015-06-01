@@ -1,0 +1,48 @@
+# This is an example configuration file for ia64 so-called "light" CT.
+# This is config file valid only for CT based on RedHat <= 7.3
+# Parameters are taken from "AdminGuide2-exm.tex,v 1.4", example A.
+#<agent>: Light config file
+#
+# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+
+VERSION="2"
+
+ONBOOT="no"
+
+# UBC parameters (in form of barrier:limit)
+# Primary parameters
+AVNUMPROC="15:15"
+NUMPROC="40:40"
+NUMTCPSOCK="40:40"
+NUMOTHERSOCK="40:40"
+VMGUARPAGES="862:9223372036854775807"
+# Secondary parameters
+KMEMSIZE="4352000:4618240"
+TCPSNDBUF="159744:262144"
+TCPRCVBUF="159744:262144"
+OTHERSOCKBUF="61440:163840"
+DGRAMRCVBUF="32768:32768"
+OOMGUARPAGES="862:9223372036854775807"
+# Auxiliary parameters
+LOCKEDPAGES="4:4"
+SHMPAGES="128:128"
+PRIVVMPAGES="1920:2112"
+NUMFILE="512:512"
+NUMFLOCK="50:60"
+NUMPTY="4:4"
+NUMSIGINFO="256:256"
+DCACHESIZE="393216:405504"
+
+PHYSPAGES="0:9223372036854775807"
+NUMIPTENT="16:16"
+
+# Disk quota parameters (in form of softlimit:hardlimit)
+DISKSPACE="204800:204800"
+DISKINODES="80000:88000"
+QUOTATIME="0"
+
+# CPU fair sheduler parameter
+CPUUNITS="250"
+ARCH="ia64"
+PLATFORM="linux"
+IP_ADDRESS="0.0.0.0"

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+CONFIG=${1}
+if [ -f "$CONFIG" ]; then
+	. "$CONFIG"
+vznet=$DEVICE
+else
+vznet=$1
+fi
+
+# VZNET device
+echo "Shutting down interface $vznet: "
+	ip link set $vznet down
+
+

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+CONFIG=${1}
+if [ -f "$CONFIG" ]; then
+	. "$CONFIG"
+	vznet=$DEVICE
+else
+	vznet=$1
+fi
+
+if [ "x$vznet" = "x" ]; then
+	echo "Error: the network interface is not specified"
+	exit 1
+fi
+
+if ! ip link show dev $vznet >/dev/null 2>&1; then exit 0; fi
+
+# VZNET device
+
+. /usr/libexec/libvzctl/scripts/vz-functions
+. /etc/vz/vz.conf
+
+veip="/proc/vz/veip"
+
+# configure interface
+ip link set $vznet up 2>/dev/null
+echo "Bringing up interface $vznet: "
+	ip addr add 0.0.0.0/0 dev $vznet 2>/dev/null
+	ip -6 addr add fe80::1/128 dev $vznet 2>/dev/null
+
+echo "Configuring interface $vznet: "
+	sysctl -w net.ipv4.conf.$vznet.send_redirects=0 2>/dev/null
+	sysctl -w net.ipv4.conf.$vznet.rp_filter=0 2>/dev/null
+
+
+if [ -r $veip ]; then
+	vzgetnetdev
+
+	for veip in `awk '!/^Version:/ { print $1; }' < $veip`; do
+		vzarp add $veip
+		vzaddrouting $veip
+	done
+fi

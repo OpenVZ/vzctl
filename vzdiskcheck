@@ -1,0 +1,73 @@
+#!/bin/bash
+# Copyright (C) Parallels IP Holdings GmbH, 2012. All rights reserved.
+#
+# Script that prints disk usage information
+# Usage: vzdiskcheck [-v]
+# See also vzdiskcheck(8) man page
+
+VZROOT="/vz"
+VERBOSE=0
+XML=0
+function usage()
+{
+	echo "Usage: vzdiskcheck [-v]"
+	exit 2
+}
+
+if [ $# -eq 1 ]; then
+	case $1 in
+		"-v")
+			VERBOSE=1
+			;;
+		"-x")
+			XML=1
+			;;
+		*)
+			usage
+			;;
+	esac
+elif [ $# -gt 1 ]; then
+	usage
+fi
+
+# force POSIX locale
+unset LANG
+
+# fetch disk information.
+BLOCKSIZE="$(stat -f ${VZROOT} | grep 'Block size' | awk '{ print $3 }')"
+BLOCKSTOTAL="$(stat -f ${VZROOT} | grep 'Blocks' | awk '{ print $3 }')"
+TOTAL_DISKSPACE="$(echo $BLOCKSIZE*$BLOCKSTOTAL/1024 | bc)"
+
+TOTAL_DISKSPACE_ASSIGNED=0
+TOTAL_DISKSPACE_USED=0
+VZROOTUID=$(stat -ft $VZROOT | cut -d' ' -f2)
+[ $VERBOSE -eq 1 ] && echo -e "CTID\tAssigned\tUsed"
+vzlist -aH -o ctid,layout,diskspace,diskspace.h,private | ( while read ctid layout diskused diskassigned private; do
+	[ "$(stat -ft $private | cut -d' ' -f2)" != "$VZROOTUID" ] && continue
+	case $layout in
+		5)
+			diskused=$(du -sx $private | cut -f1)
+			;;
+	esac
+	TOTAL_DISKSPACE_ASSIGNED=$((TOTAL_DISKSPACE_ASSIGNED + $diskassigned))
+	TOTAL_DISKSPACE_USED=$((TOTAL_DISKSPACE_USED + $diskused))
+	[ $VERBOSE -eq 1 ] && echo -e "$ctid\t$diskassigned\t\t$diskused"
+done
+[ $VERBOSE -eq 1 ] && echo
+
+if [ $XML -eq 1 ]; then
+	echo "<disk>"
+	echo "<assigned>$(printf "%2.2f" "$(echo "${TOTAL_DISKSPACE_ASSIGNED}/${TOTAL_DISKSPACE}" | bc -l)")</assigned>"
+	echo "<used>$(printf "%2.2f" "$(echo "${TOTAL_DISKSPACE_USED}/${TOTAL_DISKSPACE}" | bc -l)")</used>"
+	echo "</disk>"
+	exit 0
+fi
+
+# show disk information.
+echo "DISK"
+echo "* Total diskspace of ${VZROOT}:                ${TOTAL_DISKSPACE}"
+echo "* Total assigned diskspace to container: ${TOTAL_DISKSPACE_ASSIGNED}"
+echo "* Total used diskspace by containers:    ${TOTAL_DISKSPACE_USED}"
+echo "* Overcommitment assigned:               ${TOTAL_DISKSPACE_ASSIGNED} : ${TOTAL_DISKSPACE} = $(printf "%2.2f" "$(echo "${TOTAL_DISKSPACE_ASSIGNED}/${TOTAL_DISKSPACE}" | bc -l)") : 1"
+echo "* Overcommitment used:                   ${TOTAL_DISKSPACE_USED} : ${TOTAL_DISKSPACE} = $(printf "%2.2f" "$(echo "${TOTAL_DISKSPACE_USED}/${TOTAL_DISKSPACE}" | bc -l)") : 1")
+

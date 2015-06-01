@@ -1,0 +1,26 @@
+#!/bin/bash
+
+reboot_disabled()
+{
+	grep -q -e '^[[:space:]]*ALLOWREBOOT=no' -e '^[[:space:]]*ALLOWREBOOT="no"' $1 2>/dev/null
+	return $?
+}
+
+if reboot_disabled /etc/vz/vz.conf; then
+	exit 0
+fi
+
+if reboot_disabled /etc/vz/conf/$ID.conf; then
+	exit 0
+fi
+
+for ((i=0; i<20; i++)); do
+	if ! vzctl --quiet status $ID | grep -wq running; then
+		vzctl --quiet start $ID
+		# ignore CT locked error
+		[ $? -ne 9 ] && break
+	fi
+	sleep 5;
+done
+
+exit 0

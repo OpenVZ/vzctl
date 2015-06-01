@@ -1,0 +1,57 @@
+#!/bin/bash
+# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+#
+# Sample of custom reinstall script.
+# This script running on reinstall action.
+# It should create temporary private area in directory passed as
+# '--ve_private_tmp' option
+#
+# Parameters:
+# --veid		- VE id
+# --ve_private_tmp	- path to VE temporary private area
+# --ve_private		- path to VE original private area
+#
+# Exitcodes:
+# 0			- ok
+# 128			- ignore this script, run original reinstall
+# other			- error
+
+VE_TAR=/vz/template/redhat-9-20040116.tar.gz
+
+function create_prvt()
+{
+	[ -z "${VE_PRIVATE_TMP}" ] && exit 1
+	mkdir -p "${VE_PRIVATE_TMP}"
+	/usr/bin/tar -C "${VE_PRIVATE_TMP}" -xzf ${VE_TAR}
+	if [ $? -ne 0 ]; then
+		exit 1
+	fi
+}
+
+while [ "${#}" -gt 0 ]; do
+	case "${1}" in
+		"--veid")
+			if [ -z "${2}" ]; then exit 1; fi
+			VEID="${2}"
+			shift
+			;;
+		"--ve_private")
+			if [ -z "${2}" ]; then exit 1; fi
+			VE_PRIVATE="$2"
+			shift
+			;;
+		"--ve_private_tmp")
+			if [ -z "${2}" ]; then exit 1; fi
+			VE_PRIVATE_TMP="$2"
+			shift
+			;;
+		*)
+			echo "Invalid option ${1}"
+			exit 1
+			;;
+	esac
+	shift
+done
+create_prvt
+exit 0
+

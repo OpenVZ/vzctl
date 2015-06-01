@@ -1,0 +1,38 @@
+.TH vz-net_add 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vz-net_add \- Container's script for adding an IP alias
+.SH SYNOPSIS
+/etc/sysconfig/vz-scripts/vz-net_add
+.SH DESCRIPTION
+The \fBvz-net_add\fR script is called by \fBvzctl(8)\fR. The script can be any
+executable file and is usually a shell script.
+.P
+This script adds source routing for given IP, by executing command
+"\fB/sbin/ip\fR route add \fIaddr\fR dev venet0 src \fIsrcaddr\fR",
+where \fIaddr\fR is IP address given, and \fIsrcaddr\fR is first local
+non-loopback address.
+.P
+Also, it adds public ARP records for given IP on all interfaces excluding
+those with LOOPBACK or NOARP flags set. It does so with the command
+"\fB/sbin/ip\fR neigh add proxy \fIaddr\fR dev \fIdevice\fR", where
+\fRaddr\fR is IP address and \fIdevice\fR is network interface device name
+(like \fIeth0\fR).
+.SH OPTIONS
+Parameters are passed to the script in the form of environment
+variables. The following variables can be defined:
+.IP VEID 12
+Numeric id of CT.
+.IP IP_ADDR 12
+IP address(es) to add as an alias to CT. Several addresses are divided
+by space.
+.IP VE_STATE 12
+This (optional) variable is telling the state of CT and can be one of the
+following: \fIrunning\fR, \fIstarting\fR, \fIstopping\fR, \fIstopped\fR.
+.P
+.SH DIAGNOSTICS
+The script is expected to return 0 on success, any other return code
+will be printed by \fBvzctl\fR.
+.SH SEE ALSO
+.BR vzctl (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

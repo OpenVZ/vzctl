@@ -1,0 +1,47 @@
+# This is an example configuration file for so-called "light" CT.
+# Parameters are taken from "AdminGuide2-exm.tex,v 1.4", example A.
+#<agent>: Light config file
+#
+# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+
+VERSION="2"
+
+ONBOOT="no"
+
+# UBC parameters (in form of barrier:limit)
+# Primary parameters
+AVNUMPROC="15:15"
+NUMPROC="40:40"
+NUMTCPSOCK="40:40"
+NUMOTHERSOCK="40:40"
+VMGUARPAGES="1725:2147483647"
+# Secondary parameters
+KMEMSIZE="870400:923648"
+TCPSNDBUF="159744:262144"
+TCPRCVBUF="159744:262144"
+OTHERSOCKBUF="135168:196608"
+DGRAMRCVBUF="135168:196608"
+OOMGUARPAGES="1725:2147483647"
+# Auxiliary parameters
+LOCKEDPAGES="4:4"
+SHMPAGES="1152:1152"
+PRIVVMPAGES="7680:8448"
+NUMFILE="512:512"
+NUMFLOCK="50:60"
+NUMPTY="4:4"
+NUMSIGINFO="256:256"
+DCACHESIZE="196608:202752"
+
+PHYSPAGES="0:2147483647"
+NUMIPTENT="16:16"
+
+# Disk quota parameters (in form of softlimit:hardlimit)
+DISKSPACE="204800:204800"
+DISKINODES="80000:88000"
+QUOTATIME="0"
+
+# CPU fair sheduler parameter
+CPUUNITS="250"
+ARCH="x86"
+PLATFORM="linux"
+IP_ADDRESS="0.0.0.0"

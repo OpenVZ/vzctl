@@ -1,0 +1,22 @@
+# Example of networks_classes file
+# To get full power of traffic management system
+# please define HW node IP networks and your traffic
+# classification as described below.
+
+# HW node VPS's networks
+#0 10.10.10.0/24
+#0 10.10.15.0/24
+
+# all IP("local" traffic)
+1 0.0.0.0/0
+
+# class 2 - "foreign" traffic
+#2 10.0.0.0/8
+#2 11.0.0.0/8
+
+# inside "foreign" network there
+# is a hole with "local" traffic
+#1 10.10.16.0/24
+
+# all IPv6("local" traffic)
+1 ::0/0

@@ -1,0 +1,189 @@
+.TH vz 5 "February 2011" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vz \- global @PRODUCT_NAME_LONG@ configuration file
+.SH SYNOPSIS
+/etc/sysconfig/vz
+.SH DESCRIPTION
+This is the global configuration file for @PRODUCT_NAME_LONG@.
+It consists of lines in the form
+.PP
+\fBPARAMETER\fR="\fIvalue\fR"
+.PP
+All parameter names and values are case-sensitive.
+Quotes surrounding \fIvalue\fR are required if value contains spaces, and
+are optional otherwise. Extra spaces are not allowed. All unrecognized lines
+will be ignored.
+.SS Global parameters
+.IP \fBVIRTUOZZO\fR=\fByes\fR|\fBno\fR
+This parameter is used by \f(CW/etc/init.d/vz\fR script.
+In case it is \fBnot\fR set to \fByes\fR, nothing will be done
+to boot up @PRODUCT_NAME_LONG@ on this node.
+.IP "\fBACTIONLOGDIR\fR=\fIdirectory\fR"
+Set the directory to write action log files to. Action log files are needed
+for \fBvzctl\fR/\fBvzcoll\fR interaction, so \fBvzcoll\fR will know
+what actions are done on CTs.
+.IP "\fBLOCKDIR\fR=\fIdirectory\fR"
+Set the directory to put lock files to. This parameter is used by both
+\fBvzctl\fR(8) and \fBhwcoll\fR(8).
+.IP \fBREMOVEMIGRATED\fR=\fByes\fR|\fBno\fR
+Remove private area on migrating \fByes\fR|\fBno\fR
+This option is not supported for ploop-based CT.
+.IP \fBVE0CPUUNITS\fR=\fInumber\fR
+Value of this parameter sets \fBcpuunits\fR for host server.
+.IP \fBVZPRIVRANGE\fR="\fInumber1\fR\ \fInumber2\fR"
+Sets the range of CTs allowed to access /proc/vz/hwid file.
+.IP \fBVE_ENVIRONMENT\fR="\fINAME\fR=\fIVALUE\fR\ [\fINAME\fR=\fIVALUE\fR\ ...]"
+Environment variables to be set for CT init.
+.IP "\fBHTTP_PROXY\fR=[\fIprotocol\fB://\fR]\fIhost\fR[\fB:\fIport\fR]"
+Proxy server configuration.
+.IP "\fBUSE_NET_HWCSUM\fR=\fByes\fR|\fBno\fR"
+Enable use of hardware checksumming on venet and veth interfaces.
+In case all the hardware network interfaces in the system support scatter-gather
+and hw checksumming features it is recommended to set \fBUSE_NET_HWCSUM\fR to
+\fByes\fR.
+.IP "\fBUSE_NET_RPS\fR=\fByes\fR|\fBno\fR"
+Enables or disables use of Receive packet steering on venet and veth interfaces.
+RPS is enabled by default.
+.IP "\fBUSE_VENET_MASK\fR=\fByes\fR|\fBno\fR"
+Enable the assignment of network masks to Containers operating in the venet0
+mode (\fBno\fR by default).
+.IP "\fBGOLDEN_IMAGE\fR=\fByes\fR|\fBno\fR"
+Enable the use of Golden Images for creating Containers (\fByes\fR by default).
+A Golden Image is an extended template cache that includes an OS template and
+one or more application templates.
+.IP "\fBCPT_SUSPEND_TIMEOUT\fR=\fBsec\fR"
+Sets a global Container suspend timeout, from 10 seconds to 1 hour (10 seconds if not specified)
+.IP "\fBVE_PARALLEL\fR=\fBnumber\fR"
+Sets a number of Containers to start simultaneously on node boot. If not
+specified, the number is calculated based on node's CPU power.
+This parameter is used by the \f(CW/etc/init.d/vz\fR script.
+.IP "\fBVE_STOP_MODE\fR=\fBsuspend\fR|\fBstop\fR"
+Specifies an action to be performed on Containers on node shutdown or reboot.
+This parameter is used by the \f(CW/etc/init.d/vz\fR script.
+.br
+ \(bu \fBsuspend\fR - Suspend Containers on shutdown (default),
+.br
+ \(bu \fBstop\fR - Stop Containers.
+.SS Validation parameters
+.IP \fBVE_VALIDATE_ACTION\fR=\fBnone\fR|\fBwarning\fR|\fBerror\fR|\fBfix\fR
+Validation of CT parameters on start. Possible values are:
+.br
+ \(bu \fBnone\fR - do not validate,
+.br
+ \(bu \fBwarning\fR - display warning and continue,
+.br
+ \(bu \fBerror\fR - exit with error,
+.br
+ \(bu \fBfix\fR - fix invalid parameters and continue.
+.SS Overcommitment parameters
+.IP \fBOVERCOMMITMENT_ACTION\fR=\fBnone\fR|\fBwarning\fR|\fBerror\fR
+Check host server overcommitment on CT start. Possible values:
+.br
+ \(bu \fBnone\fR - do not check,
+.br
+ \(bu \fBwarning\fR - display warning and continue,
+.br
+ \(bu \fBerror\fR - exit with error.
+.IP \fBOVERCOMMITMENT_LEVEL_LOWMEM\fR=\fInumber%\fR
+The part of memory residing at lower addresses and directly accessed by the kernel.
+.IP \fBOVERCOMMITMENT_LEVEL_MEMSWAP\fR=\fInumber%\fR
+Amount of memory available for applications as a sum of RAM and swap space.
+.IP \fBOVERCOMMITMENT_LEVEL_ALLOCMEM\fR=\fInumber%\fR
+Allocation memory commitment level is the ratio of the memory size guaranteed to
+be available for allocation to the capacity of the system.
+.IP \fBOVERCOMMITMENT_LEVEL_ALLOCMEM_TOT\fR=\fInumber%\fR
+The number shows how much memory applications are allowed to be allocated in comparison
+with the capacity of the system.
+.IP \fBOVERCOMMITMENT_LEVEL_ALLOCMEM_MAX\fR=\fInumber%\fR
+Allocation memory utilization level is the ratio of the amount allocated memory
+to the capacity of the system.
+.SS Logging parameters
+.IP "\fBLOGGING\fR=\fByes\fR|\fBno\fR"
+Enables or disables logging. This parameter can be set to \fByes\fR or
+\fBno\fR, default is \fByes\fR.
+.IP \fBLOGFILE\fR=\fIfile\fR
+Sets location of log file, default is \f(CR/var/log/vzctl.log\fR.
+.IP "\fBLOG_LEVEL\fR=\fInumber\fR"
+Set the logging level. The more the \fInumber\fR is, the more information will be
+written to a log file. Default value is \fB0\fR. Some useful values are:
+.br
+ \(bu \fB0\fR - actions/errors of vzctl on start, stop, mount, umount, create, destroy,
+.br
+ \(bu \fB1\fR - logging helper comands vzctl running in /etc/sysconfig/vz-scripts,
+.br
+ \(bu \fB2\fR - logging create action events, pool, version used on create action,
+.br
+ \(bu \fB3\fR - logging vzctl command line.
+.SS Disk quota parameters
+.IP \fBDISK_QUOTA\fR=\fByes\fR|\fBno\fR
+In case the value of this parameter is set to \fBno\fR, all disk
+quota operations are disabled.
+.IP \fBVZFASTBOOT\fR=\fByes\fR|\fBno\fR
+This parameter is used by \f(CR/etc/init.d/vz start\fR script. In case the value
+of this parameter is set to \fByes\fR, CT with incorrectly shutdown quota state
+started without quota check and after all CTs started marked CTs restarted.
+.SS Network interface parameters
+.IP \fBVE_ROUTE_SRC_DEV\fR="\fIdevice\fR"
+This parameter specifies the network device name which IP address will be
+used as the source IP. This is helpful in case more than one network
+interface is configured on HN and there is a need to specify the source
+IP address. Default is the first device in the network device list.
+.SS Network traffic parameters
+.IP \fBTRAFFIC_SHAPING\fR="\fByes\fR|\fBno\fR"
+Traffic shaping allows limiting bandwidth consumed by Containers.
+If it is set to \fByes\fR then limitations will be turned on. Default is
+\fBno\fR.
+.IP \fBBANDWIDTH\fR="\fIdev\fB:\fIKbit\fR\ [\fIdev\fB:\fIKbit\fR\ ...]"
+Bandwidth of network interfaces. Values for these options must be in the form
+\fInetwork interface name\fR:\fIbandwidth\fR. It is possible to have several
+such pairs, space separated.
+.IP \fBTOTALRATE\fR="\fIdev\fR:\fIclass\fR:\fIKbits\fR\fI\fR"
+Specifies bound rate for network devices.
+.IP \fBRATE\fR="\fIdev\fR:\fIclass\fR:\fIKbits\fR\fI\fR"
+Specifies guaranteed rate for network devices.
+.SS Disk IO limit parameters
+.IP \fBVZ_TOOLS_BCID\fR="\fIID\fR"
+Enables disk IO limits for backup, restore, and migration operations. Make sure that no Container with the specified \fIID\fR exists on the Node.
+.IP \fBVZ_TOOLS_IOLIMIT\fR="\fIlimit\fR"
+Sets the disk IO \fIlimit\fR for backup, restore, and migration operations, in bytes per second.
+.IP \fBVZ_TOOLS_MEMLIMIT\fR="\fIlimit\fR"
+Sets the memory \fIlimit\fR for backup, restore, and migration operations, in bytes.
+.SS Parallels File Caching parameters
+.IP \fBPFCACHE_BCID\fR="\fIID\fR"
+Enables disk IO limits for the Parallels File Cache. Make sure that no Container with the specified \fIID\fR exists on the Node.
+.IP \fBPFCACHE_INCLUDES\fR="\fIdirectory\fR\ [\fIdirectory\fR\ ...]\fR"
+Specify the directories inside Containers to enable the Parallels File Caching feature for.
+.IP \fBPFCACHE\fR="\fIdirectory\fR"
+Specify the path to the Parallels File Caching directory that will store Container common files.
+.IP \fBPFCACHE_IMAGE\fR="\fIdirectory\fR"
+Specify the path to the Parallels File Caching ploop image.
+.SS Template parameters
+.IP \fBTEMPLATE\fR="\fIdirectory\fR"
+Value of this parameter is the \fIdirectory\fR in which all
+the files and directories shared between all CTs are stored.
+.SS Defaults for CT
+Below parameters are defaults for CT, and gets overwritten by parameters in
+\fBve.conf\fR(5) CT configuration file.
+.IP \fBVE_ROOT\fR=\fIdirectory\fR
+Value of this parameter is the \fIdirectory\fR which serves as CT root
+mount point. Value must contain literal string \fB$VEID\fR, which
+will be substituted with actual numeric CT ID.
+.IP \fBVE_PRIVATE\fR=\fIdirectory\fR
+Value of this parameter is the \fIdirectory\fR in which all the
+files and directories specific to that CT are stored. Value must contain
+literal string \fB$VEID\fR, which will be substituted with actual numeric
+CT ID.
+.IP \fBCONFIGFILE\fR=\fIname\fR
+Specifies default configuration file for create action, corresponds to
+\fB--config\fR option of \fBvzctl create\fR.
+.PP
+Any other parameter that appears in per-CT configuration file \fBve.conf\fR(5)
+can be also set here. Still, it is recommended to keep \fBTEMPLATE\fR,
+\fBVE_PRIVATE\fR and \fBVE_ROOT\fR in this configuration files, and all the
+other CT-related parameters in per-CT configuration files.
+.SH SEE ALSO
+.BR vzctl (8),
+.BR vzpkg (8),
+.BR ve.conf (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

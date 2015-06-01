@@ -1,0 +1,16 @@
+#!/bin/bash
+# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+#
+# Sample of custom configuration script.
+# This script running on reinstall action inside running VE.
+# The original VE is mounted under /old  directory.
+#
+# Parameters passed thru enviroment:
+# VEID - id of running VE.
+#
+# Exitcodes:
+# 0	- ok
+# other	- error
+
+cp /old/etc/hosts /etc/hosts
+exit 0

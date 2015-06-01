@@ -1,0 +1,12 @@
+This folder is used for custom vzctl configuration scripts.
+Scripts found in this folder will be used instead of the original.
+
+The supported scripts are:
+	vz-create_prvt
+	vz-net_add
+	vz-net_del
+	vz-pci_configure
+	vz-setrate
+	vz-start
+	vz-stop
+

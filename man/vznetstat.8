@@ -1,0 +1,50 @@
+.\" $Id$
+.TH vznetstat 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vznetstat \- display network traffic statistics per CT.
+.SH SYNOPSIS
+vznetstat \fI[-4|-6]\fR \fI[-v ctid]\fR \fI[-c class]\fR \fI[-a]\fR \fI[-r]\fR \fI[-h]\fR
+.SH DESCRIPTION
+The utility displays incoming and outcoming traffic for Containers for each defined network class. The output is grouped by CT ID. The network classes are described in the /etc/sysconfig/vz-scripts/networks_classes file. If no options are specified the network statistics for all running Containers is printed.
+.PP
+Note that for the CT ID of 0, the traffic of the HS (the host server
+itself) is shown. The figures for HS does not include CT traffic.
+.SH OPTIONS
+.IP "\fB-v\fR \fIctid\fR"
+Display statistics only for the CTs with the given \fIctid\fR.
+.IP "\fB-c\fR \fIclass\fR"
+Display statistics only for the given network \fIclass\fR.
+.IP "\fB-a\fR
+Display all classes (16).
+.IP "\fB-r\fR
+Round off the statistics figures from bytes to K(b), M(b) or G(b).
+.IP \fB-h\fR
+Print short usage information.
+.IP \fB-4\fR
+Display ipv4 statistics.
+.IP \fB-6\fR
+Display ipv6 statistics.
+.SH RETURN CODE
+Returns 0 upon success.
+.SH EXAMPLES
+To display statistics for all CTs:
+\f(CW
+.nh
+.nf
+    vznetstat
+\fR
+.hy
+.fi
+.PP
+To display statistics for CTs 101 and 102 for network classes 1 and 2:
+\f(CW
+.nh
+.nf
+    vznetstat -v 101 -v 102 -c 1 -c 2
+\fR
+.hy
+.fi
+.SH SEE ALSO
+.BR networks_classes (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

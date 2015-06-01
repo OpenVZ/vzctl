@@ -1,0 +1,50 @@
+# Sample configuration file for VPS based on OS template
+#<agent>: redhat-9 with Plesk Server Administrator 7 application template
+#
+# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+
+VERSION="2"
+
+ONBOOT="yes"
+
+# UBC parameters (in form of barrier:limit)
+# Primary parameters
+AVNUMPROC="200:200"
+NUMPROC="400:400"
+NUMTCPSOCK="500:500"
+NUMOTHERSOCK="500:500"
+VMGUARPAGES="0:9223372036854775807"
+# Secondary parameters
+KMEMSIZE="21299200:23429120"
+TCPSNDBUF="5365760:10485760"
+TCPRCVBUF="5365760:10485760"
+OTHERSOCKBUF="1503232:4063232"
+DGRAMRCVBUF="262144:262144"
+OOMGUARPAGES="0:9223372036854775807"
+# Auxiliary parameters
+LOCKEDPAGES="4096:4096"
+SHMPAGES="131072:131072"
+PRIVVMPAGES="262144:292912"
+NUMFILE="8192:8192"
+NUMFLOCK="200:220"
+NUMPTY="64:64"
+NUMSIGINFO="512:512"
+DCACHESIZE="4192304:4317184"
+
+PHYSPAGES="0:9223372036854775807"
+NUMIPTENT="128:128"
+
+# Disk quota parameters (in form of softlimit:hardlimit)
+DISKSPACE="1048576:1153024"
+DISKINODES="200000:220000"
+QUOTATIME="0"
+QUOTAUGIDLIMIT="150"
+
+# CPU fair sheduler parameter
+CPUUNITS="1000"
+
+OSTEMPLATE="redhat-9"
+TEMPLATES="mod_perl-rh9 mod_ssl-rh9 mysql-rh9 php-rh9 mod_frontpage-rh9 psa-rh9"
+ARCH="x86_64"
+PLATFORM="linux"
+IP_ADDRESS="0.0.0.0"

@@ -1,0 +1,33 @@
+.\" $Id$
+.TH vzauth 8 "March 2012" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzauth \- authenticate a user in a CT
+.SH SYNOPSIS
+vzauth [\fB-t\fR \fBsystem\fR|\fBpleskadmin\fR] [\fB-g\fR \fIgid\fR] \fIctid\fR \fIuser\fR
+.SH DESCRIPTION
+This utility is used to authenticate the \fIuser\fR in a CT \fIctid\fR. User password is passed
+to \fBstdin\fR. This utility mounts the CT if it is unmounted, reads \fB$VE_ROOT/etc/shadow\fR and then uses \fBcrypt\fR(3) to authenticate the user.
+If \fB-g\fR specified, user is checked to be a member of group \fIgid\fR.
+.SH DIAGNOSTICS
+.IP \fB0\fR
+access granted
+.IP \fB1\fR
+invalid parameters
+.IP \fB2\fR
+unable to read VE_ROOT from the CT configuration file.
+.IP \fB3\fR
+access denided
+.IP \fB4\fR
+unable to mount the CT
+.IP \fB5\fR
+unable to read the password
+.IP \fB6\fR
+unable to open /etc/shadow
+.IP \fB7\fR
+unable to open /etc/psa/.psa.shadow
+.SH EXAMPLES
+echo 'passwd' | vzauth 1 root
+.SH SEE ALSO
+.BR crypt (3)
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

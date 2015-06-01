@@ -1,0 +1,12 @@
+#  Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+#
+
+# This is configuration file for VE0.
+# Only UB parameters are processed
+#
+# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+
+ONBOOT="no"
+
+# UBC parameters (in form of barrier:limit)
+OOMGUARPAGES="9223372036854775807:9223372036854775807"

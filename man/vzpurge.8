@@ -1,0 +1,24 @@
+.\" $Id$
+.TH vzpurge 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzpurge \- utility to remove unused CT private areas.
+.SH SYNOPSIS
+vzpurge
+.SH DESCRIPTION
+This script finds and removes all CT private areas, which have no
+appropriate configuration file
+(\f(CW/etc/sysconfig/vz-scripts/\fR\fIveid\fR\f(CW.conf\fR).
+To find private areas, value of \fBVE_PRIVATE\fR variable in
+\f(CW/etc/sysconfig/vz\fR configuration file is used.
+.P
+If CT is running, it is stopped. If CT is mounted, it is unmounted.
+.SH NOTES
+This script makes assumption that CT private area is unused if CT has
+no configuration file, so using it can be \fBdangerous\fR as you can
+\fBlost your data\fR. Use it if you are absolutely sure what you are doing.
+.SH SEE ALSO
+.BR vzctl (8),
+.BR vz (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+

@@ -1,0 +1,41 @@
+.TH ve-veconfig 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+ve-veconfig \- vzctl helper script for setting various CT parameters
+.SH SYNOPSIS
+/etc/sysconfig/vz-scripts/ve-veconfig
+.SH DESCRIPTION
+The \fBve-veconfig\fR script is called by \fBvzctl(8)\fR. Its purpose is
+to set various parameters for given CT.
+.SH OPTIONS
+Parameters  are  passed to the script in the form of environment variables.
+The following variables can be defined:
+.IP "\fBHOSTNM\fR
+Sets CT hostname to be \fIname\fR.
+This is done by modifying CT's \f(CW/etc/hosts\fR and
+\f(CW/etc/sysconfig/network\fR (in RedHat or RedHat-like based CT) or
+\f(CW/etc/rc.config\fR (in SuSE-based CT).
+.IP "\fBSEARCHDOMAIN\fR"
+Sets CT resolver's search list for host-name lookup.
+This option modifies CT's \f(CW/etc/resolv.conf\fR.
+.IP "\fBNAMESERVER\fR
+Sets CT name server IP address.
+This option modifies CT's \f(CW/etc/resolv.conf\fR.
+.IP "\fBUSERPW\fR \fIuser:password\fR"
+Sets the \fIpassword\fR for \fIuser\fR, adding \fIuser\fR if it does not
+already exists. Several \fB--userpasswd\fR options can be given.
+.P
+.IP "\fBIS_CRYPTED\fR \fIuser:password\fR"
+\fBve-veconfig\fR assumes that the passwords specified in \fBUSERPW\fR are encoded.
+.P
+.IP "\fBDIST\fR"
+Name of the distribution this CT runs (like \fBredhat-7.1\fR). Used for script
+to do distribution-dependent setup.
+.P
+.SH DIAGNOSTICS
+The script is expected to return 0 on success, any other return code
+will be printed by \fBvzctl\fR.
+.SH SEE ALSO
+.BR vzctl (8),
+.BR resolv.conf (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

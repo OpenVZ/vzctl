@@ -1,0 +1,85 @@
+.\" $Id$
+.TH vzlist 8 "January 2012" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzlist \- CT listing utility.
+.SH SYNOPSIS
+vzlist [\fB-a\fR|\fB-S\fR] [-H] [\fB-o\fR \fIfield\fR[,\fIfield\fR...]] \
+[\fB-s\fR [\fB-\fR]\fIfield\fR] [\fB-h\fR \fIhost_pattern\fR] \
+[\fB-N\fR \fIname_pattern\fR] [\fB-d\fR \fIdescr_pattern\fR] \
+[\fB-i\fR \fIifname\fR] [\fIctid\fR [\fIctid\fR...] | \fB-1\fR]
+.PP
+vzlist \fB-L\fR
+.SH DESCRIPTION
+The \fBvzlist\fR utility lists CTs. By default only running CTs are listed.
+With \fIctid\fR specified, only specified CTs are listed,
+\fIctid\fR of \fB-1\fR is used to output CT IDs only, one per line.
+.PP
+For the fields that can have many values (e.g. \fBip\fR or \fBnetif\fR),
+all the values are displayed only for the last (i.e. leftmost) column;
+otherwise, only the first value is shown.
+.SH OPTIONS
+.IP "\fB-H\fR, \fB--no-header\fR"
+Suppress displaying the header.
+.IP "\fB-a\fR, \fB--all\fR"
+List all CTs.
+.IP "\fB-S\fR, \fB--stopped\fR"
+List only stopped CTs.
+.IP "\fB-n\fR, \fB--name\fR"
+Display CT names (instead of hostnames).
+.IP "\fB-o\fR, \fB--output\fR \fIfield[,\fIfield\fR...]"
+Display only the specified \fIfield\fR(s).
+.IP "\fB-s\fR, \fB--sort\fR \fIfield\fR"
+Sort by the value of \fIfield\fR (possible arguments are the same
+as for \fB-o\fR). The \fB-\fR before the field name means sorting
+in the reverse order.
+.SS Output filters
+List of CTs can be further filtered using the following options.
+For patterns (except for \fB--netif\fR) one can use the same wildcards
+as in shell (i.e. \fB*\fR, \fB?\fR, and \fB[]\fR).
+Note: to avoid expansion of wildcards by the shell, one have to escape
+the pattern by either putting it into single quotes (like \fB'a*a'\fR)
+or by adding a backslash before the wildcard character (like \fBa\\*a\fR).
+.IP "\fB-h\fR, \fB--hostname\fR \fIpattern\fR"
+List only those CTs whose hostname matches the \fIpattern\fR.
+.IP "\fB-N\fR, \fB--name_filter\fR \fIpattern\fR"
+List only CTs whose names match the \fIpattern\fR.
+.IP "\fB-d\fR, \fB--description\fR \fIdesc_pattern\fR"
+List only those CTs whose descriptions match the \fIdesc_pattern\fR.
+.IP "\fB-i\fR, \fB--netif\fR \fIhost_ifname\fR"
+List only CTs whose host interface names match the \fIhost_ifname\fR pattern.
+Note that you can not use wildcards with this option.
+.SS Possible fields
+.IP "\fB-L\fR, \fB--list\fR"
+List all the fields that can be used for both output
+(\fB-o\fR, \fB--output\fR) and the sorting order
+(\fB-s\fR, \fB--sort\fR).
+
+For the user beancounter fields, if suffix is not specified, current usage
+(a.k.a. "held") value is show. One can also use the following suffixes:
+.RS
+.TP
+.B .m
+maxheld
+.TP
+.B .b
+barrier
+.TP
+.B .l
+limit
+.TP
+.B .f
+fail counter
+.PP
+For the disk quota fields, if suffix is not specified, current usage
+is shown. One can also use the following suffixes:
+.TP
+.B .s
+soft limit
+.TP
+.B .h
+hard limit
+.RE
+.SH RETURN CODE
+Returns 0 upon success.
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

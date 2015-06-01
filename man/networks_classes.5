@@ -1,0 +1,55 @@
+.TH networks_classes 5 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+networks_classes \- @PRODUCT_NAME_LONG@ network classes configuration
+.SH SYNOPSIS
+/etc/vz/conf/networks_classes
+.SH DESCRIPTION
+This file describes pools of IP addresses used for @PRODUCT_NAME_LONG@ traffic
+shaping and accounting. File consist of records; each record resides
+on a separate line and contains a pair of values \fBClass\fR \fBNetwork\fR,
+separated by space. Here \fBClass\fR is number in the range 0 -
+\fIMAX_CLASSES\fR (which is defined in
+\fB/etc/vz/conf/vz-functions\fR), and \fBNetwork\fR is
+network block in CIDR notation (e.g. \fIA.B.C.D/M\fR, where \fIM\fR
+is the number of binary 1-s in network mask).
+If nested networks exists with different class numbers, "wider" networks
+must be mentioned first.
+.PP
+Class number \fI0\fR is reserved for network addresses used by CT themselves.
+@PRODUCT_NAME_LONG@ traffic accounting won't work unless you specify at least this
+class.
+.SH EXAMPLES
+\f(CW
+# Example of networks_classes file.
+.br
+.br
+# host server CT's networks
+.br
+0 10.10.10.0/24
+.br
+0 10.10.15.0/24
+.br
+.br
+# all IP ("local" traffic)
+.br
+1 0.0.0.0/0
+.br
+.br
+# class 2 - "foreign" traffic
+.br
+2 10.0.0.0/8
+.br
+2 11.0.0.0/8
+.br
+.br
+# inside "foreign" network there
+.br
+# is a hole with "local" traffic
+.br
+1 10.10.16.0/24
+\fR
+.SH SEE ALSO
+.BR vzctl (8),
+.BR vz-net_add (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

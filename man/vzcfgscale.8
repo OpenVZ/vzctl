@@ -1,0 +1,34 @@
+.\" $Id$
+.TH vzcfgscale 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzcfgscale \- scale a CT configuration file.
+.SH SYNOPSIS
+vzcfgscale [\fIoptions\fR] \fIconfigfile\fR
+.SH DESCRIPTION
+This utility is used to scale a Container
+configuration. It multiplies Container resource control parameters
+by the number passed as an argument.
+.SH OPTIONS
+.IP "\fB-o\fR, \fB--output-file\fR \fIoutfile\fR" 4
+Output the scaled configuration into the \fIoutfile\fR. By default, the utility prints its output to the screen. Note that the file specified cannot be the same as input file \fIconfigfile\fR, otherwise you will lose the configuration file content.
+.IP "\fB-a\fR, \fB--all\fR \fIcoeff\fR" 4
+Multiply all Container parameters by the coefficient specified.
+.IP "\fB-c\fR, \fB--cpu-only\fR \fIcoeff\fR" 4
+Multiply the CPU parameters by the coefficient specified.
+.IP "\fB-d\fR, \fB--disk-only\fR \fIcoeff\fR" 4
+Multiply the disk quota parameters by the coefficient specified.
+.IP "\fB-u\fR, \fB--ubc-only\fR \fIcoeff\fR" 4
+Multiply the UBC parameters by the coefficient specified.
+.IP "\fB-n\fR, \fB--network-only\fR \fIcoeff\fR" 4
+Multiply the network bandwidth parameters by the coefficient specified.
+.IP "\fB-r\fR, \fB--remove\fR" 4
+Skip the CT-specific parameters like \fBVE_ROOT\fR, \fBVE_PRIVATE\fR, etc. This option is used for producing configuration samples to be employed as an argument for the \fB--config\fR option of the \fBvzctl create\fR command.
+.PP
+After the CT configuration file has been scaled it is recommended to check the CT configuration validity with the \fBvzcfgvalidate\fR(8) utility.
+.SH DIAGNOSTICS
+Normally, the exit status is 0. On error, the exit status is 1.
+.SH SEE ALSO
+.BR ve.conf (5),
+.BR vzcfgvalidate (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

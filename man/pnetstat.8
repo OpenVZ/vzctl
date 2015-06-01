@@ -1,0 +1,51 @@
+.TH pnetstat 8 "28 Dec 2006" "Parallels" "Containers"
+.SH NAME
+pnetstat \- display network traffic statistics for servers.
+.SH SYNOPSIS
+pnetstat [\fB-v\fR <\fIid\fR>] [\fB-c\fR <\fIclass\fR>] [\fB-a\fR] [\fB-r\fR]
+[\fB-h\fR] [\fB-t\fR <\fIct\fR|\fIvm\fR|\fIall\fR>]
+.SH DESCRIPTION
+The utility displays incoming and outcoming traffic for servers for each defined
+network class. The output is grouped by server IDs. The network classes are
+described in the /etc/sysconfig/vz-scripts/networks_classes file. If no options
+are specified the network statistics for all running servers is printed.
+.PP
+Note that for the ID of 0, the traffic of the HS (the host server
+itself) is shown. The figures for HS does not include servers traffic.
+.SH OPTIONS
+.IP "\fB-v\fR <\fIid\fR>"
+Display statistics only for the servers with the given \fIid\fR.
+.IP "\fB-c\fR <\fIclass\fR>"
+Display statistics only for the given network \fIclass\fR.
+.IP "\fB-a\fR
+Display all classes (16).
+.IP "\fB-r\fR
+Round off the statistics figures from bytes to K(b), M(b) or G(b).
+.IP "\fB-t\fR <\fIct\fR|\fIvm\fR|\fIall\fR>
+Display statistics only for Containers, virtual machines or both.
+.IP \fB-h\fR
+Print short usage information.
+.SH RETURN CODE
+Returns 0 upon success.
+.SH EXAMPLES
+To display statistics for all servers:
+\f(CW
+.nh
+.nf
+    pnetstat
+\fR
+.hy
+.fi
+.PP
+To display statistics for Containers 101 and 102 for network classes 1 and 2:
+\f(CW
+.nh
+.nf
+    pnetstat -v 101 -v 102 -c 1 -c 2
+\fR
+.hy
+.fi
+.SH SEE ALSO
+.BR networks_classes (5).
+.SH COPYRIGHT
+Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.

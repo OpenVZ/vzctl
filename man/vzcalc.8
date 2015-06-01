@@ -1,0 +1,34 @@
+.\" $Id$
+.TH vzcalc 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzcalc \- utility to calculate the CT resources usage.
+.SH SYNOPSIS
+vzcalc [\fB-v\fR] <\fBctid\fR>
+.SH OPTIONS
+.IP \fB-v\fR 4
+Display additional information.
+.SH DESCRIPTION
+This utility displays the share of the host server resources a particula
+Container is using. If the CT is running, the current usage is
+displayed. High utilization values (>100%) mean the system is overloaded
+(or the CT has an invalid configuration).
+.IP \fBCurrent\fR 4
+shows the amount of the resources consumed by the CT at a given time.
+.IP \fBPromised\fR 4
+shows the resourses soft limit values "promised" for a given CT.
+.IP \fBMax\ \fR 4
+shows the resourses hard limit values "promised" for a given CT.
+.P
+If the \fB-v\fR option is specified, the additional information is displayed.
+.IP \fBLow\ Mem\fR 4
+the part of memory residing at lower addresses and directly accessed by the kernel.
+.IP \fBTotal\ Ram\fR 4
+whole RAM
+.IP \fBMem+Swap\fR 4
+amount of memory available for applications (both RAM and swap space).
+.IP \fBAlloc\ Mem\fR 4
+standard memory allocations made for applications in a CT. This is a more "virtual" system resourse than RAM or RAM and swap space.
+.SH DIAGNOSTICS
+Normally, the exit status is 0. On error, the exit status is 1.
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

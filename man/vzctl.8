@@ -1,0 +1,1119 @@
+.\" $Id$
+.TH vzctl 8 "May 2011" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzctl \- utility to control a Container.
+.SH SYNOPSIS
+vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBcreate\fR \fIctid\fR | \fB--ostemplate\fR \fIname\fR}
+[\fB--private\fR \fIpath\fR] [\fB--root\fR \fIpath\fR] [\fB--ipadd\fR \fIaddr\fR[\fB/\fImask\fR]] [\fB--hostname\fR \fIname\fR] [\fB--skip_app_templates\fR] [\fB--name\fR \fIname\fR] [\fB--description\fR \fIdesc\fR] [\fB--force\fR]
+.PP
+vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBreinstall\fR \fIctid\fR [\fB--skipbackup\fR] [\fB--resetpwdb\fR] [\fB--skipscripts\fR]
+.PP
+vzctl \fBrunscript\fR \fIctid\fR \fIscript\fR
+.TP
+vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
+.\" UBC parameters
+[\fB-p\fR, \fB--numproc\fR \fIitems\fR[:\fIitems\fR]]
+[\fB--numtcpsock\fR \fIitems\fR[:\fIitems\fR]]
+[\fB--numothersock\fR \fIitems\fR[:\fIitems\fR]]
+[\fB--vmguarpages\fR \fIpages\fR[:\fIpages\fR]]
+[\fB-k\fR, \fB--kmemsize\fR \fIbytes\fR[:\fIbytes\fR]]
+[\fB--tcpsndbuf\fR \fIbytes\fR[:\fIbytes\fR]]
+[\fB-b\fR, \fB--tcprcvbuf\fR \fIbytes\fR[:\fIbytes\fR]]
+[\fB--othersockbuf\fR \fIbytes\fR[:\fIbytes\fR]]
+[\fB--dgramrcvbuf\fR \fIbytes\fR[:\fIbytes\fR]]
+[\fB--oomguarpages\fR \fIpages\fR[:\fIpages\fR]]
+[\fB-l\fR, \fB--lockedpages\fR \fIpages\fR[:\fIpages\fR]]
+[\fB--privvmpages\fR \fIpages\fR[:\fIpages\fR]]
+[\fB--shmpages\fR \fIpages\fR[:\fIpages\fR]]
+[\fB-n\fR, \fB--numfile\fR \fIitems\fR[:\fIitems\fR]]
+[\fB-f\fR, \fB--numflock\fR \fIitems\fR[:\fIitems\fR]]
+[\fB-t\fR, \fB--numpty\fR \fIitems\fR[:\fIitems\fR]]
+[\fB-i\fR, \fB--numsiginfo\fR \fIitems\fR[:\fIitems\fR]]
+[\fB-x\fR, \fB--dcachesize\fR \fIbytes\fR[:\fIbytes\fR]]
+[\fB-e\fR, \fB--numiptent\fR \fInum\fR[:\fInum\fR]]
+[\fB--swappages\fR \fInum\fR[:\fInum\fR]]
+[\fB--physpages\fR \fIpages\fR[:\fIpages\fR]]
+[\fB--ram\fR \fIbytes\fR]
+[\fB--swap\fR \fIbytes\fR]
+
+[\fB--vm_overcommit \fR \fIN\fR]
+.br
+.\" Disk quota parameters
+[\fB--diskspace\fR \fInum\fR[:\fInum\fR]]
+[\fB--diskinodes\fR \fInum\fR[:\fInum\fR]]
+[\fB--quotatime\fR \fIseconds\fR]
+[\fB--quotaugidlimit\fR \fInum\fR]
+[\fB--jquota\fR \fBon\fR|\fBoff\fR]
+
+.br
+.\" CPU fairsched parameters
+[\fB--cpuunits\fR \fIvalue\fR]
+[\fB--cpulimit\fR \fIvalue\fR]
+[\fB--cpus\fR \fIvalue\fR]
+[\fB--cpumask\fR {\fIN[,N][,N-N]\fR|\fBall\fR|\fBauto\fR}]
+[\fB--nodemask\fR {\fIN[,N][,N-N]\fR|\fBall\fR}]
+.br
+.\" change some files inside CT
+[\fB--ipadd\fR \fIaddr\fR[\fB/\fImask\fR]] [\fB--ipdel\fR \fIaddr\fR|\fBall\fR]
+.br
+[\fB--netif_add\fR <\fIifname\fR[\fI,mac,host_ifname,host_mac\fR]]>]
+[\fB--netif_del\fR <\fIifname\fR>]
+.br
+[\fB--ifname\fR <\fIifname\fR> [\fB--mac\fR <\fImac\fR>] [\fB--host_ifname\fR <\fIname\fR>]
+[\fB--host_mac\fR <\fImac\fR>] [\fB--ipadd\fR <\fIaddr\fR>] [\fB--ipdel\fR <\fIaddr\fR>]
+[\fB--gw\fR <\fIaddr\fR>] [\fB--gw6\fR <\fIaddr\fR>] [\fB--dhcp\fR <\fByes\fR|\fBno\fR>]
+[\fB--dhcp6 <\fByes\fR|\fBno\fR>] [\fB--network\fR <\fIid\fR>]
+[\fB--configure\fR <\fInone\fR|\fBall\fR>]]
+.br
+[\fB--ext_ipadd\fR \fIaddr\fR] [\fB--ext_ipdel\fR \fIaddr\fR|\fBall\fR]
+[\fB--hostname\fR \fIname\fR]
+[\fB--nameserver\fR \fIaddr\fR]
+[\fB--searchdomain\fR \fIname\fR]
+[\fB--userpasswd\fR \fIuser\fR:\fIpassword\fR [\fB--crypted\fR]]
+.br
+.\" onboot
+[\fB--onboot\fR \fByes\fR|\fBno\fR]
+[\fB--bootorder\fR \fInumber\fR]
+.br
+.\" traffic shaping accounting
+[\fB--rate\fR \fIdev\fR:\fIclass\fR:\fIKbits\fR]
+[\fB--ratebound\fR \fByes\fR|\fBno\fR]
+.br
+.\" mount option
+[\fB--root\fR \fIpath\fR]
+[\fB--noatime\fR \fByes\fR|\fBno\fR]
+[\fB--bindmount_add\fR [\fIsrc\fR:]\fIdst\fR[,\fBnosuid\fR,\fBnoexec\fR,\fBnodev\fR]
+[\fB--bindmount_del\fR \fIdst\fR|\fBall\fR]
+[\fB--mount_opts\fR \fIopt\fR[,\fIopt\fR]]
+.br
+.\" capability
+[\fB--capability\fR \fIcapname\fR:\fBon\fR|\fBoff\fR[\fB,\fR...]]
+.br
+.\" devices
+[\fB--devnodes\fR \fIdevice\fR:\fBr\fR|\fBw\fR|\fBrw\fR|\fBnone\fR]
+[\fB--netdev_add\fR \fIname\fR]
+[\fB--netdev_del\fR \fIname\fR]
+[\fB--pci_add\fR \fI[domain:]bus:slot.func\fR]
+[\fB--pci_del\fR \fIn[domain:]bus:slot.func\fR]
+[\fB--iptables\fR \fIname\fR[\fB,\fR...]]
+[\fB--netfilter\fR \fImode\fR]
+[\fB--disabled\fR \fByes\fR|\fBno\fR]
+[\fB--applyconfig\fR \fIname\fR]
+[\fB--setmode\fR \fBrestart\fR|\fBignore\fR]
+[\fB--description\fR \fIdesc\fR]
+[\fB--name\fR \fIname\fR] [\fB--ioprio\fR \fIprio\fR]
+[\fB--iolimit\fR \fIlimit\fR] [\fB--iopslimit\fR \fIlimit\fR]
+[\fB--features\fR \fIname\fR:\fBon\fR|\fBoff\fR[\fB,\fR...]]
+.br
+.\" high availability cluster
+[\fB--ha_enable\fR \fByes\fR|\fBno\fR]
+[\fB--ha_prio\fR \fInumber\fR]
+.PP
+vzctl [\fB--quiet\fR | \fB--verbose\fR]
+\fBdestroy\fR | \fBmount\fR | \fBumount\fR |
+\fBstart\fR | \fBrestart\fR |
+\fBstatus\fR | \fBenter\fR | \fBconsole\fR |
+.PP
+vzctl \fBstop\fR \fIctid\fR|\fIname\fR [\fB--fast\fR] [\fB--skip-umount\fR]
+.PP
+vzctl \fBstart\fR \fIctid\fR|\fIname\fR [\fB--wait\fR] [\fB--skip-fsck\fR]
+.PP
+vzctl \fBmonitor\fR \fIctid|\fIname\fR|\fB0\fR
+.PP
+vzctl \fBsuspend\fR \fIctid\fR|\fIname\fR
+.PP
+vzctl \fBresume\fR \fIctid\fR|\fIname\fR [\fB--skip-fsck\fR]
+.PP
+vzctl \fBsnapshot\fR \fIctid\fR|\fIname\fR
+[\fB--id\fR \fIuuid\fR]
+[\fB--name\fR \fIname\fR]
+[\fB--description\fR \fIdesc\fR]
+.PP
+vzctl \fBsnapshot-switch\fR | \fBsnapshot-delete\fR \fIctid\fR|\fIname\fR \fB--id\fR \fIuuid\fR
+.PP
+vzctl \fBsnapshot-mount\fR \fICTID\fR \fB--id\fR \fIuuid\fR \fB--target\fR \fIpath\fR
+.PP
+vzctl \fBsnapshot-umount\fR \fICTID\fR \fB--id\fR \fIuuid\fR
+.PP
+vzctl \fBsnapshot-list \fICTID\fR [\fB-H\fR] [\fB-o\fR \fIfield\fR[,\fIfield\fR...] [\fB--id\fR \fIuuid\fR]
+.PP
+vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBexec\fR | \fBexec2\fR \fIctid\fR|\fIname\fR \fIcommand\fR [\fIarg\fR ...]
+.PP
+vzctl \fBconvert\fR \fIctid\fR|\fIname\fR
+.PP
+vzctl \fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR]
+.PP
+vzctl \fBunregister\fR \fIctid\fR|\fIname\fR
+.PP
+vzctl \fB--help\fR | \fB--version\fR
+.SH DESCRIPTION
+Utility \fBvzctl\fR runs on host server (HS) and performs direct
+manipulations with Container (CT).
+.PP
+Containers can be referred to by numeric \fIctid\fR
+(or \fIname\fR which can be assigned with \fB--name\fR option). Note
+that CT ID <= 100 are reserved for @PRODUCT_NAME_LONG@ internal purposes.
+.SH OPTIONS
+.SS Flags
+These flags can be used with any \fBvzctl\fR command.
+.IP \fB--quiet\fR 4
+Disables logging to a console (a terminal). Logging to a log file
+is not affected.
+.IP \fB--verbose\fR 4
+Sets console (terminal) logging level to maximum value. Logging to a log file
+is not affected.
+.SS Setting CT parameters
+.IP "\fBset\fR \fIctid\fR" 4
+This command sets various CT parameters. If flag \fB--save\fR is given,
+parameters are saved in CT configuration file \fBve.conf\fR(5).
+If CT is currently running, \fBvzctl\fR applies these parameters to CT,
+in case \fB--setmode\fR option specified apply logic for parameters that can't
+be applied or tunning CT will be changed, if \fBrestart\fR - restart CT,
+if \fBignore\fR - ignore error.
+Parameters that can not be applied runtime are
+\fBcapability\fR, \fBquotaugidlimit\fR, \fBbindmount\fR, \fBfeatures\fR,
+and \fBiptables\fR.
+
+The following options can be used with \fBset\fR command.
+.TP
+\fBMiscellaneous parameters\fR
+.TP
+\fB--setmode\fR \fBrestart\fR|\fBignore\fR
+Change default mode for apply parameters that can not be applied on running CT.
+\fBrestart\fR - restart CT, \fBignore\fR - ignore error.
+.TP
+\fB--onboot\fR \fByes\fR|\fBno\fR
+Sets whether this CT will be started during system boot up. CT will not be
+auto-started during system boot up unless this parameter is set to \fByes\fR.
+.TP
+\fB--bootorder\fR \fInumber\fR
+Sets the boot order priority for this CT. The higher the \fInumber\fR is,
+the earlier in the boot process this container starts. By default this
+parameter is unset, this is considered to be the lowest priority, so
+containers with unset \fBbootorder\fR will start last.
+.TP
+\fB--root\fR \fIpath\fR
+Sets path to root directory for this CT. This is essentially a mount
+point for CT root. Argument can contain literal string \fB$VEID\fR, which will
+be substituted with numeric CT ID. Changing this parameter is not
+recommended, better edit \fBvz\fR(5) global configuration file.
+.TP
+\fB--userpasswd\fR \fIuser\fR:\fIpassword\fR
+Sets password for given user in CT, creating the user if it does not exists.
+Note that this option is not saved in configuration file at all (so
+\fB--save\fR flag is useless), it is applied to CT (by modifying its
+\fB\f(CR/etc/passwd\fR and \fB\f(CR/etc/shadow\fR files).
+
+If the \fB--crypted\fR parameter is specified, the system assumes that the
+passwords are encrypted.
+
+In case CT root is not mounted, it is automatically mounted, then all
+appropriate file changes are applied, then it is unmounted.
+
+Note that CT area should be created before using this option.
+.TP
+\fB--disabled\fR \fByes\fR|\fBno\fR
+Disable CT start. For force start disabled CT option \fI--force\fR can be used.
+.TP
+\fB--name\fR \fIname\fR
+Bind CT with \fIname\fR, it allows to use name instead of CT ID.
+The valid symbols for \fIname\fR are [0-9][aA-Zz][\ -_.] and all international symbols.
+.TP
+\fB--description\fR \fIdesc\fR
+Assign description for CT. It can be viewed by \fBvzlist\fR(8) utility.
+.TP
+\fBNetwork related parameters\fR
+.TP
+\fB--ipadd\fR \fIaddr\fR[\fB/\fImask\fR
+Adds the IP address and subnet mask for the Container. To assign network masks to Containers operating in the
+venet0 mode, the USE_VENET_MASK parameter in the Parallels Containers configuration file must be set to
+"yes". Note that this option is incremental, so \fIaddr\fR are added to already existing ones.
+.TP
+\fB--ipdel\fR \fIaddr\fR | \fBall\fR
+Removes IP address \fIaddr\fR from CT. If you want to remove all addresses,
+use \fB--ipdel all\fR.
+.TP
+\fB--ext_ipadd\fR \fIaddr\fR
+Assign the external IP address to the Container. External IP addresses are considered valid IP addresses by
+the venet0 adapter, though they are not set as alias addresses inside Containers and are not announced via
+Address Resolution Protocol (ARP). You can assign the same external IP address to several Containers,
+irrespective of whether they reside on the same or different Hardware Nodes.
+.TP
+\fB--ext_ipdel\fR \fIaddr\fR
+Remove the external IP address from the Container. To delete all external IP addresses assigned to the
+Container, use ext_ipdel all.
+.TP
+\fB--netif_add\fR \fIifname[\fR,\fImac\fR,\fIhost_ifname\fR,\fIhost_mac]\fR
+Adds virtual ethernet device to given CT. Where \fIifname\fR is ethernet
+device name in the CT, \fImac\fR its MAC address, \fIhost_ifname\fR is
+ethernet device name on the host and \fIhost_mac\fR its MAC address.
+MAC addresses has format like XX:XX:XX:XX:XX:XX. All parameters except
+\fIifname\fR are option and automatically generated if not specified.
+
+Per-interface configuration.
+.br
+To select the interface to configure, use \fB--ifname\fR \fIname\fR option.
+.br
+\fB--mac\fR \fIXX:XX:XX:XX:XX:XX\fR - MAC address of interface inside CT
+.br
+\fB--host_ifname\fR \fIname\fR - interface name for virtual interface on host server
+.br
+\fB--host_mac\fR \fIXX:XX:XX:XX:XX:XX\fR - MAC address of interface on host server
+.br
+\fB--gw\fR \fIipaddr\fR - default IPv4 gateway for interface
+.br
+\fB--gw6\fR \fIipaddr\fR - default IPv6 gateway for interface
+.br
+\fB--ipadd\fR \fIipaddr\fR - add IP address(es) to interface
+.br
+\fB--ipdel\fR \fIipaddr\fR - delete IP address(es) from interface
+.br
+\fB--dhcp\fR \fByes\fR|\fBno\fR - turn on/off IPv4 dhcp
+.br
+\fB--dhcp6\fR \fByes\fR|\fBno\fR - turn on/off IPv6 dhcp
+.br
+\fB--configure\fR \fBnone\fR|\fBall\fR - apply/ignore the network settings (gw,ip,dhcp)
+from the Container configuration file.
+Configuring any of the network settings automatically sets this option to "all".
+.br
+\fB--network\fR \fIid\fR - connect virtual interface to virtual network
+with the given \fIid\fR.
+The valid symbols for \fInetwork\fR are [0-9][aA-Zz][\ -_.#()] and all
+international symbols.
+.br
+\fB--mac_filter\fR \fBon\fR|\fBoff\fR - enable/disable packets filtering by MAC
+address and MAC changing on veth device inside CT.
+.TP
+\fB--netif_del\fR \fIdev_name\fR
+Removes virtual ethernet device from CT.
+.TP
+\fB--hostname\fR \fIname\fR
+Sets CT hostname and writes it to the appropriate file inside CT
+(distribution-dependent).
+.TP
+\fB--nameserver\fR \fIaddr\fR
+Sets DNS server IP address for CT. If you want to set several nameservers,
+you should do it at once, so use \fB--nameserver\fR option multiple times
+in one call to \fBvzctl\fR, as all the name server values set in previous
+calls to \fBvzctl\fR gets overwritten.
+.TP
+\fB--searchdomain\fR \fIname\fR
+Sets DNS search domains for CT. If you want to set several search domains,
+you should do it at once, so use \fB--searchdomain\fR option multiple times
+in one call to \fBvzctl\fR, as all the search domain values set in previous
+calls to \fBvzctl\fR gets overwritten.
+.TP
+.TP
+\fBResource limits\fR
+The following options sets barrier and limit for various user beancounters.
+Each option requires one or two arguments. In case of one argument,
+\fBvzctl\fR sets barrier and limit to the same value. In case of
+two colon-separated arguments, the first is a barrier,
+and the second is a limit.
+
+Arguments are in items, pages or bytes. Note that the page size
+is architecture-specific, it is 4096 bytes on IA32 platform.
+
+There is an ability to accept different suffixes for
+set parameters (except the parameters that name started with \fBnum\fR).
+E.g. \fBvzctl set XXX --privvmpages 5M:6M\fR should set \fBprivvmpages\fR
+barrier to 5 megabytes and limit to 6 megabytes.
+
+Available suffixes are:
+.br
+\fBt\fR, \fBT\fR -- terabytes
+.br
+\fBg\fR, \fBG\fR -- gigabytes
+.br
+\fBm\fR, \fBM\fR -- megabytes
+.br
+\fBk\fR, \fBK\fR -- kilobytes
+.br
+\fBp\fR, \fBP\fR -- pages (page is 4096 bytes on x86 architecture, other
+arches may differ)
+.TP
+\fB-p\fR, \fB--numproc\fR \fIitems\fR[:\fIitems\fR]
+Maximum number of processes and kernel-level threads.
+Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB--numtcpsock\fR \fIitems\fR[:\fIitems\fR]
+Maximum number of TCP sockets. This parameter limits the number of TCP
+connections and, thus, the number of clients the server application can
+handle in parallel.
+Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB--numothersock\fR \fIitems\fR[:\fIitems\fR]
+Maximum number of non-TCP sockets (local sockets, UDP and other types
+of sockets).
+Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB--vmguarpages\fR \fIpages\fR[:\fIpages\fR]
+Memory allocation guarantee. This parameter controls how much memory is
+available to CT. The barrier is the amount
+of memory that CT's applications are guaranteed to be able to allocate.
+The meaning of the limit is currently unspecified; it should be set to
+2,147,483,647.
+.TP
+\fB-k\fR, \fB--kmemsize\fR \fIbytes\fR[:\fIbytes\fR]
+Maximum amount of kernel memory used. This parameter is related to
+\fB--numproc\fR. Each process consumes certain amount of kernel memory -
+16 KB at leas, 30-50 KB typically. Very large processes may consume
+a bit more. It is important to have a certain safety gap between the
+barrier and the limit of this parameter: equal barrier and limit may
+lead to the situation where the kernel will need to kill CT applications
+to keep the \fBkmemsize\fR usage under the limit.
+.TP
+\fB--tcpsndbuf\fR \fIbytes\fR[:\fIbytes\fR]
+Maximum size of TCP send buffers.
+Barrier should be not less than 64 KB, and difference between
+barrier and limit should be equal to or more than value of
+\fBnumtcpsock\fR multiplied by 2.5 KB.
+.TP
+\fB-b\fR, \fB--tcprcvbuf\fR \fIbytes\fR[:\fIbytes\fR]
+Maximum size of TCP receive buffers.
+Barrier should be not less than 64 KB, and difference between
+barrier and limit should be equal to or more than value of
+\fBnumtcpsock\fR multiplied by 2.5 KB.
+.TP
+\fB--othersockbuf\fR \fIbytes\fR[:\fIbytes\fR]
+Maximum size of other (non-TCP) socket send buffers. If CT processes needs
+to send very large datagrams, the barrier should be set accordingly.
+Increased limit is necessary for high performance of communications through
+local (UNIX-domain) sockets.
+.TP
+\fB--dgramrcvbuf\fR \fIbytes\fR[:\fIbytes\fR]
+Maximum size of other (non-TCP) socket receive buffers. If CT processes
+needs to send very large datagrams, the barrier should be set accordingly.
+The difference between the barrier and the limit is not needed.
+.TP
+\fB--oomguarpages\fR \fIpages\fR[:\fIpages\fR]
+Guarantees against OOM kill. Under this beancounter the kernel accounts the
+total amount of memory and swap space used by the CT processes. The barrier
+of this parameter is the out-of-memory guarantee. If the oomguarpages usage
+is below the barrier, processes of this CT are guaranteed not to be killed
+in out-of-memory situations. The meaning of limit is currently unspecified;
+it should be set to 2,147,483,647.
+.TP
+\fB-l\fR, \fB--lockedpages\fR \fIpages\fR[:\fIpages\fR]
+Maximum number of pages acquired by \fBmlock\fR(2).
+.TP
+\fB--privvmpages\fR \fIpages\fR[:\fIpages\fR]
+Allows controlling the amount of memory allocated by the applications.
+For shared (mapped as \fBMAP_SHARED\fR) pages, each CT really using a memory
+page is charged for the fraction of the page (depending on the number of
+others using it). For "potentially private" pages (mapped as
+\fBMAP_PRIVATE\fR), CT is charged either for a fraction of the size or for
+the full size if the allocated address space. It the latter case, the physical
+pages associated with the allocated address space may be in memory, in swap
+or not physically allocated yet.
+
+The barrier and the limit of this parameter
+control the upper boundary of the total size of allocated memory. Note that
+this upper boundary does not guarantee that CT will be able to allocate that
+much memory. The primary mechanism to control memory allocation is
+the \fB--vmguarpages\fR guarantee.
+.TP
+\fB--shmpages\fR \fIpages\fR[:\fIpages\fR]
+Maximum IPC SHM segment size.
+Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB-n\fR, \fB--numfile\fR \fIitems\fR[:\fIitems\fR]
+Maximum number of open files.
+Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB-f\fR, \fB--numflock\fR \fIitems\fR[:\fIitems\fR]
+Maximum number of file locks. Safety gap should be between barrier and limit.
+.TP
+\fB-t\fR, \fB--numpty\fR \fIitems\fR[:\fIitems\fR]
+Number of pseudo-terminals (PTY). Note that in @PRODUCT_NAME_LONG@ each CT
+can have no more than 255 PTYs. Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB-i\fR, \fB--numsiginfo\fR \fIitems\fR[:\fIitems\fR]
+Number of siginfo structures.
+Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB-x\fR, \fB--dcachesize\fR \fIbytes\fR[:\fIbytes\fR]
+Maximum size of filesystem-related caches, such as directory entry
+and inode caches. Exists as a separate parameter to impose a limit
+causing file operations to sense memory shortage and return an errno
+to applications, protecting from memory shortages during critical
+operations that should not fail.
+Safety gap should be between barrier and limit.
+.TP
+\fB-e\fR, \fB--numiptent\fR \fInum\fR[:\fInum\fR]
+Number of iptables (netfilter) entries.
+Setting the barrier and
+the limit to different values does not make practical sense.
+.TP
+\fB--physpages\fR \fIpages\fR[:\fIpages\fR]
+This parameter limits the physical memory (RAM) available to processes inside a container.
+The barrier is ignored, and the limit sets the limit.
+.TP
+\fB--swappages\fR \fIpages\fR[:\fIpages\fR]
+This parameter limits the amount of swap space that can be allocated to processes running in a Container.
+.TP
+\fB--ram\fR \fIbytes\fR
+The amount of RAM that can be used by the processes of a Container, in bytes. You can use the following suffixes to set RAM in other measurement units:
+.br
+\fBk\fR, \fBK\fR -- kilobytes
+.br
+\fBm\fR, \fBM\fR -- megabytes
+.br
+\fBg\fR, \fBG\fR -- gigabytes
+.br
+\fBt\fR, \fBT\fR -- terabytes
+.TP
+\fB--swap\fR \fIbytes\fR
+The amount of swap space that can be used by the Container for swapping out memory once the RAM is exceeded, in bytes. You can use the following suffixes to set swap in other measurement units:
+.br
+\fBk\fR, \fBK\fR -- kilobytes
+.br
+\fBm\fR, \fBM\fR -- megabytes
+.br
+\fBg\fR, \fBG\fR -- gigabytes
+.br
+\fBt\fR, \fBT\fR -- terabytes
+.TP
+\fB--vm_overcommit\fR \fIN\fR
+This parameter controls the memory allocation guarantee. It is calculated as
+(physpages + swappages) * N. By default, the parameter is equal to 1.
+.TP
+\fBCPU fair scheduler parameters\fR
+These parameters control CPU usage by CT.
+.TP
+\fB--cpuunits\fR \fInum\fR
+sets CPU weight for CT. Argument is positive non-zero number, which passed to
+and used in kernel fair scheduler. The larger the number is, the more CPU time
+this CT get. Maximum value is 500000, minimal is 8. Number is relative to
+weights of all the other running CTs. If cpuunits not specified default values
+are used (250 for CT belong to first class, 1000 for CT belong to second class)
+
+You can set CPU weight for host server itself as well
+(use \fBvzctl set 0 --cpuunits \fInum\fR).
+.TP
+\fB--cpulimit\fR \fInum\fR
+Sets the CPU limit, in percent or megahertz (MHz), the Container is not allowed to exceed.
+By default, the limit is set in percent. To specify the limit in MHz, specify "m" after the value.
+Note: If the computer has 2 CPUs, the total CPU time equals 200%.
+.TP
+\fB--cpus\fR \fInum\fR
+sets number of CPUs available in the CT.
+.TP
+\fB--cpumask\fR {\fIN[,N][N-N]\fR|\fBall\fR|\fBauto\fR}
+Defines the CPUs on the physical server to use for executing the processes
+running in the Container. A CPU affinity mask can be a single CPU number or a
+CPU range separated by commas (0,2,3-10).
+If used with the \fB--nodemask\fR option, value of \fBauto\fR automatically assigns to a Container
+all CPUs from the specified NUMA node. Without the \fB--nodemask\fR option, it applies
+the default settings to a Container.
+.TP
+\fB--nodemask\fR {\fIN[,N][N-N]\fR|\fBall\fR}
+Defines the NUMA node on the physical server to use for executing the processes
+running in the Container. A node mask can be a single number or a range separated by commas (0,2,3-10).
+\fB--nodemask\fR must be used with the \fB--cpumask\fR option.
+.TP
+\fB--iptables\fR \fIname\fR[\fB,\fR...]
+Restrict access to iptable modules inside CT (by default modules defined in
+the \fBIPTABLES\fR variable in the global configuration file
+.BR vz.conf (5)
+are accessible inside CT). Multiple comma-separated values can be specified.
+
+You can use the following values for \fIname\fR:
+\fBiptable_filter\fR, \fBiptable_mangle\fR, \fBipt_limit\fR,
+\fBipt_multiport\fR, \fBipt_tos\fR, \fBipt_TOS\fR, \fBipt_REJECT\fR,
+\fBipt_TCPMSS\fR, \fBipt_tcpmss\fR, \fBipt_ttl\fR, \fBipt_LOG\fR,
+\fBipt_length\fR, \fBip_conntrack\fR, \fBip_conntrack_ftp\fR,
+\fBip_conntrack_irc\fR, \fBipt_conntrack\fR, \fBipt_state\fR,
+\fBipt_helper\fR, \fBiptable_nat\fR, \fBip_nat_ftp\fR, \fBip_nat_irc\fR,
+\fBipt_owner\fR.
+.TP
+\fB--netfilter\fR \fImode\fR
+Restrict access to iptables modules inside the Container.
+The following modes are available:
+.br
+\fBdisabled\fR	-- no modules are allowed.
+.br
+\fBstateless\fR	-- (default) all modules except NAT and conntracks are allowed.
+.br
+\fBstateful\fR	-- all modules except NAT are allowed.
+.br
+\fBfull\fR	-- all modules are allowed.
+.TP
+\fBNetwork devices  control parameters\fR
+.IP "\fB--netdev_add\fR \fIname\fR"
+move network device from host server to specified CT
+.IP "\fB--netdev_del\fR \fIname\fR"
+delete network device from specified CT
+.TP
+\fBDisk quota parameters\fR
+.TP
+\fB--diskspace\fR \fInum\fR[:\fInum\fR]
+Sets soft and hard disk quotas, in blocks. First parameter is soft quota,
+second is hard quota. One block is currently equal to 1Kb.
+.TP
+\fB--diskinodes\fR \fInum[:\fInum\fR]
+Sets soft and hard disk quotas, in i-nodes. The first parameter defines the soft quota, and the second one sets the hard quota. This option is ignored for ploop-based Containers.
+.TP
+\fB--quotatime\fR \fIseconds\fR
+sets soft overusage time limit for disk quota (also known as grace period).
+.TP
+\fB--quotaugidlimit\fR \fInum\fR
+sets maximum number of user/group IDs in CT for which disk quota in CT
+will be accounted. If this value is set to \fB0\fR, user and group
+quotas will not be accounted inside CT.
+
+Note that if you have previously set value of this parameter to \fB0\fR,
+changing it while CT is running will not take effect.
+\fB--jquota\fR \fBon\fR|\fBoff\fR
+Enables or disables journaled user/group quota for a ploop-based Container.
+Journaled quota is enabled by default.
+.TP
+\fBTraffic shaping parameters\fR
+.TP
+\fB--rate\fR \fIdev\fR:\fIclass\fR:\fIKbits\fR
+Sets CT output bandwidth over specified network interface for specified traffic
+class. Traffic classes must be described in \fBnetworks_classes\fR(5) file.
+.TP
+\fB--ratebound\fR \fByes\fR|\fBno\fR
+If this parameter is set to \fByes\fR then CT output bandwidth specified by
+\fB--rate\fR option will be bandwidth limit and guarantee. Otherwise
+\fB--rate\fR sets CT output bandwidth guarantee for traffic and
+limit is set by \fBTOTALRATE\fR global option.
+.TP
+\fBMount option\fR
+.TP
+\fB--noatime\fR \fByes\fR|\fBno\fR
+Sets noatime flag (do not update inode access times) on file system.
+Default is \fByes\fR for CT with \fBclass_id\fR=1, otherwise \fBno\fR.
+.TP
+\fB--mount_opts\fR \fIopt\fR[,\fIopt\fR]
+Specify the set of mount options for ploop-based Containers.
+The supported options are \fBpfcache_csum\fR (enables the cached ext4 file system) and \fBnopfcache_csum\fR (disables the cached ext4 file system).
+.TP
+\fB--bindmount_add\fR [\fIsrc\fR:]\fIdst\fR[,\fBnosuid\fR,\fBnoexec\fR,\fBnodev\fR]
+On CT start directory \fIsrc\fR will be mounted under CT $VE_ROOT/\fIdst\fR.
+If the \fIsrc\fR directory is not specified, it is created under
+$VE_PRIVATE/mnt/\fIdst\fR with permissions taken from CT $VE_ROOT/\fIdst\fR.
+.TP
+\fB--bindmount_del\fR \fIdst\fR|\fBall\fR
+Remove directory \fIdst\fR from config file
+.TP
+\fBCapability option\fR
+.TP
+\fB--capability\fR \fIcapname\fR:\fBon\fR|\fBoff\fR[\fB,\fR...]
+Sets a capability inside the CT. Multiple comma-separated values can be specified.
+Note that setting capability when the CT is running
+does not take immediate effect; restart CT in order for changes to take
+effect (consider using \fB--setmode\fR for that).
+CT has default set of capabilities, and any operations on capabilities is
+logical AND with the default capability mask.
+
+You can use the following values for \fIcapname\fR:
+\fBchown\fR, \fBdac_override\fR, \fBdac_read_search\fR, \fBfowner\fR,
+\fBfsetid\fR, \fBkill\fR, \fBsetgid\fR, \fBsetuid\fR,
+\fBsetpcap\fR, \fBlinux_immutable\fR, \fBnet_bind_service\fR,
+\fBnet_broadcast\fR, \fBnet_admin\fR, \fBnet_raw\fR,
+\fBipc_lock\fR, \fBipc_owner\fR, \fBsys_module\fR, \fBsys_rawio\fR,
+\fBsys_chroot\fR, \fBsys_ptrace\fR, \fBsys_pacct\fR,
+\fBsys_admin\fR, \fBsys_boot\fR, \fBsys_nice\fR, \fBsys_resource\fR,
+\fBsys_time\fR, \fBsys_tty_config\fR, \fBmknod\fR, \fBlease\fR,
+\fBve_admin\fR.
+.TP
+\fBDevice access management\fR
+.TP
+\fB--devnodes\fR \fIdevice\fR:\fBr\fR|\fBw\fR|\fBrw\fR|\fBnone\fR
+Give access (\fBr\fR - read, \fBw\fR - write, \fBrw\fR - read/write,
+\fBnone\fR - no access) to special file \fB/dev/\fIdevice\fR from CT.
+.TP
+\fBI/O priority management\fR
+.TP
+\fB--ioprio\fR \fIpriority\fR
+Assigns I/O priority to CT. \fIPriority\fR range is \fB0-7\fR.
+The greater \fIpriority\fR is, the more time for I/O activity CT has.
+By default each CT has \fIpriority\fR of \fB4\fR.
+.TP
+\fB--iolimit\fR \fIlimit\fR[\fBB\fR|\fBK\fR|\fBM\fR|\fBG\fR]
+Assigns I/O limit to CT. If no suffix is provided, the value is assumed to be
+in megabytes per second. Available suffixes are:
+.br
+\fBb\fR, \fBB\fR -- bytes
+.br
+\fBk\fR, \fBK\fR -- kilobytes
+.br
+\fBm\fR, \fBM\fR -- megabytes
+.br
+\fBg\fR, \fBG\fR -- gigabytes
+.br
+\fBt\fR, \fBT\fR -- terabytes
+
+By default each CT has \fIlimit\fR of 0 (unlimited).
+The maximum disk I/O bandwidth limit you can set for a Container is 2 GB per second.
+.TP
+\fB--iopslimit\fR \fIlimit\fR
+Assigns Input/Output Operations Per Second limit to CT.
+.TP
+\fBFeatures management\fR
+.TP
+\fB--features\fR \fIname\fR:\fBon\fR|\fBoff\fR[\fB,\fR...]
+Enable/disable feature for CT. Supported features are:
+\fBnfs\fR, \fBipip\fR, \fBsit\fR, \fBppp\fR, \fBipgre\fR, \fBbridge\fR,
+\fBnfsd\fR. Multiple comma-separated values can be specified.
+.TP
+\fBPCI device management\fR
+.TP
+\fB--pci_add\fR [domain:]bus:slot.func
+Give the container an access to a PCI device. All numbers are hexadecimal as printed by \fBlspci\fR(8) in the first column.
+.TP
+\fB--pci_del\fR [domain:]bus:slot.func
+Delete PCI device from the container.
+
+.TP
+\fBApply config\fR
+.TP
+\fB--applyconfig\fR \fBname\fR
+Read CT parameters from CT sample configuration file
+\f(CW\fB/etc/vz/conf/ve-\fIname\fR\f(CW\fB.conf-sample\fR, and
+apply them, if --save option specified save to CT config file. The following
+parameters are not changed: \fBHOSTNAME\fR, \fBIP_ADDRESS\fR, \fBTEMPLATE\fR,
+\fBOSTEMPLATE\fR, \fBVE_ROOT\fR, \fBVE_PRIVATE\fR.
+
+.TP
+\fBHigh Availability Cluster\fR
+.TP
+\fB--ha_enable\fR \fByes\fR|\fBno\fR
+Adds the Container to (\fByes\fR) or removes it (\fBno\fR) from the High Availability Cluster. By default, the parameter is set to \fByes\fR.
+.TP
+\fB--ha_prio\fR \fInumber\fR
+Sets the Container priority in the High Availability Cluster. Containers with a higher priority are restarted first in the case of a system failure. If the parameter is not set for a Container (default), it has the lowest priority and is restarted after all Containers with any priorities set.
+
+.SS Performing CT actions
+.IP "\fBcreate\fR \fIctid\fR [\fB--ostemplate\fR \fIname\fR] [\fB--config\fR \fIname\fR] [\fB--private\fR \fIpath\fR] [\fB--root\fR \fIpath\fR] [\fB--name\fR \fIname\fR] [\fB--description\fR \fIdesc\fR] [\fB--force\fR]" 4
+Creates CT area. This operation should be done once, before the first
+startup of CT.
+
+If the \fB--config\fR \fIname\fR option is specified, values from
+example configuration file
+\f(CW\fB/etc/vz/conf/ve-\fIname\fR\f(CW\fB.conf-sample\fR
+are put into CT configuration file. If CT configuration file already exists,
+it will be removed.
+
+You can use \fB--root\fR \fIpath\fR option to sets the path to the mount
+point for CT root directory (default is \fBVE_ROOT\fR specified in
+\fBvz\fR(5) file). Argument can contain literal string \fB$VEID\fR, which will
+be substituted with numeric CT ID.
+
+You can use \fB--private\fR \fIpath\fR option to set the path to directory
+in which all the files and directories specific to this very CT are stored
+(default is \fBVE_PRIVATE\fR specified in \fBvz\fR(5) file). Argument can
+contain literal string \fB$VEID\fR, which will be substituted with
+numeric CT ID.
+
+You can use the \fB--force\fR option to create a Container if your storage/disk drive has less than
+10 GB of free disk space.
+.IP "\fBdestroy\fR|\fBdelete\fR \fIctid\fR" 4
+Removes CT private area by deleting all files, directories and configuration
+file of this CT. Also \fBdelete\fR command can be used as alias
+for \fBdestroy\fR.
+.IP "\fBstart\fR \fIctid\fR [\fB--wait\fR] [\fB--skip-fsck\fR]" 4
+Mounts (if necessary) and starts CT, if \fB--wait\fR option specified wait
+until default runlevel is entered. If the \fB--skip-fsck\fR option is specified, the filesystem check will be skipped.
+.IP "\fBstop\fR \fIctid\fR [\fB--fast\fR] [\fB--skip-umount\fR]" 4
+Stops the Container and unmounts it (unless \fB--skip-umount\fR is given).
+
+Normally, to stop a Container, \fBhalt\fR(8) is executed inside;
+option \fB--fast\fR makes \fBvzctl\fR use \fBreboot\fR(2) syscall
+instead which is faster but can lead to unclean Container shutdown.
+.IP "\fBrestart\fR \fIctid\fR [\fB--wait\fR]" 4
+Restart CT, stop if running and start. if \fB--wait\fR option specified wait
+until default runlevel is entered.
+.IP "\fBstatus\fR \fIctid\fR" 4
+Shows CT status. Basically this is a line with five or six words
+separated by spaces.
+
+First word is literally \fBVEID\fR.
+
+Second word is numeric \fICT ID\fR.
+
+Third word is showing whether CT exists or not,
+it can be either \fBexist\fR or \fBdeleted\fR.
+
+Fourth word is showing the status of CT filesystem,
+it can be either \fBmounted\fR or \fBunmounted\fR.
+
+Fifth word shows if CT is running,
+it can be either \fBrunning\fR or \fBdown\fR.
+
+Sixth word, if exists, is \fBsuspended\fR. It appears if
+a dump file exists for a stopped container (see \fBsuspend\fR).
+
+This command can also be usable from scripts.
+.IP "\fBmount\fR \fIctid\fR" 4
+Mounts CT private area.
+.IP "\fBumount\fR \fIctid\fR" 4
+Unmounts CT private area. Note that \fBstop\fR does \fBumount\fR automatically.
+.IP "\fBexec\fR \fIctid\fR \fIcommand\fR" 4
+Executes \fIcommand\fR in CT. Environment variables are not set inside CT.
+Signal handlers may differ from default settings. If \fIcommand\fR is \fI-\fR,
+commands are read from stdin.
+.IP "\fBexec2\fR \fIctid\fR \fIcommand\fR" 4
+The same as \fBexec\fR, but return code is that of \fIcommand\fR.
+.IP "\fBenter\fR \fIctid\fR" 4
+Enters into CT. This option is a back-door for host root only.
+.IP "\fBconsole\fR \fIctid\fR [\fB-s\fR|\fB--start\fR] [\fIN\fR]\fR" 4
+Attach to the Container's console tty number \fIN\fR.
+If \fIN\fR is not specified, \fB2\fR (i.e. tty2) is used.
+Use \fB1\fR to attach to Container's system console, see
+log messages from init etc.
+Note that you can even attach to a console if a Container is not yet running.
+To exit from the console, press "Esc" then "."
+(note this sequence is only recognized after Enter).
+
+If option \fB--start\fR is given, \fBvzctl\fR doesn't attach to a console,
+instead it starts getty for tty\fIN\fR. Usually, getty is preconfigured
+to start on tty1 and tty2 only.
+.IP "\fBreinstall\fR \fIctid\fR [\fB--skipbackup\fR] [\fB--resetpwdb\fR] [\fB--scripts\fR \fIscript\fR] [\fB--skipscripts\fR] [\fB--vzpkg_opts\fR \fIopts\fR]" 4
+The \fBreinstall\fR command creates a new private area, installs all applications,
+copies CT credentials from the old CT (unless \fB--resetpwdb\fR is given),
+and moves old CT private area to /old directory (unless \fB--skipbackup\fR option is given).
+To customize the reinstall process, two scripts should be created. The first one,
+\fIvps.reinstall\fR, creates a new private area. If this script exits with exit code
+of 128, it indicates that standard reinstall procedure will be done. The second
+script, \fIvps.configure\fR, is run inside CT there the old CT is mounted under '/old'
+directory.
+.IP "\fBreinstall\fR \fIctid\fR [\fB--listscripts\fR] [\fB--desc\fR]"
+List reinstall scripts if \fB--desc\fR option specified output description.
+.IP "\fBrunscript\fR \fIctid\fR" 4
+Run the specified shell script in the Container. For a running Container, the command jumps into the Container and runs the script.
+For a stopped Container, it enters the Container, mounts the root (/) filesystem, and executes the script. In this case,
+only a process for the vzctl session, the script, and processes launched by the script are running in the Container.
+.IP "\fBmonitor\fR \fIctid\fR | \fB0\fR" 4
+Display in real-time actions or events for \fIctid\fR.
+In case ctid is 0, display actions and events for all CTs. Valid only on 2.6
+kernel.
+.IP "\fBconvert\fR \fIctid\fR" 4
+In @PRODUCT_NAME_LONG@, Containers use the new layout. The \fBconvert\fR command converts a Container from the old layout to a new one.
+.IP "\fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR" 4
+Register the Container using the configuration file \fIpath\fR/ve.conf and having ID \fIctid\fR.
+If the \fB--force\fR option is specified, all validation checks will be skipped.
+.IP "\fBunregister\fR \fIctid\fR|\fIname\fR" 4
+Unregister the specified Container.
+.SS Suspend/Restore
+Checkpointing is an extension of @PRODUCT_NAME_LONG@ kernel 2.6 which
+allows to save full state of running CT and to restore it later.
+.TP
+\fBsuspend\fR \fIctid\fR
+This command saves all the state of running CT to a dump file and stops the CT.
+The dump files is named /\fIVE_PRIVATE\fR/dump/Dump.
+.TP
+\fBresume\fR \fIctid\fR [\fB--skip-fsck\fR]
+This command restores CT from dump file created by \fBsuspend\fR command.
+The \fBstart\fR or \fBresume\fR actions will invalidate dump file
+so it will be removed.
+If the \fB--skip-fsck\fR option is specified, the filesystem check will be skipped.
+.SS Snapshotting
+Snapshotting is a feature based on checkpointing and ploop shapshots.
+It allows to save a complete state of container file system. Plus, if
+the container is running, it's in-memory state (as in checkpointing).
+Note that snapshot functionality is only working
+for containers on ploop device.
+.TP
+\fBsnapshot\fR \fICTID\fR [\fB--id\fR \fIuuid\fR]
+Creates a container snapshot. If \fIuuid\fR is not specified, it is
+auto-generated. If a container is running, it's checkpointed and then
+restored. If a container is not running, only file system state is saved.
+.TP
+\fBsnapshot-switch\fR \fICTID\fR \fB--id\fR \fIuuid\fR
+Switches the container to a snapshot identified by \fIuuid\fR.
+Note that the current container state and its file system state is lost!
+If given snapshot contains CT memory dump, it is restored, otherwise
+it is stopped.
+.TP
+\fBsnapshot-delete\fR \fICTID\fR \fB--id\fR \fIuuid\fR
+Removes a specified snapshot.
+.TP
+\fBsnapshot-mount\fR \fICTID\fR \fB--id\fR \fIuuid\fR \fB--target\fR \fIpath\fR
+Mounts a snapshot specified by \fIuuid\fR to \fIpath\fR. Note that this is
+read-only mount.
+.TP
+\fBsnapshot-umount\fR \fICTID\fR \fB--id\fR \fIuuid\fR
+Unmounts the snapshot specified by \fIuuid\fR.
+.TP
+\fBsnapshot-list\fR \fICTID\fR [\fB-H\fR] [\fB-o\fR \fIfield\fR[,\fIfield\fR...] [\fB--id\fR \fIuuid\fR]
+Lists all snapshots. Active snapshot is marked with \fB*\fR sign.
+
+You can suppress displaying header using \fB-H\fR option.
+
+You can use the \fB-o\fR option to display only the specified \fIfield\fR(s).
+List of available fields can be obtained using \fB-L\fR option.
+.SS Other options
+.IP \fB--help\fR 4
+Prints help message with a brief list of possible options.
+.IP \fB--version\fR 4
+Prints \fBvzctl\fR version.
+.SH DIAGNOSTICS
+\fBvzctl\fR returns 0 upon successful execution. If something goes wrong, it
+returns an appropriate error code.
+.SS System errors
+.IP 1
+Setting UBC parameters failed
+.IP 2
+Setting fair scheduler parameters failed
+.IP 3
+System error
+.IP 4
+Not enough memory error
+.IP 5
+Kernel does not have support for CT, or some VZ modules are not loaded
+.IP 6
+Not enough system resources
+.IP 7
+Creation of the virtual server failed
+.IP 8
+Command run by \fBvzctl exec\fR returned non-zero exit status
+.IP 9
+CT is locked by another \fBvzctl\fR operation
+.IP 10
+Global configuration file not found
+.IP 14
+CT configuration file not found
+.IP 11
+One of \fBvzctl\fR helper scripts not found
+.IP 12
+VZ license not loaded, or invalid class ID
+.SS Parameter errors
+.IP 13
+Setting capability failed
+.IP 20
+Invalid command line parameter
+.IP 21
+Invalid value for command line parameter
+.IP 22
+CT root directory is not set
+.IP 23
+CT private directory is not set
+.IP 24
+CT template directory is not set
+.IP 25
+Traffic shaping parameter RATE is not set
+.IP 26
+Traffic shaping parameter TOTALRATE is not set
+.IP 27
+Not all needed parameters set, unable to start CT
+.IP 28
+Not all UBC parameters set, unable to start CT
+.IP 29
+Package set parameter is not specified during create
+.IP 30
+Traffic shaping parameter BANDWIDTH is not set
+.IP 76
+Class ID is not set
+.IP 77
+Lock dir is not set
+.IP 133
+Failed to setup CT start wait functionality
+.SS CT errors
+.IP 31
+CT is not running
+.IP 32
+CT is already running
+.IP 33
+Unable to stop CT
+.IP 79
+Per CT action script returned with error
+.IP 85
+CT config file contain invalid data (belong to diferent config versions)
+.IP 105
+CT start disabled
+.IP 140
+Failed to register CT
+.IP 141
+CT owner check failed
+.IP 142
+Failed to unregister CT
+.SS File system errors
+.IP 40
+CT area is not mounted
+.IP 41
+CT area is mounted, can not destroy CT area
+.IP 43
+CT private area does not exist
+.IP 44
+CT private area already exists
+.IP 46
+Not enough disk space
+.IP 47
+CT private area is not created properly
+.IP 48
+Can not create new CT private area
+.IP 49
+Can not create mount point
+.IP 50
+Can not mount CT private area
+.IP 51
+Can not umount CT private area
+.IP 52
+Error deleting CT private area
+.IP 53
+Unknown mount type
+.IP 54
+Can not create directory
+.IP 56
+Unsupported /sbin/init
+.IP 82
+Can't copy sample config file, or sample config file not exist
+.SS Disk quota errors
+.IP 60
+Error during "quota on" operation
+.IP 66
+Error during "quota off" operation
+.IP 61
+Error during "quota init" operation
+.IP 62
+Error during "quota set" operation
+.IP 67
+Ugid quota can not be turned ON on mounted CT. It must be initialized first.
+.IP 63
+Can not init quota - disk space limit is not set
+.IP 64
+Can not init quota - disk inode limit is not set
+.IP 65
+Can not set ugid quota limit
+.SS Errors of \fBvzctl set\fR
+.IP 70
+Invalid host name
+.IP 71
+Invalid IP address
+.IP 72
+Invalid DNS server address
+.IP 73
+Invalid DNS domain name
+.IP 74
+Error changing password
+.IP 34
+Error adding IP address
+.IP 78
+IP address already in use
+.IP 106
+Error setting iptables parameter
+.IP 135
+Error setting meminfo parameter
+.IP 137
+Can not set CT name
+.IP 146
+Error setting cpumask parameter
+.IP 147
+Unable to configure PCI device
+.IP 148
+Error setting IO parameters
+.IP 149
+Error setting nodemask parameter
+.SS Traffic shaping error
+.IP 80
+Can not set up traffic shaping
+.SS Traffic accounting error
+.IP 81
+Can not set up traffic accounting
+.SS Template error
+.IP 91
+Private area tarball not found.
+.IP 87
+Unable to install applications.
+.SS Reinstall error
+.IP 93
+Unable to get installed packages
+.IP 94
+Reinstall error
+.IP 55
+Not enough quota limits to create temporary CT
+.SS Checkpointing error
+.IP 16
+Checkpoint error
+.IP 17
+Restore error
+.SS Ploop errors
+.IP 151
+Failed to create ploop image
+.IP 152
+Failed to mount ploop image
+.IP 153
+Failed to unmount ploop image
+.IP 154
+Failed to resize ploop image
+.IP 155
+Failed to convert CT to ploop
+.IP 156
+Failed to create ploop snapshot
+.IP 157
+Failed to merge ploop snapshots
+.IP 158
+Failed to delete ploop snapshot
+.IP 159
+Failed to switch to snapshot
+.IP 160
+Failed to mount ploop snapshot
+.SH EXAMPLES
+To create and start "light" CT with ID 1000 using \fBcentos-6\fR
+package set, and IP address 192.168.10.200:
+.br
+\f(CR	vzctl create 1000 --ostemplate centos-6 --config light
+.br
+\f(CR	vzctl set 1000 --ipadd 192.168.10.200 --save
+.br
+\f(CR	vzctl start 1000
+.br
+\fR
+To set number of processes barrier/limit to 80/100 processes and
+PTY barrier/limit to 16/20 PTYs:
+.br
+\f(CR	vzctl set 1000 --numproc 80:100 -t 16:20 --save
+\fR
+.P
+To execute command \fBls -la\fR in this CT:
+.br
+\f(CR	vzctl exec 1000 /bin/ls -la
+\fR
+.P
+To execute command pipe \fBls -l / | sort\fR in this CT:
+.br
+\f(CR	vzctl exec 1000 /bin/sh -c 'ls -l / | sort'
+\fR
+.P
+To stop this CT:
+.br
+\f(CR	vzctl stop 1000
+\fR
+.P
+To permanently remove this CT:
+.br
+\f(CR	vzctl destroy 1000
+\fR
+.SH FILES
+.ad l
+\f(CR/etc/vz/vz.conf
+.br
+/etc/vz/conf/CTID.conf
+.br
+/proc/vz/veinfo
+.br
+/proc/vz/vzquota
+.br
+/proc/user_beancounters
+.br
+/proc/fairsched\fR
+.SH SEE ALSO
+.BR vz (5),
+.BR ve.conf (5),
+.BR networks_classes (5),
+.BR vzquota (8),
+.BR vzcreate (8),
+.BR vz-start (5),
+.BR vz-stop (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

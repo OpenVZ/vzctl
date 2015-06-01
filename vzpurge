@@ -1,0 +1,108 @@
+#!/bin/bash
+#
+# Copyright (C) SWsoft, 1999-2007. All rights reserved.
+# All rights reserved.
+#
+# This script finds all VE areas which have no appropriate
+# configuration files, and removes it. It also removes configuration
+# files that have ".destroyed" suffix.
+# See also vzpurge(8) man page.
+
+# Check if the caller is root
+ID=`id -u`
+if [ ! $ID -eq 0 ]; then
+	echo "You need to be root to run this command."
+	exit 1
+fi
+
+VZCTL='/usr/sbin/vzctl'
+
+# Read global configuration
+VEID="@veid@"
+. /etc/sysconfig/vz
+CONFIG_DIR=/etc/sysconfig/vz-scripts
+
+# Check if we got correct VE_PRIVATE
+if echo $VE_PRIVATE | grep -v "@veid@" >/dev/null 2>&1; then
+	echo "ERROR: Can't find correct VE_PRIVATE in /etc/sysconfig/vz"
+	exit 1
+fi
+
+# Split the value of VE_PRIVATE to parts before and after @veid@
+VE_PRIV_PREFIX=`echo $VE_PRIVATE | sed -e 's/@veid@.*//'`
+VE_PRIV_SUFFIX=`echo $VE_PRIVATE | \
+sed -e 's/.*@veid@//' -e 's%/$%%' -e 's%^/%*%'`
+# This is regex for grep; trailing slash is also removed
+VE_PRIV_FILT=`echo $VE_PRIVATE | sed -e 's/@veid@/[1-9][0-9]*/' -e 's%/$%%'`
+VE_PRIV_FILTER="^$VE_PRIV_FILT$"
+# Count the number of slashes in VE_PRIV_SUFFIX
+MAXDEPTH=`echo $VE_PRIV_SUFFIX | awk -F "/" '{print NF+1}'`
+#echo "** VE_PRIVATE     = $VE_PRIVATE"
+#echo "** VE_PRIV_PREFIX = $VE_PRIV_PREFIX"
+#echo "** VE_PRIV_SUFFIX = $VE_PRIV_SUFFIX"
+#echo "** VE_PRIV_FILT   = $VE_PRIV_FILT"
+#echo "** VE_PRIV_FILTER = $VE_PRIV_FILTER"
+#echo "** MAXDEPTH       = $MAXDEPTH"
+
+
+# Get the list of private areas
+
+if test "x$VE_PRIV_SUFFIX" = "x"; then
+	FIND_PATH="*"
+else
+	FIND_PATH=$VE_PRIV_SUFFIX
+fi
+
+PRIV_DIR_LIST=\
+`find $VE_PRIV_PREFIX -maxdepth $MAXDEPTH -path "$FIND_PATH" \
+-type d 2>/dev/null | grep -e "$VE_PRIV_FILTER"`
+
+#echo "PRIV_DIR_LIST = $PRIV_DIR_LIST"
+
+VALID_VES=`ls -1 ${CONFIG_DIR}/*.conf 2>/dev/null | \
+sed -e "s|${CONFIG_DIR}/||g" -e 's/.conf//g' | grep "[1-9][0-9]*"`
+
+#echo "VALID_VES=$VALID_VES"
+
+SED_PROG="-e s#$VE_PRIV_PREFIX##"
+if test "x$VE_PRIV_SUFFIX" != "x"; then
+	VE_PRIV_SUFFIX=`echo $VE_PRIV_SUFFIX | sed "s#\*#/#"`
+	SED_PROG="$SED_PROG -e s#$VE_PRIV_SUFFIX##"
+fi
+
+RETCODE=0
+for VE_DIR in $PRIV_DIR_LIST; do
+	VE=`echo $VE_DIR | sed $SED_PROG`
+#	echo "** VE .$VE."
+	if echo "$VALID_VES" | grep "^${VE}$" >/dev/null 2>&1; then
+		continue
+	else
+		# Stop/unmount VE if it is running/mounted
+		VE_STATUS=`$VZCTL status $VE`
+		if echo $VE_STATUS | grep ' running' >/dev/null 2>&1; then
+			$VZCTL stop $VE
+		elif echo $VE_STATUS | grep ' mounted' >/dev/null 2>&1; then
+			$VZCTL umount $VE
+		fi
+		echo -n "Deleting VE $VE private area ($VE_DIR) ..."
+		RM_MSG=`rm -rf $VE_DIR 2>&1`
+		if test $? -eq 0; then
+			echo " Ok"
+		else
+			echo " Failed"
+			echo $RM_MSG
+			RETCODE=1
+		fi
+	fi
+done
+
+# Remove configuration files *.conf.destroyed
+# let's be paranoid about file names here ;)
+CONF_FILES=`ls -1 $CONFIG_DIR/*.destroyed 2>/dev/null | grep "[1-9][0-9]*.conf.destroyed"`
+for FILE in $CONF_FILES; do
+	# we don't care if rm fails
+	rm -f $FILE >/dev/null 2>&1
+done
+
+exit $RETCODE
+# end of script

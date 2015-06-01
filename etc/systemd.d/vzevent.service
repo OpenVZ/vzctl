@@ -1,0 +1,12 @@
+[Unit]
+Description=vzevent service.
+After=syslog.target network.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/vzeventd.pid
+ExecStart=/usr/sbin/vzeventd
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

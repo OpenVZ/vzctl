@@ -1,0 +1,25 @@
+.\" $Id$
+.TH vztactl 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vztactl \- traffic accounting utility.
+.SH SYNOPSIS
+vztactl \fI[class_load <net_classes_file>]\fR \fI[class_unload]\fR \fI[class_list]\fR \fI[reset_ve_stat <ctid>]\fR \fI[reset_all_stat]\fR
+.SH DESCRIPTION
+This utility used to manage traffic accounting.
+.SH OPTIONS
+.IP "\fBclass_load\fR \fInet_classes_file\fR"
+Load traffic classes from file \fInet_classes_file\fR.
+.IP "\fBclass_unload\fR \fIclass\fR"
+Unload traffic classes.
+.IP "\fBclass_list\fR"
+Get list loadded traffic classes.
+.IP "\fBreset_ve_stat\fR \fIctid\fR"
+Reset traffic statistic for CT \fIctid\fR.
+.IP "\fBreset_all_stat\fR"
+Reset statistics for all CTs.
+.SH RETURN CODE
+Returns 0 upon success.
+.SH SEE ALSO
+.BR networks_classes (5).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.

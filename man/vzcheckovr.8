@@ -1,0 +1,35 @@
+.\" $Id$
+.TH vzcheckovr 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.SH NAME
+vzcheckovr \- utility to check host server overcommitment.
+.SH SYNOPSIS
+vzcheckovr [\fB-v\fR]
+.SH OPTIONS
+.IP \fB-v\fR 4
+Verbose output
+.SH DESCRIPTION
+This utility used to check that the configuration of the whole system is valid.
+Configurations where recources allowed to Container exceed system
+capacity are not valid an dangerous from the stability point of view.
+There are five parameters this utility check:
+.PP
+\(bu Low Memory
+.br
+\(bu Memory + Swap
+.br
+\(bu Alocated Memory
+.br
+\(bu Total Alloc Limit
+.br
+\(bu Max Alloc Limit
+.PP
+The warning levels for these parameters are in \f(CR/ets/sysconfig/vz\fR
+configuration file.
+.SH DIAGNOSTICS
+Normally, exit status is 0. On error, exit status is 1.
+.SH SEE ALSO
+.BR ve.conf (5), vz (5),
+.BR vzmemcheck (8).
+.SH COPYRIGHT
+Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+

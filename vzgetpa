@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# Copyright (C) SWsoft, 1999-2007. All rights reserved.
+# All rights reserved.
+#
+# Simple script that prints location of VE private area
+# Usage: vzgetpa VEID
+# See also vzgetpa(8) man page
+
+VEID=$1
+PROGNAME=`basename $0`
+
+function usage()
+{
+	echo "Usage: $PROGNAME VEID" 1>&2
+	exit 0
+}
+
+test $# -eq 1 || usage
+
+if echo $VEID | grep -v "^[1-9][0-9]*$" >/dev/null 2>&1; then
+	echo "Invalid VE id"
+	exit 1
+fi
+
+. /etc/sysconfig/vz
+
+if test -f /etc/sysconfig/vz-scripts/$VEID.conf; then
+	. /etc/sysconfig/vz-scripts/$VEID.conf
+fi
+
+
+echo $VE_PRIVATE
