@@ -1,7 +1,7 @@
 # This is an example configuration file for CT with 1024MB.
 #<agent>: Configuration file for CT with installed Plesk application
 #
-# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+# Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
 
 VERSION="2"
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@.
+# Copyright (c) 1999-2015 Parallels IP Holdings GmbH.
 # All rights reserved.
 
 _get_ves()

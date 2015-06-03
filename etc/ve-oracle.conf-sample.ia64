@@ -2,7 +2,7 @@
 # CT capable of running Oracle9i.
 #<agent>: Configuration file for running Oracle9i server
 #
-# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+# Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
 
 VERSION="2"
 

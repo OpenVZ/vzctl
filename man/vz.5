@@ -1,10 +1,10 @@
-.TH vz 5 "February 2011" "@PRODUCT_NAME_LONG@"
+.TH vz 5 "February 2011" "OpenVZ"
 .SH NAME
-vz \- global @PRODUCT_NAME_LONG@ configuration file
+vz \- global OpenVZ configuration file
 .SH SYNOPSIS
 /etc/sysconfig/vz
 .SH DESCRIPTION
-This is the global configuration file for @PRODUCT_NAME_LONG@.
+This is the global configuration file for OpenVZ.
 It consists of lines in the form
 .PP
 \fBPARAMETER\fR="\fIvalue\fR"
@@ -17,7 +17,7 @@ will be ignored.
 .IP \fBVIRTUOZZO\fR=\fByes\fR|\fBno\fR
 This parameter is used by \f(CW/etc/init.d/vz\fR script.
 In case it is \fBnot\fR set to \fByes\fR, nothing will be done
-to boot up @PRODUCT_NAME_LONG@ on this node.
+to boot up OpenVZ on this node.
 .IP "\fBACTIONLOGDIR\fR=\fIdirectory\fR"
 Set the directory to write action log files to. Action log files are needed
 for \fBvzctl\fR/\fBvzcoll\fR interaction, so \fBvzcoll\fR will know
@@ -186,4 +186,4 @@ other CT-related parameters in per-CT configuration files.
 .BR vzpkg (8),
 .BR ve.conf (5).
 .SH COPYRIGHT
-Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.

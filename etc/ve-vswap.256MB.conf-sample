@@ -1,7 +1,7 @@
 # This is an example configuration file for so-called "vswap.256MB" Container.
 #<agent>: Configuration file for allocating 256 Mb of memory.
 #
-# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+# Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
 
 VERSION="2"
 

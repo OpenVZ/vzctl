@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+# Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
 #
 # Sample of custom configuration script.
 # This script running on reinstall action inside running VE.

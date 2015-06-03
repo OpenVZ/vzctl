@@ -1,5 +1,5 @@
 .\" $Id$
-.TH vzctl 8 "May 2011" "@PRODUCT_NAME_LONG@"
+.TH vzctl 8 "May 2011" "OpenVZ"
 .SH NAME
 vzctl \- utility to control a Container.
 .SH SYNOPSIS
@@ -152,7 +152,7 @@ manipulations with Container (CT).
 .PP
 Containers can be referred to by numeric \fIctid\fR
 (or \fIname\fR which can be assigned with \fB--name\fR option). Note
-that CT ID <= 100 are reserved for @PRODUCT_NAME_LONG@ internal purposes.
+that CT ID <= 100 are reserved for OpenVZ internal purposes.
 .SH OPTIONS
 .SS Flags
 These flags can be used with any \fBvzctl\fR command.
@@ -430,7 +430,7 @@ the limit to different values does not make practical sense.
 Maximum number of file locks. Safety gap should be between barrier and limit.
 .TP
 \fB-t\fR, \fB--numpty\fR \fIitems\fR[:\fIitems\fR]
-Number of pseudo-terminals (PTY). Note that in @PRODUCT_NAME_LONG@ each CT
+Number of pseudo-terminals (PTY). Note that in OpenVZ each CT
 can have no more than 255 PTYs. Setting the barrier and
 the limit to different values does not make practical sense.
 .TP
@@ -798,14 +798,14 @@ Display in real-time actions or events for \fIctid\fR.
 In case ctid is 0, display actions and events for all CTs. Valid only on 2.6
 kernel.
 .IP "\fBconvert\fR \fIctid\fR" 4
-In @PRODUCT_NAME_LONG@, Containers use the new layout. The \fBconvert\fR command converts a Container from the old layout to a new one.
+In OpenVZ, Containers use the new layout. The \fBconvert\fR command converts a Container from the old layout to a new one.
 .IP "\fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR" 4
 Register the Container using the configuration file \fIpath\fR/ve.conf and having ID \fIctid\fR.
 If the \fB--force\fR option is specified, all validation checks will be skipped.
 .IP "\fBunregister\fR \fIctid\fR|\fIname\fR" 4
 Unregister the specified Container.
 .SS Suspend/Restore
-Checkpointing is an extension of @PRODUCT_NAME_LONG@ kernel 2.6 which
+Checkpointing is an extension of OpenVZ kernel 2.6 which
 allows to save full state of running CT and to restore it later.
 .TP
 \fBsuspend\fR \fIctid\fR
@@ -1116,4 +1116,4 @@ To permanently remove this CT:
 .BR vz-start (5),
 .BR vz-stop (5).
 .SH COPYRIGHT
-Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
