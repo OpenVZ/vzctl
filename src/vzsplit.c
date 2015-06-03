@@ -183,7 +183,7 @@ void header(FILE *fp)
 "# on HN with total amount of physical memory %llu Mb\n"
 "# low memory %llu Mb, swap size %llu Mb, max threads %lu\n"
 "# Resource commit level %d:\n# %s\n"
-"# Please read @PRODUCT_NAME_LONG@ Management of System Resources\n"
+"# Please read OpenVZ Management of System Resources\n"
 "# (SLMGuide.pdf) before changing these values\n\n",
 		 num_ve, (mem_total >> 20), (low_total >> 20), (swap_total >> 20),
 		 proc_calc, osl, level_string[osl]);
@@ -517,7 +517,7 @@ int main(int argc, char **argv)
 
 	fclose(fd);
 	if (mem_total < SYSRSRV) {
-		fprintf(stderr, "@PRODUCT_NAME_LONG@ requires at least %d Mb of RAM "
+		fprintf(stderr, "OpenVZ requires at least %d Mb of RAM "
 				"installed on host server\n",
 			SYSRSRV /1024/1024);
 		exit(1);

@@ -1,10 +1,10 @@
-#  Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+#  Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
 #
 
 # This is configuration file for VE0.
 # Only UB parameters are processed
 #
-# Copyright (C) @COPYRIGHT_OWNER@, 1999-@LAST_COPYRIGHT_YEAR@. All rights reserved.
+# Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
 
 ONBOOT="no"
 

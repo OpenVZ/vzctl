@@ -1,5 +1,5 @@
 .\" $Id$
-.TH vzcfgconvert 8 "October 2009" "@PRODUCT_NAME_LONG@"
+.TH vzcfgconvert 8 "October 2009" "OpenVZ"
 .SH NAME
 vzcfgconvert \- convert the CT configuration file from Virtuozzo
 \fI2.0.2\fR to \fI3.0.0\fR or from \fI2.6.2\fR to \fI3.0.0\fR.
@@ -11,7 +11,7 @@ Virtuozzo to the latest Virtuozzo update of \fI3.0.0\fR format and saves the upd
 configuration file. After upgrading a Hardware Node or migrating a Container
 from Virtuozzo 2.0.2 Hardware Node to a Virtuozzo 3.0.0 Hardware
 Node, the Container configuration file remains in the old format.
-@PRODUCT_NAME_LONG@ can use the old format files to start and run the Container. However, for validation and scaling utilities the file has to be in the
+OpenVZ can use the old format files to start and run the Container. However, for validation and scaling utilities the file has to be in the
 Virtuozzo \fI3.0.0\fR format.
 .SS \fBConversion\ formulas from 2.0.2 to 2.6.2\fR
 kmemsize.bar = old.kmemsize.bar * 1.44
@@ -90,4 +90,4 @@ Normally, the exit status is 0. On error, the exit status is 1.
 .BR ve.conf (5),
 .BR vzcfgvalidate (8).
 .SH COPYRIGHT
-Copyright (C) 1999-@LAST_COPYRIGHT_YEAR@, @COPYRIGHT_OWNER@. All rights reserved.
+Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
