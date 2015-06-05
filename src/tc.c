@@ -125,14 +125,21 @@ int tc_get_v6_stat(struct vzctl_tc_get_stat *stat)
 }
 int tc_destroy_ve_stats(ctid_t ctid)
 {
-#if 0
-	if (vzctl2_clear_ve_netstat(ctid)) {
+	int ret;
+	struct vzctl_env_handle *h;
+
+	if (!(h = vzctl2_env_open(ctid, 0, &ret)))
+		return ret;
+
+	ret = vzctl2_clear_ve_netstat(h);
+	if (ret) {
 		fprintf(stderr, "Reset failed: %s\n", strerror(errno));
 		return ERR_IOCTL;
 	}
 
 	printf("Counters for Container %s reseted.\n", ctid);
-#endif
+	vzctl2_env_close(h);
+
 	return 0;
 }
 
