@@ -504,8 +504,8 @@ SORT_UL_RES(cpuunits_sort_fn, Ccpu, cpu, limit, 2)
 
 static int iolimit_sort_fn(const void *val1, const void *val2)
 {
-	int *r1 = ((struct Cveinfo *)val1)->io.limit;
-	int *r2 = ((struct Cveinfo *)val2)->io.limit;
+	unsigned *r1 = ((struct Cveinfo *)val1)->io.limit;
+	unsigned *r2 = ((struct Cveinfo *)val2)->io.limit;
 	int ret;
 
 	if ((ret = check_empty_param(r1, r2)) == 2)
