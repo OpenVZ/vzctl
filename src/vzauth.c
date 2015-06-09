@@ -4,10 +4,12 @@
 #include <errno.h>
 
 #include "vzctl/libvzctl.h"
+#include "vzctl/vzerror.h"
 
 #define ERR_PARAM       1
 #define ERR_AUTH        3
 #define ERR_READ_PASSWD 5
+#define ERR_GID_CHECK   9
 
 
 void usage(void)
@@ -102,15 +104,24 @@ int main(int argc, char **argv)
 	vzctl2_init_log("vzauth");
 	vzctl2_set_flags(VZCTL_FLAG_DONT_USE_WRAP);
 
-	if ((ret = vzctl2_lib_init()))
-		return ret;
+	if (vzctl2_lib_init())
+		return ERR_PARAM;
 
 	h = vzctl2_env_open(ctid, 0, &ret);
 	if (ret)
-		return ret;
+		return ERR_PARAM;
 
-	if (vzctl2_env_auth(h, user, passwd, gid, type))
-		ret = ERR_AUTH;
+	ret = vzctl2_env_auth(h, user, passwd, gid, type);
+	if (ret) {
+		switch (ret) {
+		case VZCTL_E_AUTH_GUID:
+			ret = ERR_GID_CHECK;
+			break;
+		default:	
+			ret = ERR_AUTH;
+			break;
+		}
+	}
 
 	vzctl2_env_close(h);
 
