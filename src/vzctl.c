@@ -84,24 +84,24 @@ static struct option set_options[] =
 	{"applyconfig", required_argument, NULL, PARAM_APPCONF},
 	{"applyconfig_map", required_argument, NULL, PARAM_APPCONF_MAP},
 /* VETH */
-	{"netif_add",	required_argument, NULL, PARAM_NETIF_ADD},
-	{"netif_del",	required_argument, NULL, PARAM_NETIF_DEL},
+	{"netif_add",	required_argument, NULL, VZCTL_PARAM_NETIF_ADD},
+	{"netif_del",	required_argument, NULL, VZCTL_PARAM_NETIF_DEL},
 	{"netif_mac_renew",	no_argument, NULL, PARAM_NETIF_MAC_RENEW},
 	{"default_gateway",	required_argument, NULL, PARAM_DEF_GW},
 	{"default_gw",	required_argument, NULL, PARAM_DEF_GW},
-	{"ifname",	required_argument, NULL, PARAM_NETIF_NAME},
-	{"mac",		required_argument, NULL, PARAM_NETIF_MAC},
-	{"host_mac",	required_argument, NULL, PARAM_NETIF_HOST_MAC},
-	{"host_ifname",	required_argument, NULL, PARAM_NETIF_HOST_IFNAME},
-	{"gateway",	required_argument, NULL, PARAM_NETIF_GW},
-		{"gw",		required_argument, NULL, PARAM_NETIF_GW},
-	{"gateway6",	required_argument, NULL, PARAM_NETIF_GW6},
-		{"gw6",		required_argument, NULL, PARAM_NETIF_GW6},
-	{"network",	required_argument, NULL, PARAM_NETIF_NETWORK},
-	{"dhcp",	required_argument, NULL, PARAM_NETIF_DHCP},
-	{"dhcp6",	required_argument, NULL, PARAM_NETIF_DHCP6},
-	{"mac_filter",	required_argument, NULL, PARAM_NETIF_MAC_FILTER},
-	{"configure",	required_argument, NULL, PARAM_NETIF_CONFIGURE_MODE},
+	{"ifname",	required_argument, NULL, VZCTL_PARAM_NETIF_IFNAME},
+	{"mac",		required_argument, NULL, VZCTL_PARAM_NETIF_MAC},
+	{"host_mac",	required_argument, NULL, VZCTL_PARAM_NETIF_HOST_MAC},
+	{"host_ifname",	required_argument, NULL, VZCTL_PARAM_NETIF_HOST_IFNAME},
+	{"gateway",	required_argument, NULL, VZCTL_PARAM_NETIF_GW},
+		{"gw",		required_argument, NULL, VZCTL_PARAM_NETIF_GW},
+	{"gateway6",	required_argument, NULL, VZCTL_PARAM_NETIF_GW6},
+		{"gw6",		required_argument, NULL, VZCTL_PARAM_NETIF_GW6},
+	{"network",	required_argument, NULL, VZCTL_PARAM_NETIF_NETWORK},
+	{"dhcp",	required_argument, NULL, VZCTL_PARAM_NETIF_DHCP},
+	{"dhcp6",	required_argument, NULL, VZCTL_PARAM_NETIF_DHCP6},
+	{"mac_filter",	required_argument, NULL, VZCTL_PARAM_NETIF_MAC_FILTER},
+	{"configure",	required_argument, NULL, VZCTL_PARAM_NETIF_CONFIGURE_MODE},
 /*	bindmount	*/
 	{"bindmount_add",	required_argument, NULL, VZCTL_PARAM_BINDMOUNT},
 		{"bindmount-add",	required_argument, NULL, VZCTL_PARAM_BINDMOUNT},
@@ -113,9 +113,9 @@ static struct option set_options[] =
 	{"onboot",	required_argument, NULL, VZCTL_PARAM_ONBOOT},
 	{"root",	required_argument, NULL, VZCTL_PARAM_VE_ROOT},
 	{"private",	required_argument, NULL, VZCTL_PARAM_VE_PRIVATE},
-	{"ip",		required_argument, NULL, VZCTL_PARAM_IP_ADDRESS},
-	{"ipadd",	required_argument, NULL, VZCTL_PARAM_IP_ADDRESS},
-	{"ipdel",	required_argument, NULL, VZCTL_PARAM_IPDEL},
+	{"ip",		required_argument, NULL, PARAM_IP_ADD},
+	{"ipadd",	required_argument, NULL, PARAM_IP_ADD},
+	{"ipdel",	required_argument, NULL, PARAM_IP_DEL},
 /* Disk quota parameters */
 	{"diskspace",	required_argument, NULL, VZCTL_PARAM_DISKSPACE},
 	{"diskinodes",	required_argument, NULL, VZCTL_PARAM_DISKINODES},
@@ -1002,10 +1002,21 @@ static int validate_disk_param(struct CParam *param, struct vzctl_disk_param *di
 	return 0;
 }
 
+static int find_arg(char **arg, const char *str)
+{
+	char **p;
+
+	for (p = arg; *p != NULL; p++)
+		if (!strcmp(*p, str))
+			return 1;
+	return 0;
+}
+
 int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 {
 	int i, c, err, ret = 0;
 	struct vzctl_disk_param *disk = NULL;
+	int veth = find_arg(argv, "--ifname") || find_arg(argv, "--netif_add");
 
 	memset(&tmpparam, 0, sizeof(tmpparam));
 	while (1)
@@ -1036,6 +1047,14 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			if (ret)
 				return ret;
 			continue;
+		case PARAM_IP_ADD:
+			c = veth ? VZCTL_PARAM_NETIF_IPADD :
+					VZCTL_PARAM_IP_ADDRESS;
+			break;
+		case PARAM_IP_DEL:
+			c = veth ? VZCTL_PARAM_NETIF_IPDEL:
+					VZCTL_PARAM_IPDEL;
+			break;
 		}
 
 		if (c >= VZCTL_PARAM_KMEMSIZE) {
