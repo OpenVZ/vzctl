@@ -1924,7 +1924,7 @@ skip_eid:
 		}
 		case ACTION_RESTART	:
 		{
-			ret = vzctl_env_restart(ctid, param->wait, param->skip_ve_setup);
+			ret = vzctl_env_restart(ctid, gparam->wait, gparam->skip_ve_setup);
 			break;
 		}
 		case ACTION_CREATE	:
