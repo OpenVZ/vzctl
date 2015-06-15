@@ -11,7 +11,6 @@
 #include <vzctl/vzctl_param.h>
 #include <vzctl/libvzctl.h>
 
-#include "veth.h"
 #include "clist.h"
 
 /* libs include */
@@ -280,19 +279,7 @@
 #define PARAM_RESETUB		341
 #define PARAM_NAME		345
 #define PARAM_REINSTALL_DESC	346
-#define PARAM_NETIF		347
-#define PARAM_NETIF_ADD		348
-#define PARAM_NETIF_DEL		349
 #define PARAM_NETIF_MAC_RENEW	350
-#define PARAM_NETIF_DHCP	352
-#define PARAM_NETIF_NAMESERVER	353
-#define PARAM_NETIF_MAC		354
-#define PARAM_NETIF_HOST_MAC	355
-#define PARAM_NETIF_HOST_IFNAME	356
-#define PARAM_NETIF_GW		357
-#define PARAM_NETIF_NETWORK	358
-#define PARAM_NETIF_NETTYPE	359
-#define PARAM_NETIF_NAME	360
 #define PARAM_DEF_GW		361
 #define PARAM_BINDMOUNT_ADD	362
 #define PARAM_BINDMOUNT_DEL	363
@@ -302,7 +289,6 @@
 #define PARAM_VE_LAYOUT		369
 #define PARAM_SKIPSCRIPTS	371
 #define PARAM_VZPKG_OPTS	372
-#define PARAM_NETIF_MAC_FILTER	373
 #define PARAM_SKIP_CLUSTER	374
 #define PARAM_RENEW		375
 #define PARAM_SWAPPAGES		377
@@ -312,8 +298,6 @@
 #define PARAM_MEMORY		382
 #define PARAM_VM_OVER		383
 #define PARAM_OSRELEASE		385
-#define PARAM_NETIF_DHCP6	386
-#define PARAM_NETIF_GW6		387
 #define PARAM_EXPANDED		393
 #define PARAM_PREALLOCATED	394
 #define PARAM_RAW		395
@@ -326,7 +310,6 @@
 #define PARAM_SNAPSHOT_SKIP_DUMP	402
 #define PARAM_UNFREEZE		403
 #define PARAM_GUID		404
-#define PARAM_NETIF_CONFIGURE_MODE 405
 #define PARAM_APPLY_IPONLY	406
 #define PARAM_TARGET_DIR	407
 #define PARAM_DEVICE_ADD	409
@@ -542,9 +525,6 @@ struct CParam
 	int force;
 /* Config */
 	int setmode;
-/* VETH */
-	veth_param *veth_add;
-	veth_param *veth_del;
 	int netif_mac_renew;
 /* DISK */
 	int disk_op;
@@ -616,14 +596,8 @@ int vzctl_mount(ctid_t ctid, const char *ve_private, const char *ve_root,
 		unsigned long *ds, unsigned long *di);
 int vzctl_umount(ctid_t ctid, const char *ve_private, const char *ve_root);
 int vzctl_env_set_rate(ctid_t ctid);
-int vzctl_env_set_param(ctid_t ctid,
-		struct veth_param *veth_add,
-		struct veth_param *veth_del,
-		int skip_arpdetect, int save);
 int vzctl_add_env_param_by_name(ctid_t ctid, const char *name, const char *str);
 int vzctl_add_env_param_by_id(ctid_t ctid, int id, const char *str);
-void reassign_veth_ip(struct CParam *param);
-int check_veth_param(ctid_t ctid, struct CParam *param, struct CParam *lparam);
 int vzctl_env_destroy(ctid_t ctid);
 int vzctl_env_is_run(ctid_t ctid);
 int vzctl_env_save(ctid_t ctid);

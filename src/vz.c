@@ -341,14 +341,6 @@ int Set(ctid_t ctid, struct CParam *param)
 		}
 	}
 
-	if (param->veth_add || param->veth_del) {
-		if ((ret = vzctl_env_set_param(ctid,
-					param->veth_add,
-					param->veth_del,
-					param->skip_arpdetect, param->save)))
-			return ret;
-	}
-
 	/* Set password */
 	if (param->userpw != NULL)
 	{

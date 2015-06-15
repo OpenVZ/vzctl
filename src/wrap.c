@@ -8,7 +8,6 @@
 #include "vzctl.h"
 #include "clist.h"
 #include "vzerror.h"
-#include "veth.h"
 #include "vzerror.h"
 
 extern char *get_ipname(unsigned int ip);
@@ -723,106 +722,6 @@ int vzctl_env_set_rate(ctid_t ctid)
 	return vzctl2_apply_param(h, param, flags);
 #endif
 	return -1;
-}
-
-int vzctl_env_set_param(ctid_t ctid,
-		struct veth_param *veth_add,
-		struct veth_param *veth_del,
-		int skip_arpdetect, int save)
-{
-	int ret = 0;
-	struct vzctl_env_handle *h;
-	struct vzctl_env_param *param;
-
-	h = vzctl_env_open(ctid, NULL, 0, &ret);
-	if (h == NULL)
-		return ret;
-
-	param = get_env_param(ctid);
-	if (param == NULL)
-		return VZCTL_E_NOMEM;
-
-	if (veth_add) {
-		struct veth_dev *dev;
-		struct vzctl_ip_param *ip_t;
-
-		list_for_each(dev, &veth_add->dev, list) {
-			char str[64];
-			struct vzctl_veth_dev_param dev_param = {};
-			vzctl_veth_dev_iterator it_dev;
-
-			if (dev->addrlen)
-				dev_param.mac = hwaddr2str(dev->mac);
-			if (dev->dev_name[0])
-				dev_param.dev_name = dev->dev_name;
-			if (dev->addrlen_ve)
-				dev_param.mac_ve = hwaddr2str(dev->mac_ve);
-			if (dev->dev_name_ve[0])
-				dev_param.dev_name_ve = dev->dev_name_ve;
-			if (dev->gw)
-				dev_param.gw = dev->gw;
-			if (dev->gw6)
-				dev_param.gw6 = dev->gw6;
-			dev_param.configure_mode = dev->configure_mode;
-
-			if (dev->dhcp)
-				dev_param.dhcp = (dev->dhcp == YES);
-
-			if (dev->dhcp6)
-				dev_param.dhcp6 = (dev->dhcp6 == YES);
-			if (dev->mac_filter)
-				dev_param.allow_mac_spoof = (dev->mac_filter == NO);
-			if (dev->network)
-				dev_param.network = dev->network;
-			/* TODO: if (dev_t->custom_dev_name) */
-
-			it_dev = vzctl2_create_veth_dev(&dev_param, sizeof(dev_param));
-			if (it_dev == NULL) {
-				ret = VZCTL_E_NOMEM;
-				goto err;
-			}
-
-			list_for_each(ip_t, &dev->ip, list) {
-				if (ip_t->op == DELALL)
-					vzctl2_env_del_veth_ipaddress(it_dev, "all");
-				else if (ip_t->op == ADD) {
-					if (ip_t->mask) {
-						if (strchr(ip_t->ip, ':'))
-							snprintf(str, sizeof(str), "%s/%d",
-									ip_t->ip, ip_t->mask);
-						else
-							snprintf(str, sizeof(str), "%s/%s",
-									ip_t->ip, get_ipname(ip_t->mask));
-					} else
-						snprintf(str, sizeof(str), "%s", ip_t->ip);
-
-					ret = vzctl2_env_add_veth_ipaddress(it_dev, str);
-					if (ret)
-						goto err;
-				} else
-					vzctl2_env_del_veth_ipaddress(it_dev, ip_t->ip);
-			}
-
-			ret = vzctl2_env_add_veth(param, it_dev);
-			if (ret)
-				goto err;
-		}
-	}
-
-	if (veth_del) {
-		struct veth_dev *dev;
-
-		list_for_each(dev, &veth_del->dev, list) {
-			ret = vzctl2_env_del_veth(param,
-					veth_del->delall ? "all" : dev->dev_name_ve);
-			if (ret)
-				goto err;
-		}
-	}
-
-err:
-
-	return ret;
 }
 
 int vzctl_apply_param(ctid_t ctid)

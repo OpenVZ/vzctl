@@ -63,40 +63,4 @@ typedef struct veth_param {
 	int delall;
 } veth_param;
 
-
-/** Data structure for devices.
- */
-struct vzctl_veth_dev {
-	list_elem_t list;		/**< next element. */
-	list_head_t ip;			/**< ip addresses. */
-	char mac[ETH_ALEN];		/**< device MAC address. */
-	int addrlen;			/**< device MAC address length. */
-	char dev_name[IFNAMSIZE];	/**< device name. */
-	char mac_ve[ETH_ALEN];		/**< device MAC address in VE. */
-	int addrlen_ve;			/**< VE device MAC address length. */
-	char dev_name_ve[IFNAMSIZE];	/**< device name in VE. */
-	char *gw;			/**< gateway ip */
-	char *network;			/**< connect virtual interface to
-						virtual network.
-					*/
-	int dhcp;			/**< DHCP oh/off. */
-	int active;
-	int mac_filter;
-};
-typedef struct vzctl_veth_dev vzctl_veth_dev_t;
-
-/** Devices list.
- */
-struct vzctl_veth_param {
-	list_head_t dev;
-};
-typedef struct vzctl_veth_param vzctl_veth_param_t;
-
-#ifdef __cplusplus
-extern "C" {
 #endif
-
-#ifdef __cplusplus
-}
-#endif
-#endif	/* __VETH_H__ */

@@ -5,7 +5,6 @@
 #include <vzctl/libvzctl.h>
 
 #include <linux/vzlist.h>
-#include "veth.h"
 #include "cpu.h"
 
 #define PROCVEINFO	"/proc/vz/veinfo"

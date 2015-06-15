@@ -42,7 +42,6 @@
 #include "vzctl.h"
 #include "util.h"
 #include "list.h"
-#include "veth.h"
 #include "util.h"
 #include "vzerror.h"
 #include "config.h"
@@ -682,23 +681,6 @@ int get_netaddr(const char *ipstr, unsigned int *ip)
 	return family;
 }
 
-int parse_hwaddr(const char *str, char *addr)
-{
-	int i;
-	char buf[3];
-	char *endptr;
-
-	for (i = 0; i < ETH_ALEN; i++) {
-		buf[0] = str[3*i];
-		buf[1] = str[3*i+1];
-		buf[2] = '\0';
-		addr[i] = strtol(buf, &endptr, 16);
-		if (*endptr != '\0')
-			return ERR_INVAL;
-	}
-	return 0;
-}
-
 #define MERGE_STR(x)						\
 	if ((src->x) != NULL) {					\
 		free(dst->x);					\
@@ -1104,17 +1086,3 @@ const char *get_dir_lock_file(const char *dir, char *buf, int size)
 
 	return buf;
 }
-
-vzctl_veth_dev_t *find_veth(list_head_t *head, vzctl_veth_dev_t *dev)
-{
-	vzctl_veth_dev_t *tmp;
-
-	if (list_empty(head))
-		return NULL;
-	list_for_each(tmp, head, list) {
-		if (!strcmp(tmp->dev_name, dev->dev_name))
-			return dev;
-	}
-	return NULL;
-}
-

@@ -21,6 +21,7 @@
 #include <vzctl/libvzctl.h>
 
 #include "vzctl.h"
+#include "veth.h"
 #include "vzlist.h"
 #include "config.h"
 #include "util.h"
