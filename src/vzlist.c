@@ -1369,17 +1369,19 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 
 		vzctl2_env_get_veth_param(itdev, &dev_param, sizeof(dev_param));
 		if (dev_param.mac) {
-			memcpy(&dev.mac, &dev_param.mac, ETH_ALEN);
+			memcpy(dev.mac, dev_param.mac, ETH_ALEN);
 			dev.addrlen = ETH_ALEN;
 		}
 		if (dev_param.mac_ve) {
-			memcpy(&dev.mac_ve, &dev_param.mac_ve, ETH_ALEN);
+			memcpy(dev.mac_ve, dev_param.mac_ve, ETH_ALEN);
 			dev.addrlen_ve = ETH_ALEN;
 		}
 		if (dev_param.dev_name)
-			memcpy(&dev.dev_name, &dev_param.dev_name, ETH_ALEN);
+			strncpy(dev.dev_name, dev_param.dev_name,
+						sizeof(dev.dev_name)-1);
 		if (dev_param.dev_name_ve)
-			memcpy(&dev.dev_name_ve, &dev_param.dev_name_ve, ETH_ALEN);
+			strncpy(dev.dev_name_ve, dev_param.dev_name_ve,
+						sizeof(dev.dev_name_ve)-1);
 		if (dev_param.gw)
 			dev.gw = strdup(dev_param.gw);
 		if (dev_param.gw6)
