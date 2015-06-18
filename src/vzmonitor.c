@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <asm/types.h>
 #include <sys/socket.h>
 #include <linux/netlink.h>
@@ -5,13 +6,14 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <vzctl/libvzctl.h>
 #include "vzctl.h"
 
 #ifndef NETLINK_VZEVENT
 #define NETLINK_VZEVENT		31
 #endif
 
-void msg_print(char *buf, int veid)
+void msg_print(char *buf, ctid_t ctid)
 {
 	char *p;
 
@@ -20,13 +22,12 @@ void msg_print(char *buf, int veid)
 		logger(0, 0, "Invalid message format: [%s]", buf);
 		return;
 	}
-	if (veid != 0 && atoi(p) != veid)
-		return;
 
-	logger(0, 0, "%s",  buf);
+	if (CMP_CTID(p, ctid) == 0)
+		fprintf(stdout, "%s\n",  buf);
 }
 
-int monitoring(int veid)
+int monitoring(ctid_t ctid)
 {
 	int s, ret;
 	struct sockaddr_nl nladdr;
@@ -69,7 +70,7 @@ int monitoring(int veid)
 		} else if (!ret)
 			break;
 
-		msg_print(buf, veid);
+		msg_print(buf, ctid);
 	}
 	ret = 0;
 out:

@@ -555,7 +555,7 @@ struct CParam
 
 extern struct CParam *gparam;
 
-int monitoring(int veid);
+int monitoring(ctid_t ctid);
 int parse_ip(char *str, char **ipstr, unsigned int *mask);
 int vzctl_configure_disk(ctid_t ctid, int op, struct vzctl_disk_param *param);
 int VZExecScript(ctid_t ctid, char *name, struct CList *env, int log, int timeout);

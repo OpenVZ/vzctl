@@ -1631,10 +1631,8 @@ skip_eid:
 
 
 	/* do not any checkings for monitoring and console */
-#if 0
 	if (action == ACTION_MONITOR)
 		return monitoring(ctid);
-#endif
 	get_pagesize();
 	vzctl_init_log(ctid, quiet, "vzctl");
 	vzctl2_set_flags(VZCTL_FLAG_DONT_USE_WRAP);
