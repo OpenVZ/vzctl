@@ -1831,7 +1831,10 @@ static int get_ve_list(void)
 	mask = g_skip_owner ? ENV_SKIP_OWNER | ENV_STATUS_EXISTS : ENV_STATUS_EXISTS;
 	while ((ep = readdir (dp))) {
 		ctid_t id, ctid;
-		if (sscanf(ep->d_name, "%[^.]37s.conf", id) != 1)
+		char str[6];
+
+		if (sscanf(ep->d_name, "%37[^.].%5s", id, str) != 2 ||
+				strcmp(str, "conf"))
 			continue;
 		if (vzctl2_parse_ctid(id, ctid))
 			continue;
