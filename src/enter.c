@@ -27,6 +27,7 @@
 #include <pwd.h>
 #include <err.h>
 #include <sys/ioctl.h>
+#include <vzctl/libvzctl.h>
 
 #include "vzerror.h"
 #include "vzctl.h"
@@ -44,11 +45,9 @@ static volatile sig_atomic_t child_term;
 static volatile sig_atomic_t win_changed;
 static volatile sig_atomic_t exit_signal;
 static struct termios s_tios;
-extern struct CParam *gparam;
 
 extern char *_proc_title;
 extern int _proc_title_len;
-extern int __vzctlfd;
 
 static void raw_off(void)
 {
@@ -108,7 +107,7 @@ static void sak(void)
 	ioctl(tty, TIOSAK);
 }
 
-int vzcon_attach(unsigned veid, int ntty)
+int vzcon_attach(struct vzctl_env_handle *h, int ntty)
 {
 	struct vzctl_ve_configure c;
 	int dev, pid, status;
@@ -125,8 +124,11 @@ int vzcon_attach(unsigned veid, int ntty)
 		return ret;
 	}
 
+	fprintf(stderr, "Attached to CT %s tty%d (type ESC . to detach)\n",
+			vzctl2_env_get_ctid(h), ntty);
+
 	child_term = 0;
-	c.veid = veid;
+	c.veid = vzctl2_env_get_veid(h);
 	c.key = VE_CONFIGURE_OPEN_TTY;
 	c.val = ntty - 1;
 	c.size = 0;
@@ -142,8 +144,6 @@ int vzcon_attach(unsigned veid, int ntty)
 	signal(SIGWINCH, winch);
 	winch(SIGWINCH);
 
-	fprintf(stderr, "Attached to CT %d tty%d (type ESC . to detach)\n",
-			veid, ntty);
 	if ((pid = fork()) < 0) {
 		fprintf(stderr, "Unable to fork: %s\n", strerror(errno));
 		return VZ_RESOURCE_ERROR;
@@ -214,7 +214,7 @@ err:
 		if (errno != EINTR)
 			break;
 	raw_off();
-	fprintf(stderr, "\nDetached from CT %d\n", veid);
+	fprintf(stderr, "\nDetached from CT %s\n", vzctl2_env_get_ctid(h));
 
 	return ret;
 }

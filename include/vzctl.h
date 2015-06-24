@@ -666,4 +666,5 @@ int vzctl_err(int err, int eno, const char *format, ...)
 
 const char *vzctl_veformat2fs(int format);
 int get_vzctlfd(void);
+int vzcon_attach(struct vzctl_env_handle *h, int ntty);
 #endif

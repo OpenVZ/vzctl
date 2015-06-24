@@ -37,7 +37,6 @@ char *_proc_title;
 int _proc_title_len;
 volatile sig_atomic_t child_exited;
 /* function prototypes */
-int vzcon_attach(unsigned veid, int ntty);
 int vzcon_start(ctid_t ctid, int ntty);
 int handle_set_cmd_on_ha_cluster(int veid, const char *ve_private,
 		struct ha_params *cmdline,
@@ -1339,7 +1338,6 @@ int main(int argc, char **argv, char *envp[])
 	const char *ve_private = NULL;
 	int reg_flags = 0;
 	struct vzctl_env_handle *h = NULL;
-	int veid = -1;
 	ctid_t ctid = {};
 	int flags = 0;
 
@@ -2191,7 +2189,7 @@ skip_eid:
 			if (start_console)
 				ret = vzcon_start(ctid, console_tty);
 			else
-				ret = vzcon_attach(veid, console_tty);
+				ret = vzcon_attach(h, console_tty);
 			break;
 		}
 		default :
