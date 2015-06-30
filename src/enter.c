@@ -46,9 +46,6 @@ static volatile sig_atomic_t win_changed;
 static volatile sig_atomic_t exit_signal;
 static struct termios s_tios;
 
-extern char *_proc_title;
-extern int _proc_title_len;
-
 static void raw_off(void)
 {
 	if (tcsetattr(0, TCSADRAIN, &s_tios) == -1)
@@ -76,18 +73,6 @@ static void raw_on(void)
 static void child_handler(int sig)
 {
 	child_term = 1;
-}
-
-void set_proc_title(char *tty)
-{
-	char *p;
-
-	p = tty;
-	if (p != NULL && !strncmp(p, "/dev/", 5))
-		p += 5;
-	memset(_proc_title, 0, _proc_title_len);
-	snprintf(_proc_title, _proc_title_len - 1, "vzctl: %s",
-		p != NULL ? p : "");
 }
 
 static int tty;

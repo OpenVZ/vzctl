@@ -33,8 +33,6 @@
 
 static int use_args_from_env;
 
-char *_proc_title;
-int _proc_title_len;
 volatile sig_atomic_t child_exited;
 /* function prototypes */
 int vzcon_start(ctid_t ctid, int ntty);
@@ -1341,8 +1339,6 @@ int main(int argc, char **argv, char *envp[])
 	ctid_t ctid = {};
 	int flags = 0;
 
-	_proc_title = argv[0];
-	_proc_title_len = envp[0 ] - argv[0];
 	param = xcalloc(1, sizeof(struct CParam));
 	gparam = xcalloc(1, sizeof(struct CParam));
 
@@ -1360,7 +1356,7 @@ int main(int argc, char **argv, char *envp[])
 		if (!STRNCOMP(argv[1], "--verbose"))
 			verbose = 5;
 		else if (!STRNCOMP(argv[1], "--quiet"))
-			quiet = 1;
+			quiet = 0;
 		else if (!STRNCOMP(argv[1], "--help"))
 		{
 			Usage();
