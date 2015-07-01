@@ -51,7 +51,7 @@ VECONFIG_VSWAP = ve-vswap.256MB.conf-sample ve-vswap.512MB.conf-sample \
                vz-postinst.5 vz-net_add.5 vz-net_del.5 networks_classes.5
 BASHCOMPLSCRIPT = vzctl.sh
 
- VZEVENTSCRIPTS = ve-reboot
+ VZEVENTSCRIPTS = ve-reboot ve-stop
 
 ##################################################
 default: all
