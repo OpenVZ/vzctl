@@ -23,8 +23,10 @@ void msg_print(char *buf, ctid_t ctid)
 		return;
 	}
 
-	if (CMP_CTID(p, ctid) == 0)
+	if (CMP_CTID(p, ctid) == 0) {
 		fprintf(stdout, "%s\n",  buf);
+		fflush(stdout);
+	}
 }
 
 int monitoring(ctid_t ctid)
