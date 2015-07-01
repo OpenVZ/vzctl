@@ -4,7 +4,7 @@
 # This script start CT on reboot event
 #
 . /etc/vz/vz.conf
-. /etc/vz/conf/vz-functions
+. /usr/libexec/libvzctl/scripts/vz-functions
 
 VEIP=/proc/vz/veip
 
@@ -17,7 +17,7 @@ clear_ve_net()
 	ips=$(cat "$VE_STATE_DIR/$ID" 2>/dev/null)
 
 	[ -n "${LOGFILE}" ] || \	
-		echo "`date --iso-8601=seconds` venetclean : Container $ID : clear ips: $ips" >> ${LOGFILE}
+		echo "`date --iso-8601=seconds` venetclean : CT $ID : clear ips: $ips" >> ${LOGFILE}
 
 	for ip in $ips; do
 		if ! grep -qw "${ip}" $VEIP 2>/dev/null; then
