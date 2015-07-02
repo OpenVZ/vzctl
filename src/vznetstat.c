@@ -10,7 +10,6 @@
 #include <string.h>
 #include <linux/vzctl_venet.h>
 #include <linux/vzctl_netstat.h>
-#include <uuid/uuid.h>
 #include <errno.h>
 #include <vzctl/libvzctl.h>
 
@@ -27,8 +26,8 @@ enum env_type {
 };
 
 struct uuidmap_t {
-	uuid_t uuid;
-	unsigned int id;
+	ctid_t ctid;
+	int veid;
 };
 
 static int ipv6 = 1;
@@ -76,81 +75,58 @@ static int parse_int(const char *str, int *val)
 	return 0;
 }
 
-#define UUID_MAP_FILE "/etc/parallels/uuid.map"
 static int read_uuid_map(void)
 {
-	int fd, ret;
-	struct stat st;
+	int ret, n;
+	struct vzctl_env_handle *h;
+	int flags = VZCTL_CONF_SKIP_GLOBAL | VZCTL_CONF_BASE_SET;
+	vzctl_ids_t *ctids = vzctl2_alloc_env_ids();
 
-	fd = open(UUID_MAP_FILE, O_RDONLY);
-	if (fd == -1) {
-		if (errno == ENOENT)
-			return 0;
-		fprintf(stderr, "Unable to read %s %d", UUID_MAP_FILE, errno);
+	if (ctids == NULL)
 		return -1;
-	}
-	if (flock(fd, LOCK_SH)) {
-		fprintf(stderr, "Unable to lock %s %d", UUID_MAP_FILE, errno);
-		goto err;
-	}
-	if (fstat(fd, &st)) {
-		fprintf(stderr, "Unable to fstat %s %d", UUID_MAP_FILE, errno);
-		goto err;
-	}
+	
+	n = vzctl2_get_env_ids_by_state(ctids, ENV_STATUS_EXISTS);
+	if (n > 0) {
+		_uuidmap = malloc(sizeof(struct uuidmap_t) * n);
+		if (_uuidmap == NULL)
+			return -1;
 
-	_uuidmap = malloc(st.st_size);
-	if (_uuidmap == NULL) {
-		fprintf(stderr, "Unable to allocate %lu bytes", st.st_size);
-		goto err;
-	}
+		_uuidmap_size = n;
+		for (n = 0; n < _uuidmap_size; n++) {
+			h = vzctl2_env_open(ctids->ids[n], flags, &ret);
+			if (ret)
+				continue;
 
-	ret = read(fd, _uuidmap, st.st_size);
-	if (ret == -1) {
-		fprintf(stderr, "failed read from %s %d", UUID_MAP_FILE, errno);
-		goto err;
+			SET_CTID(_uuidmap[n].ctid, ctids->ids[n]);
+			_uuidmap[n].veid = vzctl2_env_get_veid(h);
+
+			vzctl2_env_close(h);
+		}
 	}
 
-	_uuidmap_size = st.st_size / sizeof(struct uuidmap_t);
+	vzctl2_free_env_ids(ctids);
 
-	flock(fd, LOCK_UN);
-	close(fd);
-
-	return 0;
-
-err:
-	free(_uuidmap);
-	_uuidmap = 0;
-	flock(fd, LOCK_UN);
-	close(fd);
-
-	return -1;
+	return n == -1 ? -1 : 0;
 }
 
 static struct uuidmap_t *find_uuid_by_id(unsigned int id)
 {
 	unsigned int i;
 
-	if (_uuidmap == NULL)
-		return NULL;
-	for (i = 0; i < _uuidmap_size; i++) {
-		if (_uuidmap[i].id == id)
+	for (i = 0; i < _uuidmap_size; i++)
+		if (_uuidmap[i].veid == id)
 			return &_uuidmap[i];
-	}
 	return NULL;
 }
 
-static struct uuidmap_t *find_id_by_uuid(const char *uuid)
+static struct uuidmap_t *find_id_by_uuid(const char *ctid)
 {
 	unsigned int i;
-	char _uuid[64];
 
-	if (_uuidmap == NULL)
-		return NULL;
-	for (i = 0; i < _uuidmap_size; i++) {
-		uuid_unparse(_uuidmap[i].uuid, _uuid);
-		if (!strcmp(uuid, _uuid))
+	for (i = 0; i < _uuidmap_size; i++)
+		if (!strcmp(_uuidmap[i].ctid, ctid))
 			return &_uuidmap[i];
-	}
+
 	return NULL;
 }
 
@@ -161,28 +137,15 @@ static int print_stat(struct vzctl_tc_get_stat *stat, int len, int class_mask, i
 	char *sfx[3] = {"K", "M", "G"};
 	char *in_sfx, *out_sfx;
 	char id[64];
-	struct uuidmap_t *uuidmap;
+	struct uuidmap_t *map;
 
-	if (type == UNSPEC_TYPE) {
-		sprintf(id, "%-10d", stat->veid);
-	} else {
-		uuidmap = find_uuid_by_id(stat->veid);
-		if (uuidmap != NULL) {
-			if (type == CT_TYPE)
-				return 0;
-			uuid_unparse(uuidmap->uuid, id);
-		} else {
-			if (type == VM_TYPE)
-				return 0;
-			if ((type & VM_TYPE) != 0)
-				sprintf(id, "%-36d", stat->veid);
-			else
-				sprintf(id, "%-10d", stat->veid);
-		}
-	}
+	map = find_uuid_by_id(stat->veid);
+	if (map != NULL)
+		snprintf(id, sizeof(id), "%s", map->ctid);
+	else
+		snprintf(id, sizeof(id), "%d", stat->veid);
 
-	for (class = 0; class < len; class++)
-	{
+	for (class = 0; class < len; class++) {
 		if (!((1 << class) & class_mask))
 			continue;
 		in_sfx = " ";
@@ -203,7 +166,7 @@ static int print_stat(struct vzctl_tc_get_stat *stat, int len, int class_mask, i
 			}
 		}
 
-		ret = printf("%s %-2u %20llu%1s %10u %20llu%1s %10u\n",
+		ret = printf("%-36s %-2u %20llu%1s %10u %20llu%1s %10u\n",
 			id,
 			class,
 			in, in_sfx,
@@ -347,45 +310,16 @@ int build_class_mask(int *class_mask)
 	return 0;
 }
 
-static int is_uuid(const char *in, char *out)
-{
-	int len, i;
-	/* fbcdf284-5345-416b-a589-7b5fcaa87673 */
-#define UUID_LEN 36
-	if (in[0] == '{')
-		in++;
-	len = strlen(in);
-	if (len == 0)
-		return 0;
-	if (in[len-1] == '}')
-		len--;
-	if (len != UUID_LEN)
-		return 0;
-
-	for (i = 0; i < UUID_LEN; i++) {
-		if ((i == 8) || (i == 13) || (i == 18) || (i == 23)) {
-			if (in[i] != '-' )
-				return 0;
-		} else if (!isxdigit(in[i])) {
-			return 0;
-		}
-		out[i] = in[i];
-	}
-	out[i] = 0;
-	return 1;
-}
-
 int main(int argc, char **argv)
 {
 	struct vzctl_tc_get_stat_list velist = {NULL, 0};
-	int ret, veid = -1, classid;
+	int ret, classid;
 	int class_mask_p = 0;
 	int class_mask = 0;
 	int all_classes = 0;
-	int filter_by_id = 0;
 	char c;
-	char uuid[64];
-	int type = CT_TYPE;
+	int type = VM_TYPE;
+	ctid_t ctid = {};
 
 	pnetstat_mode = !strcmp(basename(argv[0]), "pnetstat");
 
@@ -397,17 +331,7 @@ int main(int argc, char **argv)
 		switch (c)
 		{
 		case 'v':
-			filter_by_id = 1;
-			if (is_uuid(optarg, uuid))
-			{
-				type = VM_TYPE;
-			}
-			else if (parse_int(optarg, &veid) == 0)
-			{
-				type = CT_TYPE;
-			}
-			else
-			{
+			if (vzctl2_parse_ctid(optarg, ctid)) {
 				printf("Invalid veid: %s\n", argv[2]);
 				return ERR_INVAL_OPT;
 			}
@@ -462,27 +386,18 @@ int main(int argc, char **argv)
 	}
 	if (tc_get_v6_class_num() == 0)
 		ipv6 = 0;
-	if (read_uuid_map() && (type & VM_TYPE) != 0)
+	if (read_uuid_map())
 		return ERR_READ_UUIDMAP;
-	if (filter_by_id)
-	{
-		if (veid == -1) {
-			struct uuidmap_t *uidmap;
-				uidmap = find_id_by_uuid(uuid);
-			if (uidmap != NULL)
-				veid = uidmap->id;
-		}
-		velist.list = realloc(velist.list,
-				sizeof(int) * (velist.length + 1));
-		velist.list[velist.length] = veid;
-		velist.length = 1;
 
-	}
-	else
-	{
-		if ((ret = get_ve_list(&velist)) < 0)
-			return ret;
-	}
+	if (!EMPTY_CTID(ctid)) {
+		struct uuidmap_t *map = find_id_by_uuid(ctid);
+
+		velist.list = realloc(velist.list, sizeof(int));
+		velist.list[0] = map != NULL ? map->veid : -1;
+		velist.length = 1;
+	} else if ((ret = get_ve_list(&velist)) < 0)
+		return ret;
+
 	if ((ret = build_class_mask(&class_mask)))
 		return ret;
 	if (all_classes)
