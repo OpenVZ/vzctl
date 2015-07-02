@@ -83,13 +83,13 @@ static int read_uuid_map(void)
 	vzctl_ids_t *ctids = vzctl2_alloc_env_ids();
 
 	if (ctids == NULL)
-		return -1;
+		return ERR_NOMEM;
 	
 	n = vzctl2_get_env_ids_by_state(ctids, ENV_STATUS_EXISTS);
 	if (n > 0) {
 		_uuidmap = malloc(sizeof(struct uuidmap_t) * n);
 		if (_uuidmap == NULL)
-			return -1;
+			return ERR_NOMEM;
 
 		_uuidmap_size = n;
 		for (n = 0; n < _uuidmap_size; n++) {
@@ -384,6 +384,11 @@ int main(int argc, char **argv)
 		printf("Unable to open %s: %s\n", VZCTLDEV, strerror(errno));
 		return 7;
 	}
+
+
+	/* Disable logging */
+	vzctl2_set_log_enable(0);
+
 	if (tc_get_v6_class_num() == 0)
 		ipv6 = 0;
 	if (read_uuid_map())
