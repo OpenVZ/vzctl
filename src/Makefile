@@ -31,7 +31,6 @@ endif
 	       snapshot-list.o cleanup.o cpu.o technologies.o wrap.o util.o
 
    OBJS_vzctl = vzctl.o enter.o $(OBJS)
-     OBJS_arp = arpsend.o
  OBJ_vzeventd = vzeventd.o
        OBJ_nd = ndsend.o
  OBJS_ubclogd = ubclogd.o timeutils.o
@@ -46,7 +45,7 @@ OBJS_vztactl  = vztactl.o tc.o list.o util.o wrap.o cleanup.o
 OBJS_vznetstat= vznetstat.o tc.o
 OBJS_vzlist   = vzlist.o $(OBJS)
 ### Target names
-	PROGS = vzctl arpsend ubclogd vzsplit \
+	PROGS = vzctl ubclogd vzsplit \
 		vzauth \
 		vztactl vznetstat vzlist ndsend vzeventd
 
@@ -76,9 +75,6 @@ real-all: $(PROGS)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(INC) $< -o $@
-
-arpsend: $(OBJS_arp)
-	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ -o $@
 
 vzeventd: $(OBJ_vzeventd)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) -lvzctl2 $^ -o $@
@@ -120,7 +116,7 @@ vzlist: $(OBJS_vzlist)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -lm -o $@
 
 clean:
-	$(RM) $(PROGS) $(OBJS) $(OBJS_arp) $(OBJS_memcheck)\
+	$(RM) $(PROGS) $(OBJS) $(OBJS_memcheck)\
 	$(OBJS_ubclogd) $(OBJS_split) $(OBJS_calc) $(OBJS_convert) \
 	$(OBJS_cfgscale) $(OBJS_vzauth) \
 	$(OBJS_proxyctl) $(OBJS_vztactl) $(OBJS_vznetstat) \

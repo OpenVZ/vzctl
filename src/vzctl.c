@@ -48,6 +48,11 @@ static void cleanup_callback(int sig)
 	run_cleanup();
 }
 
+struct option_alternative {
+	const char *long_name;
+	int short_name;
+};
+
 static struct option set_options[] =
 {
 	{"save",	no_argument, NULL, PARAM_SAVE},
@@ -390,6 +395,20 @@ static struct option console_options[] =
 {
 	{"start", no_argument, NULL, 's'},
 	{ NULL, 0, NULL, 0 }
+};
+
+struct option_alternative option_alternatives[] =
+{
+	{"numproc",     'p'},
+	{"kmemsize",    'k'},
+	{"tcprcvbuf",   'b'},
+	{"lockedpages", 'l'},
+	{"numfile",     'n'},
+	{"numflock",    'f'},
+	{"numpty",      't'},
+	{"numsiginfo",  'i'},
+	{"dcachesize",  'x'},
+	{"numiptent",   'e'}
 };
 
 static int check_argv_tail(int argc, char **argv)
@@ -1009,6 +1028,21 @@ static int find_arg(char **arg, const char *str)
 	return 0;
 }
 
+static void convert_short_opt_to_val(int *c)
+{
+	size_t i, j;
+	size_t altlen = sizeof(option_alternatives) / sizeof(option_alternatives[0]);
+	size_t optionslen = sizeof(set_options) / sizeof(set_options[0]);
+
+	for (i = 0; i < altlen; ++i)
+		if (option_alternatives[i].short_name == *c)
+			for (j = 0; j < optionslen; ++j)
+				if (!strcmp(option_alternatives[i].long_name, set_options[j].name)) {
+					*c = set_options[j].val;
+					return;
+				}
+}
+
 int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 {
 	int i, c, err, ret = 0;
@@ -1053,6 +1087,9 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 					VZCTL_PARAM_IPDEL;
 			break;
 		}
+
+		if (isalpha(c))
+			convert_short_opt_to_val(&c);
 
 		if (c >= VZCTL_PARAM_KMEMSIZE) {
 			ret = vzctl_add_env_param_by_id(ctid, c, optarg);
