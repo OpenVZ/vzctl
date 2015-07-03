@@ -141,6 +141,12 @@ such pairs, space separated.
 Specifies bound rate for network devices.
 .IP \fBRATE\fR="\fIdev\fR:\fIclass\fR:\fIKbits\fR\fI\fR"
 Specifies guaranteed rate for network devices.
+.IP \fBRATEMPU\fR="\fIdev\fR:\fIclass\fR[:\fIbytes\fR]"
+Specifies Minimum Packet Unit for traffic shaping.
+If packet size is lower then MPU bytes, it will consume MPU HTB tokens.
+This is to limit packet rate (packet rate = \fBTOTALRATE\fR / \fBRATEMPU\fR).
+If MPU value (bytes) is omitted then VZ_TC_DEFAULT_MPU (1000) is used.
+If dev:class is not in \fBRATEMPU\fR then packet rate is not limited for them.
 .SS Disk IO limit parameters
 .IP \fBVZ_TOOLS_BCID\fR="\fIID\fR"
 Enables disk IO limits for backup, restore, and migration operations. Make sure that no Container with the specified \fIID\fR exists on the Node.
