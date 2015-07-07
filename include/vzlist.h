@@ -16,13 +16,6 @@
 #define MAXCPUUNITS	500000
 #define MAX_STR		16384
 
-enum {
-	VE_STOPPED,
-	VE_RUNNING,
-	VE_MOUNTED,
-	VE_SUSPENDED
-};
-
 struct Cubc {			// held maxheld barrier limit failcnt
 	unsigned long kmemsize[5];
 	unsigned long lockedpages[5];

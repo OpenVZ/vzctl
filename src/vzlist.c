@@ -27,13 +27,18 @@
 #include "util.h"
 
 
-static char *ve_status[]= {
-	"stopped",
-	"running",
-	"mounted",
-	"suspended"
-};
-
+static const char *ve_status(int status)
+{
+	if (status & ENV_STATUS_RUNNING)
+		return "running";
+	else if (status & ENV_STATUS_MOUNTED)
+		return "mounted";
+	else if (status & ENV_STATUS_SUSPENDED)
+		return "suspended";
+	else if (status & ENV_STATUS_EXISTS)
+		return "stopped";
+	return "unknown";
+}
 
 static struct Cveinfo *veinfo = NULL;
 static int n_veinfo = 0;
@@ -137,7 +142,7 @@ static void print_uuid(struct Cveinfo *p, int index)
 static void print_status(struct Cveinfo *p, int index)
 {
 	p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%-9s",
-		ve_status[p->status]);
+		ve_status(p->status));
 }
 
 static void print_laverage(struct Cveinfo *p, int index)
@@ -354,7 +359,7 @@ static void print_devnodes(struct Cveinfo *p, int index)
 static void print_ubc_ ## name(struct Cveinfo *p, int index)		\
 {									\
 	if (p->ubc == NULL ||						\
-		(p->status != VE_RUNNING &&				\
+		(p->status != ENV_STATUS_RUNNING &&				\
 			(index == 0 || index == 1 || index == 4)))	\
 		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%10s", "-");	\
 	else								\
@@ -1121,7 +1126,7 @@ static void update_ip(struct Cveinfo *ve)
 	char *tmp;
 
 	/* Get IPs from Container */
-	if (ve->status == VE_RUNNING &&	check_param(RES_IP))
+	if (ve->status == ENV_STATUS_RUNNING &&	check_param(RES_IP))
 	{
 		tmp = get_real_ips(ve->ctid);
 		if (tmp != NULL) {
@@ -1208,7 +1213,7 @@ static void print_ve(void)
 			idx = i;
 		if (veinfo[idx].hide)
 			continue;
-		if (only_stopped_ve && veinfo[idx].status == VE_RUNNING)
+		if (only_stopped_ve && veinfo[idx].status == ENV_STATUS_RUNNING)
 			continue;
 		last_field = 0;
 		for (p = g_field_order; p != NULL; p = p->next) {
@@ -1272,7 +1277,7 @@ void update_ubc(ctid_t ctid, const struct Cubc *ubc)
 	if ((tmp = find_ve(ctid)) == NULL)
 		return;
 
-	if (tmp->status != VE_RUNNING)
+	if (tmp->status != ENV_STATUS_RUNNING)
 		return;
 
 	if (tmp->ubc == NULL)
@@ -1667,7 +1672,7 @@ static int _get_run_ve(int update)
 		} else if (res == 3)
 			ve.ip = strdup("");
 		SET_CTID(ve.ctid, ctid);
-		ve.status = VE_RUNNING;
+		ve.status = ENV_STATUS_RUNNING;
 		if (update)
 			update_ve(ctid, ve.ip, ve.status);
 		else
@@ -1773,34 +1778,6 @@ static int get_ves_la(void)
 	return 0;
 }
 
-static int get_mounted_status(void)
-{
-#if 0
-	int i;
-	char buf[512];
-
-	for (i = 0; i < n_veinfo; i++) {
-		if (veinfo[i].status == VE_RUNNING)
-			continue;
-		if (veinfo[i].ve_private == NULL ||
-			!stat_file(veinfo[i].ve_private))
-		{
-			veinfo[i].hide = 1;
-			continue;
-		}
-		vzctl_get_dump_file(veinfo[i].veid, veinfo[i].ve_private,
-			NULL, buf, sizeof(buf));
-		if (stat_file(buf))
-			veinfo[i].status = VE_SUSPENDED;
-		if (veinfo[i].ve_root == NULL)
-			continue;
-		if (env_is_mounted(veinfo[i].ctid))
-			veinfo[i].status = VE_MOUNTED;
-	}
-#endif
-	return 0;
-}
-
 static int get_ves_cpu(void)
 {
 #if 0
@@ -1849,7 +1826,6 @@ static int get_ve_list(void)
 	DIR *dp;
 	struct dirent *ep;
 	struct Cveinfo ve;
-	vzctl_env_status_t status;
 	int mask;
 
 	dp = opendir(VZ_ENV_CONF_DIR);
@@ -1857,9 +1833,9 @@ static int get_ve_list(void)
 		return -1;
 	}
 	memset(&ve, 0, sizeof(struct Cveinfo));
-	ve.status = VE_STOPPED;
 	mask = g_skip_owner ? ENV_SKIP_OWNER | ENV_STATUS_EXISTS : ENV_STATUS_EXISTS;
 	while ((ep = readdir (dp))) {
+		struct vzctl_env_status status = {};
 		ctid_t id, ctid;
 		char str[6];
 
@@ -1870,13 +1846,15 @@ static int get_ve_list(void)
 			continue;
 		if (!check_veid_restr(ctid))
 			continue;
-		bzero(&status, sizeof(vzctl_env_status_t));
-		status.mask = ENV_STATUS_EXISTS;
+
+		mask = check_param(RES_STATUS) ? ENV_STATUS_ALL :
+							ENV_STATUS_EXISTS;
 		if (vzctl2_get_env_status(ctid, &status, mask))
 			continue;
 		if (!(status.mask & ENV_STATUS_EXISTS))
 			continue;
 		SET_CTID(ve.ctid, ctid)
+		ve.status = status.mask;
 		add_elem(&ve);
 	}
 	closedir(dp);
@@ -1890,7 +1868,7 @@ static int update_ves_io_info(void)
 #if 0
 	int limit, i;
 	for (i = 0; i < n_veinfo; i++) {
-		if (veinfo[i].status != VE_RUNNING)
+		if (veinfo[i].status != ENV_STATUS_RUNNING)
 			continue;
 		if (vzctl_get_iolimit(veinfo[i].ctid, &limit) == 0) {
 			if (veinfo[i].io.limit == NULL)
@@ -2021,8 +1999,6 @@ static int collect(void)
 		update_ves_io_info();
 	if (check_param(RES_QUOTA))
 		get_quota_stat();
-	if (check_param(RES_STATUS))
-		get_mounted_status();
 	do_filter();
 
 	return 0;
