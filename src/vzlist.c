@@ -324,6 +324,32 @@ static void print_netfilter(struct Cveinfo *p, int index)
 	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 9);
 }
 
+static void print_devnodes(struct Cveinfo *p, int index)
+{
+	int r;
+	char *tmp, *token;
+	char *sptr;
+
+	if (p->devnodes == NULL) {
+		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
+		SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 16);
+		return;
+	}
+
+	tmp = strdup(p->devnodes);
+	if ((token = strtok_r(tmp, " \t", &sptr)) != NULL) {
+		do {
+			r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%s ",
+					token);
+			SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 0);
+		} while ((token = strtok_r(NULL, " \t", &sptr)));
+	} else {
+		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
+		SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 16);
+	}
+	free(tmp);
+}
+
 #define PRINT_UBC(name)						\
 static void print_ubc_ ## name(struct Cveinfo *p, int index)		\
 {									\
@@ -625,6 +651,7 @@ UBC_FIELD(swappages, SWAPP),
 {"ha_prio", "HA_PRIO", "%10s", 0, RES_HA_PRIO, print_ha_prio, ha_prio_sort_fn},
 
 {"netfilter", "NETFILTER", "%9s", 0, RES_NONE, print_netfilter, none_sort_fn},
+{"devnodes", "DEVNODES", "%-16s", 0, RES_NONE, print_devnodes, none_sort_fn},
 };
 
 static void print_hostname(struct Cveinfo *p, int index)
@@ -1498,6 +1525,9 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 
 	if (vzctl2_env_get_uuid(vzctl2_get_env_param(h), &p) == 0 && p != NULL)
 		ve->uuid = strdup(p);
+
+	if (vzctl2_env_get_param(h, "DEVNODES",  &p) == 0 && p != NULL)
+		ve->devnodes = strdup(p);
 }
 
 static void parse_conf(ctid_t ctid, struct Cveinfo *ve)

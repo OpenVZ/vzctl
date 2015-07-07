@@ -97,6 +97,7 @@ struct Cveinfo {
 	unsigned long *ha_prio;
 	char *netfilter;
 	char *uuid;
+	char *devnodes;
 };
 
 #define RES_NONE	0
