@@ -37,6 +37,7 @@ class/misc rx
 devices rx
 devices/system rx
 devices/system/cpu rx
+devices/system/cpu/kernel_max r
 devices/virtual rx
 devices/virtual/misc rx
 devices/virtual/misc/tun rx
