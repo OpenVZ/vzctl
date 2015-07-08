@@ -1,5 +1,7 @@
 [Unit]
 Description=Virtuozzo Container service
+After=vcmmd.service
+Wants=vcmmd.service
 
 [Service]
 ExecStart=/usr/libexec/vz start
