@@ -1,0 +1,136 @@
+#!/bin/bash
+
+VE_PARALLEL=0
+
+VZCTL=/usr/sbin/vzctl
+VZLIST=/usr/sbin/vzlist
+OOM_GROUPS_CONF=/etc/vz/oom-groups.conf
+
+get_parallel()
+{
+	[ -n "${VE_PARALLEL}" -a "${VE_PARALLEL}" != "0" ] && return
+	VE_PARALLEL=`awk '
+BEGIN { num=0; }
+$1 == "processor" { num++; }
+END { print num * 4; }' /proc/cpuinfo`
+}
+
+setup_oom_groups()
+{
+	[ ! -f "$OOM_GROUPS_CONF" ] && return
+	cat $OOM_GROUPS_CONF > /proc/vz/oom_score_adj 2>/dev/null
+}
+
+setup_ve_sysfs()
+{
+
+[ ! -f /sys/fs/cgroup/ve/ve.default_sysfs_permissions ] && return 0
+
+PERM="/ rx
+block rx
+class rx
+class/block rx
+class/net rx
+class/tty rx
+class/mem rx
+class/misc rx
+devices rx
+devices/system rx
+devices/system/cpu rx
+devices/virtual rx
+devices/virtual/misc rx
+devices/virtual/misc/tun rx
+devices/virtual/misc/tun/dev r
+devices/virtual/misc/tun/uevent rw
+devices/virtual/net rx
+devices/virtual/mem rx
+devices/virtual/tty rx
+dev rx
+dev/block rx
+dev/char rx
+fs rx
+fs/cgroup rw
+kernel rx
+kernel/fscaps r
+kernel/profiling r
+kernel/uevent_seqnum r"
+
+	local ifs=$IFS
+	IFS="
+"
+	for i in $PERM; do
+        	echo "$i" > /sys/fs/cgroup/ve/ve.default_sysfs_permissions 2>/dev/null
+	done
+	IFS=$ifs
+}
+
+
+start()
+{
+	setup_oom_groups
+	setup_ve_sysfs
+}
+
+stop()
+{
+	local cmd pid pids cmd iter velist veid
+	local stages="prepare stop"
+
+	get_parallel
+
+	velist=`$VZLIST -H -o ctid`
+	for stage in $stages; do
+		for veid in $velist; do
+			case $stage in
+			prepare)
+				$VZCTL --skiplock set $veid --cpulimit 0 --iolimit 0 --iopslimit 0 >/dev/null 2>&1
+				continue
+				;;
+			stop)
+				cmd="$VZCTL --skiplock stop $veid"
+				;;
+			esac
+
+			# Run command
+			$cmd >/dev/null 2>&1 &
+			pid=$!
+			pids="$pids $pid"
+			let iter++
+			if [ $iter -ge $VE_PARALLEL ]; then
+				for pid in $pids; do
+					wait $pid
+				done
+				pids=
+				iter=0
+			fi
+		done
+
+		for pid in $pids; do
+			wait $pid
+		done
+	done
+
+	# forcible stop the rest
+	velist=`$VZLIST -o ctid`
+	for veid in $velist; do
+		$VZCTL --skiplock stop $veid --force > /dev/null 2>&1
+	done
+
+	# Unmount
+	velist=`$VZLIST -ao ctid,status | awk '$2=="mounted" {print $1}'`
+	for veid in $velist; do
+		$VZCTL --skiplock umount $veid > /dev/null 2>&1
+	done
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+        stop
+        ;;
+  *)
+        echo "Usage: $0 start|stop"
+        exit 1
+esac

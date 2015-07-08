@@ -8,6 +8,7 @@
         CONFDIR = ${PREFIX}/etc/vz/conf
    NETSCRIPTDIR = /etc/sysconfig/network-scripts
      SYSTEMDDIR = ${PREFIX}/lib/systemd/system
+SYSTEMDSCRIPTDIR = ${PREFIX}/libexec
    MODPROBEDDIR = /etc/modprobe.d
      SYSCTLDDIR = /etc/sysctl.d
 MODULESLOADDDIR = /etc/modules-load.d
@@ -27,7 +28,8 @@ MODULESLOADDDIR = /etc/modules-load.d
       SYSCTL = 99-vzctl.conf
     MODPROBE = vz.conf
      MODLOAD = vz.conf
-SYSTEMDUNITS = vzevent.service
+SYSTEMDUNITS = vzevent.service vz.service
+SYSTEMDSCRIPTS = vz
 
   NETSCRIPTS = ifcfg-venet0 ifdown-venet ifup-venet
    VE0CONFIG = 0.conf networks_classes
@@ -106,6 +108,9 @@ install-systemd:
 	for file in $(SYSTEMDUNITS); do \
 		$(INSTALL) -m 644 etc/systemd.d/$$file $(DESTDIR)$(SYSTEMDDIR)/$$file; \
 	done
+	for file in $(SYSTEMDSCRIPTS); do \
+		$(INSTALL) -m 755 etc/systemd.d/$$file $(DESTDIR)$(SYSTEMDSCRIPTDIR)/$$file; \
+	done
 
 install-modulesd:
 	for file in $(MODPROBE); do \
@@ -147,6 +152,7 @@ installdirs:
 	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man5
 	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8
 	$(INSTALL) -d $(DESTDIR)$(SYSTEMDDIR)
+	$(INSTALL) -d $(DESTDIR)$(SYSTEMDSCRIPTDIR)
 	$(INSTALL) -d $(DESTDIR)$(MODPROBEDDIR)
 	$(INSTALL) -d $(DESTDIR)$(SYSCTLDDIR)
 	$(INSTALL) -d $(DESTDIR)$(MODULESLOADDDIR)
