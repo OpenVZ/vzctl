@@ -7,7 +7,7 @@ MANS = vzctl.8 vz.5 ve.conf.5 networks_classes.5 \
  vz-create_prvt.5 ve-veconfig.5 vz-postinst.5 \
  vzpurge.8 vzgetpa.8  ubclogd.8 vznetstat.8 vzsplit.8 vzcpucheck.8 \
  vzpid.8 vzcfgscale.8 vzcfgvalidate.8 vzcalc.8 vzmemcheck.8 \
- vzauth.8 vztactl.8 vzlist.8 vzreboot.8 \
+ vzauth.8 vztactl.8 vzlist.8 \
  vzdiskcheck.8 vzeventd.8
 
 PSS = $(patsubst %, %.ps, $(MANS))
