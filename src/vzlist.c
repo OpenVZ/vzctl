@@ -126,7 +126,7 @@ static void print_na(struct Cveinfo *p, int index)
 }
 static void print_eid(struct Cveinfo *p, int index)
 {
-	p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%-36s",
+	p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%36s",
 		p->ctid);
 }
 
