@@ -58,9 +58,8 @@ _vzctl()
 		--numfile --numflock --numpty \
 		--numsiginfo --dcachesize \
 		--numiptent --physpages --swappages --diskspace \
-		--diskinodes --quotatime --quotaugidlimit \
-		--cpuunits --cpulimit --cpus --slmmode \
-		--slmmemorylimit --ipadd --ipdel \
+		--quotaugidlimit --cpuunits --cpulimit \
+		--cpus --ipadd --ipdel \
 		--root --hostname --nameserver --searchdomain \
 		--userpasswd --onboot --rate --ratebound \
 		--noatime --bindmount_add --bindmount_del \
