@@ -51,16 +51,12 @@ _vzctl()
 	local vzctl_create_opts="--ostemplate --config --private --root \
 		--ipadd --hostname --name --description --skip_app_templates"
 	local vzctl_set_opts="--save --onboot \
-		--numproc --numtcpsock --numothersock \
-		--kmemsize --tcpsndbuf --tcprcvbuf \
-		--othersockbuf --dgramrcvbuf --oomguarpages \
+		--numproc --oomguarpages \
 		--lockedpages --privvmpages --shmpages \
-		--numfile --numflock --numpty \
-		--numsiginfo --dcachesize \
+		--numfile --numflock --numpty --numsiginfo \
 		--numiptent --physpages --swappages --diskspace \
-		--diskinodes --quotatime --quotaugidlimit \
-		--cpuunits --cpulimit --cpus --slmmode \
-		--slmmemorylimit --ipadd --ipdel \
+		--quotaugidlimit --cpuunits --cpulimit \
+		--cpus --ipadd --ipdel \
 		--root --hostname --nameserver --searchdomain \
 		--userpasswd --onboot --rate --ratebound \
 		--noatime --bindmount_add --bindmount_del \

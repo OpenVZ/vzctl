@@ -414,12 +414,10 @@ fprintf(stdout,
 "UBC parameters (N - items, P - pages, B - bytes):\n"
 "Two numbers divided by colon denote barrier:limit.\n"
 "In case the limit is not given it is set to the same value as the barrier.\n"
-"   --numproc N[:N]	--numtcpsock N[:N]	--numothersock N[:N]\n"
-"   --vmguarpages P[:P]	--kmemsize B[:B]	--tcpsndbuf B[:B]\n"
-"   --tcprcvbuf B[:B]	--othersockbuf B[:B]	--dgramrcvbuf B[:B]\n"
-"   --oomguarpages P[:P]	--lockedpages P[:P]	--privvmpages P[:P]\n"
+"   --numproc N[:N] 	--vmguarpages P[:P]\n"
+"   --lockedpages P[:P]	--privvmpages P[:P]\n"
 "   --shmpages P[:P]	--numfile N[:N]		--numflock N[:N]\n"
-"   --numpty N[:N]	--numsiginfo N[:N]	--dcachesize N[:N]\n"
+"   --numpty N[:N]	--numsiginfo N[:N]\n"
 "   --numiptent N[:N]	--physpages P[:P]	--avnumproc N[:N]\n"
 "   --swappages P[:P] --ram N --swap N\n");
 if (is_vswap_mode())
