@@ -13,15 +13,7 @@ vzctl \fBrunscript\fR \fIctid\fR \fIscript\fR
 vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 .\" UBC parameters
 [\fB-p\fR, \fB--numproc\fR \fIitems\fR[:\fIitems\fR]]
-[\fB--numtcpsock\fR \fIitems\fR[:\fIitems\fR]]
-[\fB--numothersock\fR \fIitems\fR[:\fIitems\fR]]
 [\fB--vmguarpages\fR \fIpages\fR[:\fIpages\fR]]
-[\fB-k\fR, \fB--kmemsize\fR \fIbytes\fR[:\fIbytes\fR]]
-[\fB--tcpsndbuf\fR \fIbytes\fR[:\fIbytes\fR]]
-[\fB-b\fR, \fB--tcprcvbuf\fR \fIbytes\fR[:\fIbytes\fR]]
-[\fB--othersockbuf\fR \fIbytes\fR[:\fIbytes\fR]]
-[\fB--dgramrcvbuf\fR \fIbytes\fR[:\fIbytes\fR]]
-[\fB--oomguarpages\fR \fIpages\fR[:\fIpages\fR]]
 [\fB-l\fR, \fB--lockedpages\fR \fIpages\fR[:\fIpages\fR]]
 [\fB--privvmpages\fR \fIpages\fR[:\fIpages\fR]]
 [\fB--shmpages\fR \fIpages\fR[:\fIpages\fR]]
@@ -29,7 +21,6 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB-f\fR, \fB--numflock\fR \fIitems\fR[:\fIitems\fR]]
 [\fB-t\fR, \fB--numpty\fR \fIitems\fR[:\fIitems\fR]]
 [\fB-i\fR, \fB--numsiginfo\fR \fIitems\fR[:\fIitems\fR]]
-[\fB-x\fR, \fB--dcachesize\fR \fIbytes\fR[:\fIbytes\fR]]
 [\fB-e\fR, \fB--numiptent\fR \fInum\fR[:\fInum\fR]]
 [\fB--swappages\fR \fInum\fR[:\fInum\fR]]
 [\fB--physpages\fR \fIpages\fR[:\fIpages\fR]]
@@ -335,65 +326,12 @@ Maximum number of processes and kernel-level threads.
 Setting the barrier and
 the limit to different values does not make practical sense.
 .TP
-\fB--numtcpsock\fR \fIitems\fR[:\fIitems\fR]
-Maximum number of TCP sockets. This parameter limits the number of TCP
-connections and, thus, the number of clients the server application can
-handle in parallel.
-Setting the barrier and
-the limit to different values does not make practical sense.
-.TP
-\fB--numothersock\fR \fIitems\fR[:\fIitems\fR]
-Maximum number of non-TCP sockets (local sockets, UDP and other types
-of sockets).
-Setting the barrier and
-the limit to different values does not make practical sense.
-.TP
 \fB--vmguarpages\fR \fIpages\fR[:\fIpages\fR]
 Memory allocation guarantee. This parameter controls how much memory is
 available to CT. The barrier is the amount
 of memory that CT's applications are guaranteed to be able to allocate.
 The meaning of the limit is currently unspecified; it should be set to
 2,147,483,647.
-.TP
-\fB-k\fR, \fB--kmemsize\fR \fIbytes\fR[:\fIbytes\fR]
-Maximum amount of kernel memory used. This parameter is related to
-\fB--numproc\fR. Each process consumes certain amount of kernel memory -
-16 KB at leas, 30-50 KB typically. Very large processes may consume
-a bit more. It is important to have a certain safety gap between the
-barrier and the limit of this parameter: equal barrier and limit may
-lead to the situation where the kernel will need to kill CT applications
-to keep the \fBkmemsize\fR usage under the limit.
-.TP
-\fB--tcpsndbuf\fR \fIbytes\fR[:\fIbytes\fR]
-Maximum size of TCP send buffers.
-Barrier should be not less than 64 KB, and difference between
-barrier and limit should be equal to or more than value of
-\fBnumtcpsock\fR multiplied by 2.5 KB.
-.TP
-\fB-b\fR, \fB--tcprcvbuf\fR \fIbytes\fR[:\fIbytes\fR]
-Maximum size of TCP receive buffers.
-Barrier should be not less than 64 KB, and difference between
-barrier and limit should be equal to or more than value of
-\fBnumtcpsock\fR multiplied by 2.5 KB.
-.TP
-\fB--othersockbuf\fR \fIbytes\fR[:\fIbytes\fR]
-Maximum size of other (non-TCP) socket send buffers. If CT processes needs
-to send very large datagrams, the barrier should be set accordingly.
-Increased limit is necessary for high performance of communications through
-local (UNIX-domain) sockets.
-.TP
-\fB--dgramrcvbuf\fR \fIbytes\fR[:\fIbytes\fR]
-Maximum size of other (non-TCP) socket receive buffers. If CT processes
-needs to send very large datagrams, the barrier should be set accordingly.
-The difference between the barrier and the limit is not needed.
-.TP
-\fB--oomguarpages\fR \fIpages\fR[:\fIpages\fR]
-Guarantees against OOM kill. Under this beancounter the kernel accounts the
-total amount of memory and swap space used by the CT processes. The barrier
-of this parameter is the out-of-memory guarantee. If the oomguarpages usage
-is below the barrier, processes of this CT are guaranteed not to be killed
-in out-of-memory situations. The meaning of limit is currently unspecified;
-it should be set to 2,147,483,647.
 .TP
 \fB-l\fR, \fB--lockedpages\fR \fIpages\fR[:\fIpages\fR]
 Maximum number of pages acquired by \fBmlock\fR(2).
@@ -436,14 +374,6 @@ the limit to different values does not make practical sense.
 Number of siginfo structures.
 Setting the barrier and
 the limit to different values does not make practical sense.
-.TP
-\fB-x\fR, \fB--dcachesize\fR \fIbytes\fR[:\fIbytes\fR]
-Maximum size of filesystem-related caches, such as directory entry
-and inode caches. Exists as a separate parameter to impose a limit
-causing file operations to sense memory shortage and return an errno
-to applications, protecting from memory shortages during critical
-operations that should not fail.
-Safety gap should be between barrier and limit.
 .TP
 \fB-e\fR, \fB--numiptent\fR \fInum\fR[:\fInum\fR]
 Number of iptables (netfilter) entries.
