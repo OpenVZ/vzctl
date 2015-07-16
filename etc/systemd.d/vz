@@ -27,7 +27,7 @@ setup_ve_sysfs()
 [ ! -f /sys/fs/cgroup/ve/ve.default_sysfs_permissions ] && return 0
 
 PERM="/ rx
-block rx
+block -
 class rx
 class/block rx
 class/net rx
