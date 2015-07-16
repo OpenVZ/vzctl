@@ -23,7 +23,7 @@ MODULESLOADDDIR = /etc/modules-load.d
      VZEVENTDIR = $(VZDIR)/vzevent.d
 
 ### Target names
- SBINSCRIPTS = vzpurge vzgetpa vzcpucheck vzdiskcheck vzpid vzreboot
+ SBINSCRIPTS = vzpurge vzgetpa vzcpucheck vzdiskcheck vzpid
 
       SYSCTL = 99-vzctl.conf
     MODPROBE = vz.conf
@@ -46,7 +46,7 @@ VECONFIG_VSWAP = ve-vswap.256MB.conf-sample ve-vswap.512MB.conf-sample \
         MAN8 = vzctl.8 vzpurge.8 vzgetpa.8 ubclogd.8 vznetstat.8 \
 	       vzsplit.8 vzcpucheck.8 vzpid.8 vzcfgscale.8 vzcfgvalidate.8 \
                vzcalc.8 vzmemcheck.8 vzdiskcheck.8 \
-	       vzauth.8 vztactl.8 vzlist.8 vzreboot.8 \
+	       vzauth.8 vztactl.8 vzlist.8 \
 	       vzeventd.8
         MAN5 = vz.5 ve.conf.5 vz-start.5 vz-stop.5 ve-alias_add.5 \
                ve-alias_del.5 vz-create_prvt.5 ve-veconfig.5 \

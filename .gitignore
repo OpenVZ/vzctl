@@ -1,0 +1,13 @@
+src/ndsend
+src/ubclogd
+src/vzauth
+src/vzctl
+src/vzeventd
+src/vzlist
+src/vznetstat
+src/vzsplit
+src/vztactl
+tags
+*.o
+.stamp-all
+.depend
