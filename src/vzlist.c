@@ -1438,11 +1438,15 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 	}
 
 	struct vzctl_2UL_res res;
+	ve->quota = x_malloc(sizeof(struct Cquota));
+	memset(ve->quota, 0, sizeof(*ve->quota));
 	if (vzctl2_env_get_diskspace(vzctl2_get_env_param(h), &res) == 0) {
-		ve->quota = x_malloc(sizeof(struct Cquota));
-		ve->quota->quota_block[0] = 0;
 		ve->quota->quota_block[1] = res.b;
 		ve->quota->quota_block[2] = res.l;
+	}
+	if (vzctl2_env_get_diskinodes(vzctl2_get_env_param(h), &res) == 0) {
+		ve->quota->quota_inode[1] = res.b;
+		ve->quota->quota_inode[2] = res.l;
 	}
 
 	struct vzctl_cpulimit_param c;
