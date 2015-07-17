@@ -1438,11 +1438,15 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 	}
 
 	struct vzctl_2UL_res res;
+	ve->quota = x_malloc(sizeof(struct Cquota));
+	memset(ve->quota, 0, sizeof(*ve->quota));
 	if (vzctl2_env_get_diskspace(vzctl2_get_env_param(h), &res) == 0) {
-		ve->quota = x_malloc(sizeof(struct Cquota));
-		ve->quota->quota_block[0] = 0;
 		ve->quota->quota_block[1] = res.b;
 		ve->quota->quota_block[2] = res.l;
+	}
+	if (vzctl2_env_get_diskinodes(vzctl2_get_env_param(h), &res) == 0) {
+		ve->quota->quota_inode[1] = res.b;
+		ve->quota->quota_inode[2] = res.l;
 	}
 
 	struct vzctl_cpulimit_param c;
@@ -1742,16 +1746,13 @@ static int get_quota_stat(void)
 		if (ploop_get_info_by_descr(buf, &info))
 			continue;
 
-		if (veinfo[i].quota == NULL)
+		if (veinfo[i].quota == NULL) {
 			veinfo[i].quota = x_malloc(sizeof(struct Cquota));
+			memset(veinfo[i].quota, 0, sizeof(struct Cquota));
+		}
 
 		veinfo[i].quota->quota_block[0] = info.fs_bsize * (info.fs_blocks - info.fs_bfree) / 1024;
-		veinfo[i].quota->quota_block[1] = info.fs_bsize * info.fs_blocks / 1024;
-		veinfo[i].quota->quota_block[2] = veinfo[i].quota->quota_block[1];
-
 		veinfo[i].quota->quota_inode[0] = info.fs_inodes - info.fs_ifree;
-		veinfo[i].quota->quota_inode[1] = info.fs_inodes;
-		veinfo[i].quota->quota_inode[2] = veinfo[i].quota->quota_inode[1];
 	}
 	return 0;
 }
