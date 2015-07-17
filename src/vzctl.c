@@ -1307,11 +1307,11 @@ int Show(ctid_t ctid)
 		status.mask & ENV_STATUS_EXISTS ? "exist" : "deleted",
 		status.mask & ENV_STATUS_MOUNTED ? "mounted" : "unmounted");
 	if (status.mask & ENV_STATUS_RUNNING)
-		printf( "running");
+		printf( " running");
 	else if (status.mask & ENV_STATUS_SUSPENDED)
 		printf(" suspended");
 	else
-		printf("down");
+		printf(" down");
 
 	printf("\n");
 	return 0;
