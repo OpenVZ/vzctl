@@ -1742,16 +1742,13 @@ static int get_quota_stat(void)
 		if (ploop_get_info_by_descr(buf, &info))
 			continue;
 
-		if (veinfo[i].quota == NULL)
+		if (veinfo[i].quota == NULL) {
 			veinfo[i].quota = x_malloc(sizeof(struct Cquota));
+			memset(veinfo[i].quota, 0, sizeof(struct Cquota));
+		}
 
 		veinfo[i].quota->quota_block[0] = info.fs_bsize * (info.fs_blocks - info.fs_bfree) / 1024;
-		veinfo[i].quota->quota_block[1] = info.fs_bsize * info.fs_blocks / 1024;
-		veinfo[i].quota->quota_block[2] = veinfo[i].quota->quota_block[1];
-
 		veinfo[i].quota->quota_inode[0] = info.fs_inodes - info.fs_ifree;
-		veinfo[i].quota->quota_inode[1] = info.fs_inodes;
-		veinfo[i].quota->quota_inode[2] = veinfo[i].quota->quota_inode[1];
 	}
 	return 0;
 }
