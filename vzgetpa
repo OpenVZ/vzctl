@@ -18,15 +18,10 @@ function usage()
 
 test $# -eq 1 || usage
 
-if echo $VEID | grep -v "^[1-9][0-9]*$" >/dev/null 2>&1; then
-	echo "Invalid VE id"
-	exit 1
-fi
+. /etc/vz/vz.conf
 
-. /etc/sysconfig/vz
-
-if test -f /etc/sysconfig/vz-scripts/$VEID.conf; then
-	. /etc/sysconfig/vz-scripts/$VEID.conf
+if test -f /etc/vz/conf/$VEID.conf; then
+	. /etc/vz/conf/$VEID.conf
 fi
 
 
