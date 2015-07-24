@@ -5,6 +5,7 @@ VE_PARALLEL=0
 VZCTL=/usr/sbin/vzctl
 VZLIST=/usr/sbin/vzlist
 OOM_GROUPS_CONF=/etc/vz/oom-groups.conf
+SYSFS_PERM=/sys/fs/cgroup/ve/ve.default_sysfs_permissions
 
 get_parallel()
 {
@@ -23,8 +24,7 @@ setup_oom_groups()
 
 setup_ve_sysfs()
 {
-
-[ ! -f /sys/fs/cgroup/ve/ve.default_sysfs_permissions ] && return 0
+	[ ! -f "$SYSFS_PERM"  ] && return 0
 
 PERM="/ rx
 block -
@@ -54,17 +54,35 @@ fs/cgroup rw
 kernel rx
 kernel/fscaps r
 kernel/profiling r
-kernel/uevent_seqnum r"
+kernel/uevent_seqnum r
+devices/virtual/mem rx
+devices/virtual/mem/full rx
+devices/virtual/mem/full/dev r
+devices/virtual/mem/full/uevent rw
+devices/virtual/mem/null rx
+devices/virtual/mem/null/dev r
+devices/virtual/mem/null/uevent rw
+devices/virtual/mem/random rx
+devices/virtual/mem/random/dev r
+devices/virtual/mem/random/uevent rw
+devices/virtual/mem/urandom rx
+devices/virtual/mem/urandom/dev r
+devices/virtual/mem/urandom/uevent rw
+devices/virtual/mem/zero rx
+devices/virtual/mem/zero/dev r
+devices/virtual/mem/zero/uevent rw
+devices/virtual/tty/ptmx rx
+devices/virtual/tty/ptmx/dev r
+devices/virtual/tty/ptmx/uevent rw"
 
 	local ifs=$IFS
 	IFS="
 "
 	for i in $PERM; do
-        	echo "$i" > /sys/fs/cgroup/ve/ve.default_sysfs_permissions 2>/dev/null
+        	echo "$i" > $SYSFS_PERM 2>/dev/null
 	done
 	IFS=$ifs
 }
-
 
 start()
 {
