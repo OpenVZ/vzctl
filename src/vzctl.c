@@ -1640,19 +1640,17 @@ int main(int argc, char **argv, char *envp[])
 		goto END;
 	}
 
-	if (vzctl2_parse_ctid(argv[2], ctid))
-	{
-		char name[STR_SIZE];
-
-		ctid[0] = '\0';
-		ret = VZ_INVALID_PARAMETER_VALUE;
-		if (vzctl_convertstr(argv[2], name, sizeof(name)))
-			goto END;
-
-		if (action == ACTION_CREATE) {
+	ret = VZ_INVALID_PARAMETER_VALUE;
+	if (action == ACTION_CREATE) {
+		if (vzctl2_parse_ctid(argv[2], ctid)) {
 			fprintf(stderr, "Invalid ctid is specified: %s\n", argv[2]);
 			goto END;
 		}
+	} else {
+		char name[STR_SIZE];
+
+		if (vzctl_convertstr(argv[2], name, sizeof(name)))
+			goto END;
 
 		if (vzctl2_get_envid_by_name(name, ctid)) {
 			fprintf(stderr, "Invalid ctid is specified: %s\n", argv[2]);

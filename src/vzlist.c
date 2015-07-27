@@ -2145,27 +2145,14 @@ int main(int argc, char **argv)
 	}
 	if (optind < argc) {
 		while (optind < argc) {
-			char conf[PATH_MAX];
-			struct stat st;
+			char name[STR_SIZE];
 
-			ret = vzctl2_parse_ctid(argv[optind], ctid);
-			if (ret == 0) {
-				/* Special case NAME==VEID */
-				vzctl2_get_env_conf_path(ctid, conf, sizeof(conf));
-				ret = lstat(conf, &st);
-			}
-
-			if (ret) {			
-				char name[STR_SIZE];
-
-				if (vzctl_convertstr(argv[optind], name,
-							sizeof(name)) ||
-				    vzctl2_get_envid_by_name(name, ctid) < 0)
-				{
-					fprintf(stderr, "Container ID %s is invalid.\n",
-							argv[optind]);
-					return 1;
-				}
+			if (vzctl_convertstr(argv[optind], name, sizeof(name)) ||
+					vzctl2_get_envid_by_name(name, ctid) < 0)
+			{
+				fprintf(stderr, "Container ID %s is invalid.\n",
+						argv[optind]);
+				return 1;
 			}
 			optind++;
 			g_ve_list = x_realloc(g_ve_list, sizeof(ctid_t) * ++n_ve_list);
