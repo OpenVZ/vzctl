@@ -1641,7 +1641,7 @@ int main(int argc, char **argv, char *envp[])
 	}
 
 	ret = VZ_INVALID_PARAMETER_VALUE;
-	if (action == ACTION_CREATE) {
+	if (action == ACTION_CREATE || action == ACTION_REGISTER) {
 		if (vzctl2_parse_ctid(argv[2], ctid)) {
 			fprintf(stderr, "Invalid ctid is specified: %s\n", argv[2]);
 			goto END;
