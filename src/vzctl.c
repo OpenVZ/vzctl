@@ -1652,7 +1652,9 @@ int main(int argc, char **argv, char *envp[])
 		if (vzctl_convertstr(argv[2], name, sizeof(name)))
 			goto END;
 
-		if (vzctl2_get_envid_by_name(name, ctid)) {
+		if (vzctl2_get_envid_by_name(name, ctid) &&
+				vzctl2_parse_ctid(argv[2], ctid))
+		{
 			fprintf(stderr, "Invalid ctid is specified: %s\n", argv[2]);
 			goto END;
 		}
