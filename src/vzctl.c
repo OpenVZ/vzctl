@@ -2157,7 +2157,7 @@ skip_eid:
 			ret = vzctl_env_umount_snapshot(ctid, param->snapshot_guid);
 			break;
 		case ACTION_SNAPSHOT_LIST:
-			ret = vzctl_env_snapshot_list(argc, argv, ctid, gparam->ve_private);
+			ret = vzctl_env_snapshot_list(argc, argv, h);
 			break;
 		case ACTION_TSNAPSHOT:
 			ret = vzctl_env_create_tsnapshot(ctid, param->snapshot_guid,

@@ -275,8 +275,7 @@ static void usage_snapshot_list(int err)
 	       );
 }
 
-int vzctl_env_snapshot_list(int argc, char **argv, int envid,
-		const char *ve_private)
+int vzctl_env_snapshot_list(int argc, char **argv, struct vzctl_env_handle *h)
 {
 	int c, ret;
 	int no_hdr = 0;
@@ -286,6 +285,7 @@ int vzctl_env_snapshot_list(int argc, char **argv, int envid,
 	const char *output = NULL;
 	const char *guid =  NULL;
 	char fname[MAXPATHLEN];
+	const char *ve_private = NULL;
 	struct option list_options[] =
 	{
 		{"no-header",	no_argument, NULL, 'H'},
@@ -297,7 +297,6 @@ int vzctl_env_snapshot_list(int argc, char **argv, int envid,
 		{ NULL, 0, NULL, 0 }
 	};
 
-	g_envid = envid;
 	while (1) {
 		int option_index = -1;
 		c = getopt_long(argc, argv, "HhLo:u:",
@@ -344,7 +343,9 @@ int vzctl_env_snapshot_list(int argc, char **argv, int envid,
 	if (ret)
 		return ret;
 
-	if (ve_private == NULL) {
+	if (vzctl2_env_get_ve_private_path(vzctl2_get_env_param(h), &ve_private) ||
+			ve_private == NULL)
+	{
 		fprintf(stderr, "VE_PRIVATE is not specified\n");
 		return VZ_VE_PRIVATE_NOTSET;
 	}
@@ -365,6 +366,7 @@ int vzctl_env_snapshot_list(int argc, char **argv, int envid,
 	if (ret)
 		goto free_tree;
 
+	g_envid = vzctl2_env_get_veid(h);
 	if (read_di(ve_private)) {
 		ret = VZCTL_E_PARSE_DD;
 		goto free_tree;

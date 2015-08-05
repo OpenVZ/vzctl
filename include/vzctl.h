@@ -574,7 +574,7 @@ int vzctl_env_delete_snapshot(ctid_t ctid, const char *guid);
 int vzctl_env_delete_tsnapshot(ctid_t ctid, const char *guid);
 int vzctl_env_mount_snapshot(ctid_t ctid, const char *mnt, const char *guid);
 int vzctl_env_umount_snapshot(ctid_t ctid, const char *guid);
-int vzctl_env_snapshot_list(int argc, char **argv, ctid_t ctid, const char *ve_private);
+int vzctl_env_snapshot_list(int argc, char **argv, struct vzctl_env_handle *h);
 int vzctl_env_enter(ctid_t ctid);
 int vzctl_env_start(ctid_t ctid, int skip_action_script, int wait,
 		int skip_ve_setup, int skip_fsck);
