@@ -94,7 +94,7 @@ static void print_device(struct vzctl_snapshot_data *p)
 	return;
 err:
 	printf(FMT("%-16s "), "");
-	fprintf(stderr, "%s", ploop_get_last_error());
+	fprintf(stderr, "%s\n", ploop_get_last_error());
 	error++;
 }
 
@@ -115,7 +115,7 @@ static void print_target(struct vzctl_snapshot_data *p)
 	return;
 err:
 	printf(FMT("%-32s "), "");
-	fprintf(stderr, "%s", ploop_get_last_error());
+	fprintf(stderr, "%s\n", ploop_get_last_error());
 	error++;
 }
 
@@ -243,7 +243,7 @@ static int read_di(const char *ve_private)
 
 	GET_DISK_DESCRIPTOR(fname, ve_private)
 	if (ploop_read_disk_descr(&g_di, fname)) {
-		fprintf(stderr, "Failed to read %s: %s",
+		fprintf(stderr, "Failed to read %s: %s\n",
 				fname, ploop_get_last_error());
 		return 1;
 	}
@@ -345,7 +345,7 @@ int vzctl_env_snapshot_list(int argc, char **argv, int envid,
 		return ret;
 
 	if (ve_private == NULL) {
-		fprintf(stderr, "VE_PRIVATE is not specified");
+		fprintf(stderr, "VE_PRIVATE is not specified\n");
 		return VZ_VE_PRIVATE_NOTSET;
 	}
 
@@ -357,7 +357,7 @@ int vzctl_env_snapshot_list(int argc, char **argv, int envid,
 
 	tree = vzctl2_open_snapshot_tree(fname, &ret);
 	if (tree == NULL) {
-		fprintf(stderr, "Failed to read %s", fname);
+		fprintf(stderr, "Failed to read %s\n", fname);
 		goto free_tree;
 	}
 
