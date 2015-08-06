@@ -100,7 +100,7 @@ static int mainloop(void)
 	int len;
 	char buf[512];
 	char event[32];
-	char id[32];
+	char id[36];
 	struct iovec iov = {
 		.iov_base = buf,
 		.iov_len = sizeof(buf)-1,
