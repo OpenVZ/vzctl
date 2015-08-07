@@ -4,6 +4,7 @@ VE_PARALLEL=0
 
 VZCTL=/usr/sbin/vzctl
 VZLIST=/usr/sbin/vzlist
+VZCONF=/etc/vz/vz.conf
 OOM_GROUPS_CONF=/etc/vz/oom-groups.conf
 SYSFS_PERM=/sys/fs/cgroup/ve/ve.default_sysfs_permissions
 
@@ -84,10 +85,24 @@ devices/virtual/tty/ptmx/uevent rw"
 	IFS=$ifs
 }
 
+setup_net()
+{
+	local ethtool_args=
+	# We do not want to export the whole config file.
+	eval $(. ${VZCONF} && echo USE_NET_TSO="${USE_NET_TSO}" \
+		USE_NET_HWCSUM="${USE_NET_HWCSUM}")
+	[ "${USE_NET_HWCSUM}" = "yes" ] && \
+		ethtool_args="${ethtool_args} rx on tx on sg on"
+	[ "${USE_NET_TSO}" = "yes" ] && \
+		ethtool_args="${ethtool_args} tso on"
+	[ -n "${ethtool_args}" ] && ethtool -K venet0 ${ethtool_args}
+}
+
 start()
 {
 	setup_oom_groups
 	setup_ve_sysfs
+	setup_net
 }
 
 stop()
