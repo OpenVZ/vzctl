@@ -9,6 +9,7 @@
    NETSCRIPTDIR = /etc/sysconfig/network-scripts
      SYSTEMDDIR = ${PREFIX}/lib/systemd/system
 SYSTEMDSCRIPTDIR = ${PREFIX}/libexec
+ VZCTLSCRIPTDIR = ${SYSTEMDSCRIPTDIR}/vzctl
    MODPROBEDDIR = /etc/modprobe.d
      SYSCTLDDIR = /etc/sysctl.d
 MODULESLOADDDIR = /etc/modules-load.d
@@ -30,6 +31,7 @@ MODULESLOADDDIR = /etc/modules-load.d
      MODLOAD = vz.conf
 SYSTEMDUNITS = vzevent.service vz.service
 SYSTEMDSCRIPTS = vz
+VZCTLSCRIPTS = iptables-config.py
 
   NETSCRIPTS = ifcfg-venet0 ifdown-venet ifup-venet
    VE0CONFIG = 0.conf networks_classes
@@ -144,6 +146,11 @@ installvzevent:
 		$(INSTALL) etc/vzevent.d/$$file $(DESTDIR)$(VZEVENTDIR)/$$file; \
 	done
 
+installvzctlscripts:
+	for file in $(VZCTLSCRIPTS); do \
+		$(INSTALL) -m 755 $$file $(DESTDIR)$(VZCTLSCRIPTDIR)/$$file; \
+	done
+
 installdirs:
 	$(INSTALL) -d $(DESTDIR)$(VZDIR)
 	$(INSTALL) -d $(DESTDIR)$(CONFDIR)
@@ -153,6 +160,7 @@ installdirs:
 	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8
 	$(INSTALL) -d $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -d $(DESTDIR)$(SYSTEMDSCRIPTDIR)
+	$(INSTALL) -d $(DESTDIR)$(VZCTLSCRIPTDIR)
 	$(INSTALL) -d $(DESTDIR)$(MODPROBEDDIR)
 	$(INSTALL) -d $(DESTDIR)$(SYSCTLDDIR)
 	$(INSTALL) -d $(DESTDIR)$(MODULESLOADDDIR)
@@ -170,7 +178,8 @@ install: installdirs installsbinscripts installmans \
 	installconfig install-modulesd install-systemd \
 	installveconfig installnetscripts install-sysctld \
 	install-modules-load \
-	installbashcompl installvzevent
+	installbashcompl installvzevent \
+	installvzctlscripts
 	(cd src && ${MAKE} $@)
 
 
