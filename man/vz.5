@@ -37,10 +37,18 @@ Environment variables to be set for CT init.
 .IP "\fBHTTP_PROXY\fR=[\fIprotocol\fB://\fR]\fIhost\fR[\fB:\fIport\fR]"
 Proxy server configuration.
 .IP "\fBUSE_NET_HWCSUM\fR=\fByes\fR|\fBno\fR"
-Enable use of hardware checksumming on venet and veth interfaces.
+Enable use of hardware checksumming on venet interfaces.
 In case all the hardware network interfaces in the system support scatter-gather
 and hw checksumming features it is recommended to set \fBUSE_NET_HWCSUM\fR to
 \fByes\fR.
+If \fBUSE_NET_HWCSUM\fR is absent or has a value different from
+\fByes\fR|\fBno\fR then it is autoconfigured
+(minimal common subset of capabilities among physical adapters on node).
+.IP "\fBUSE_NET_TSO\fR=\fByes\fR|\fBno\fR"
+Enable use of hardware tcp segmentation offload on venet interfaces.
+If \fBUSE_NET_TSO\fR is absent or has a value different from
+\fByes\fR|\fBno\fR then it is autoconfigured
+(minimal common subset of capabilities among physical adapters on node).
 .IP "\fBUSE_NET_RPS\fR=\fByes\fR|\fBno\fR"
 Enables or disables use of Receive packet steering on venet and veth interfaces.
 RPS is enabled by default.
