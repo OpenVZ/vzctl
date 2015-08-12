@@ -85,17 +85,59 @@ devices/virtual/tty/ptmx/uevent rw"
 	IFS=$ifs
 }
 
+get_physical_interfaces()
+{
+	local link target
+	for link in $(find /sys/class/net -type l); do
+		target=$(readlink -f "${link}")
+		# Only physical
+		[[ "${target}" == "/sys/devices/virtual"* ]] && continue
+		basename "${link}"
+	done
+}
+
 setup_net()
 {
-	local ethtool_args=
+	local hwcsum_set=1 tso_set=1 val
+	local rx=on tx=on sg=on tso=on
+	local ethtool_args= iface_params
 	# We do not want to export the whole config file.
 	eval $(. ${VZCONF} && echo USE_NET_TSO="${USE_NET_TSO}" \
 		USE_NET_HWCSUM="${USE_NET_HWCSUM}")
-	[ "${USE_NET_HWCSUM}" = "yes" ] && \
+
+	if [ "${USE_NET_HWCSUM}" = "yes" ]; then
 		ethtool_args="${ethtool_args} rx on tx on sg on"
-	[ "${USE_NET_TSO}" = "yes" ] && \
+	elif [ "${USE_NET_HWCSUM}" = "no" ]; then
+		ethtool_args="${ethtool_args} rx off tx off sg off"
+	else
+		hwcsum_set=0
+	fi
+
+	if [ "${USE_NET_TSO}" = "yes" ]; then
 		ethtool_args="${ethtool_args} tso on"
-	[ -n "${ethtool_args}" ] && ethtool -K venet0 ${ethtool_args}
+	elif [ "${USE_NET_TSO}" = "no" ]; then
+		ethtool_args="${ethtool_args} tso off"
+	else
+		tso_set=0
+	fi
+
+	if [[ ${hwcsum_set} -eq 0 || ${tso_set} -eq 0 ]]; then
+		# Get minimal common subset of capabilities.
+		for iface in $(get_physical_interfaces); do
+			iface_params=$(ethtool -k "${iface}" | awk '
+				/^rx-checksumming:/{print "rx", $2};
+				/^tx-checksumming:/{print "tx", $2};
+				/^scatter-gather:/{print "sg", $2};
+				/^tcp-segmentation-offload:/{print "tso", $2}')
+			for param in rx tx sg tso; do
+				val=$(echo "${iface_params}" | awk "/${param}/{print \$2}")
+				[ "${val}" = "off" ] && eval ${param}=off
+			done
+		done
+		[ ${hwcsum_set} -eq 0 ] && ethtool_args="${ethtool_args} rx ${rx} tx ${tx} sg ${sg}"
+		[ ${tso_set} -eq 0 ] && ethtool_args="${ethtool_args} tso ${tso}"
+	fi
+	[ -n "${ethtool_args}" ] && ethtool -K venet0 ${ethtool_args} &>/dev/null
 }
 
 start()
