@@ -138,6 +138,7 @@ setup_net()
 		[ ${tso_set} -eq 0 ] && ethtool_args="${ethtool_args} tso ${tso}"
 	fi
 	[ -n "${ethtool_args}" ] && ethtool -K venet0 ${ethtool_args} &>/dev/null
+	return 0
 }
 
 start()
