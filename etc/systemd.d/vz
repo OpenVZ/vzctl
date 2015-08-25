@@ -83,6 +83,11 @@ devices/virtual/tty/ptmx/uevent rw"
         	echo "$i" > $SYSFS_PERM 2>/dev/null
 	done
 	IFS=$ifs
+
+	echo "devices/system/cpu/ rx" > $SYSFS_PERM
+	for i in `ls -1d /sys/devices/system/cpu/cpu[0-9]*`; do
+		echo $i | sed s,/sys/,,g | sed 's/$/ rx/' > $SYSFS_PERM
+	done
 }
 
 get_physical_interfaces()
