@@ -100,7 +100,7 @@ static int mainloop(void)
 	int len;
 	char buf[512];
 	char event[32];
-	char id[36];
+	char id[37];
 	struct iovec iov = {
 		.iov_base = buf,
 		.iov_len = sizeof(buf)-1,
@@ -142,7 +142,7 @@ static int mainloop(void)
 		buf[len] = '\0';
 		vzctl2_log(2, 0, "EVENT: %s", buf);
 		/* event@id */
-		if (sscanf(buf, "%31[^@]@%31s", event, id) != 2) {
+		if (sscanf(buf, "%31[^@]@%36s", event, id) != 2) {
 			vzctl2_log(-1, 0, "Unknown event format: %s", buf);
 			continue;
 		}
