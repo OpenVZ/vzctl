@@ -35,13 +35,13 @@ static void term_handler(int signo)
 	_s_stopped = 1;
 }
 
-static int init(int demonize)
+static int init(int demonize, int verbose)
 {
 	vzctl2_init_log("vzeventd");
 	vzctl2_set_log_file(LOG_FILE);
 	vzctl2_set_log_enable(1);
-	vzctl2_set_log_level(1);
-	vzctl2_set_log_verbose(1);
+	vzctl2_set_log_level(verbose);
+	vzctl2_set_log_verbose(verbose);
 	vzctl2_set_log_quiet(!demonize);
 
 	_s_sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_VZEVENT);
@@ -183,6 +183,7 @@ static void usage(void)
 int main(int argc, char **argv)
 {
 	int ret, opt;
+	int verbose = 1;
 	int daemonize = 1;
 
 	while ((opt = getopt(argc, argv, "dvh")) != -1) {
@@ -193,6 +194,9 @@ int main(int argc, char **argv)
 			case 'h':
 				usage();
 				return 0;
+			case 'v':
+				verbose++;
+				break;
 			default:
 				usage();
 				return 1;
@@ -200,7 +204,7 @@ int main(int argc, char **argv)
 	}
 
 
-	ret = init(daemonize);
+	ret = init(daemonize, verbose);
 	if (ret)
 		return ret;
 
