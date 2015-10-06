@@ -242,7 +242,7 @@ static int read_di(const char *ve_private)
 	char fname[MAXPATHLEN];
 
 	GET_DISK_DESCRIPTOR(fname, ve_private)
-	if (ploop_read_disk_descr(&g_di, fname)) {
+	if (ploop_open_dd(&g_di, fname)) {
 		fprintf(stderr, "Failed to read %s: %s\n",
 				fname, ploop_get_last_error());
 		return 1;
@@ -381,7 +381,7 @@ int vzctl_env_snapshot_list(int argc, char **argv, struct vzctl_env_handle *h)
 		}
 	}
 
-	ploop_free_diskdescriptor(g_di);
+	ploop_close_dd(g_di);
 free_tree:
 	if (tree)
 		vzctl2_close_snapshot_tree(tree);
