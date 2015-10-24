@@ -33,7 +33,6 @@ SYSTEMDUNITS = vzevent.service vz.service
 SYSTEMDSCRIPTS = vz
 VZCTLSCRIPTS = iptables-config.py
 
-  NETSCRIPTS = ifcfg-venet0 ifdown-venet ifup-venet
    VE0CONFIG = 0.conf networks_classes
 VECONFIG_VSWAP = ve-vswap.256MB.conf-sample ve-vswap.512MB.conf-sample \
 		ve-vswap.1024MB.conf-sample ve-vswap.2048MB.conf-sample \
@@ -90,11 +89,6 @@ installsbinscripts:
 installbashcompl:
 	for file in $(BASHCOMPLSCRIPT); do \
 		$(INSTALL) etc/bash_completion.d/$$file $(DESTDIR)$(BASHCOMPLDIR)/$$file; \
-	done
-
-installnetscripts:
-	for file in $(NETSCRIPTS); do \
-		$(INSTALL) etc/$$file $(DESTDIR)$(NETSCRIPTDIR)/$$file; \
 	done
 
 installveconfig:
@@ -176,7 +170,7 @@ installdirs:
 
 install: installdirs installsbinscripts installmans \
 	installconfig install-modulesd install-systemd \
-	installveconfig installnetscripts install-sysctld \
+	installveconfig install-sysctld \
 	install-modules-load \
 	installbashcompl installvzevent \
 	installvzctlscripts
