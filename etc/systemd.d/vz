@@ -101,11 +101,23 @@ get_physical_interfaces()
 	done
 }
 
+setup_venet()
+{
+	[ ! -e /sys/class/net/venet0 ] && ip l a name venet0 type venet 
+	ip l s dev venet0 up
+	ip -6 a a fe80::1/128 dev venet0 2>/dev/null
+	sysctl -w net.ipv4.conf.venet0.send_redirects=0
+	sysctl -w net.ipv4.conf.venet0.rp_filter=0
+}
+
 setup_net()
 {
 	local hwcsum_set=1 tso_set=1 val
 	local rx=on tx=on sg=on tso=on
 	local ethtool_args= iface_params
+
+	setup_venet
+
 	# We do not want to export the whole config file.
 	eval $(. ${VZCONF} && echo USE_NET_TSO="${USE_NET_TSO}" \
 		USE_NET_HWCSUM="${USE_NET_HWCSUM}")
