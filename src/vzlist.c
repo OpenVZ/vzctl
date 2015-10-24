@@ -266,7 +266,7 @@ static void print_ioprio(struct Cveinfo *p, int index)
 static void print_features(struct Cveinfo *p, int index)
 {
 	if (p->features != NULL) {
-		char buf[64];
+		char buf[64] = "";
 
 		features_mask2str(p->features->mask, p->features->known,
 				",", buf, sizeof(buf));
@@ -1513,7 +1513,9 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		ve->nodemask = strdup(buf);
 
 	struct vzctl_feature_param f;
-	if (vzctl2_env_get_features(vzctl2_get_env_param(h), &f) == 0) {
+	if (vzctl2_env_get_features(vzctl2_get_env_param(h), &f) == 0 &&
+			(f.on | f.off)) 
+	{
 		ve->features = x_malloc(sizeof(struct vzctl_env_features));
 		ve->features->known = f.on | f.off;
 		ve->features->mask = f.on;
