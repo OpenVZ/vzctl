@@ -1428,10 +1428,17 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		LIST_HEAD(ip);
 
                 vzctl_ip_iterator it = NULL;
-                while ((it = vzctl2_env_get_ipaddress(vzctl2_get_env_param(h), it)) != NULL) {
-                        if (vzctl2_env_get_ipstr(it, buf, sizeof(buf)) == 0)
-				add_str_param(&ip, buf);
-                }
+		while ((it = vzctl2_env_get_ipaddress(vzctl2_get_env_param(h), it)) != NULL) {
+			char *p;
+
+			if (vzctl2_env_get_ipstr(it, buf, sizeof(buf)))
+				continue;
+
+			p = strrchr(buf, '/');
+			if (p != NULL)
+				*p = '\0';
+			add_str_param(&ip, buf);
+		}
 
 		ve->ip = list2str(NULL, &ip);
 		free_str(&ip);
