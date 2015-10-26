@@ -1303,15 +1303,13 @@ int Show(ctid_t ctid)
 
 	vzctl2_get_env_status(ctid, &status, ENV_STATUS_ALL);
 
-	printf("VEID %s %s %s", ctid,
+	printf("VEID %s %s %s %s", ctid,
 		status.mask & ENV_STATUS_EXISTS ? "exist" : "deleted",
-		status.mask & ENV_STATUS_MOUNTED ? "mounted" : "unmounted");
-	if (status.mask & ENV_STATUS_RUNNING)
-		printf( " running");
-	else if (status.mask & ENV_STATUS_SUSPENDED)
+		status.mask & ENV_STATUS_MOUNTED ? "mounted" : "unmounted",
+		status.mask & ENV_STATUS_RUNNING ? "running" : "down");
+
+	if (status.mask & ENV_STATUS_SUSPENDED)
 		printf(" suspended");
-	else
-		printf(" down");
 
 	printf("\n");
 	return 0;
