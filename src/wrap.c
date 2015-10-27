@@ -688,40 +688,14 @@ char *hwaddr2str(const char *hwaddr)
 
 int vzctl_env_set_rate(ctid_t ctid)
 {
-#if 0
 	int ret;
-	struct vzctl_rate_param rate_param;
-	vzctl_env_param_ptr param;
 	struct vzctl_env_handle *h;
-	int flags = save ? VZCTL_SAVE : 0;
 
-	h = vzctl_env_open(veid, NULL, &ret);
+	h = vzctl_env_open(ctid, NULL, VZCTL_CONF_SKIP_PARSE, &ret);
 	if (h == NULL)
 		return ret;
 
-	param = get_env_param(veid);
-	if (param == NULL)
-		return VZCTL_E_NOMEM;
-
-	for (; rate != NULL; rate = rate->next) {
-		rate_param.dev = rate->str;
-		rate_param.net_class = *rate->val1;
-		rate_param.rate = *rate->val2;
-
-		ret = vzctl2_env_add_rate(param, vzctl2_create_rate(&rate_param));
-		if (ret)
-			return ret;
-	}
-
-	if (ratebound) {
-		ret = vzctl2_env_set_ratebound(param, (ratebound == YES));
-		if (ret)
-			return ret;
-	}
-
-	return vzctl2_apply_param(h, param, flags);
-#endif
-	return -1;
+	return vzctl2_set_tc_param(h, get_env_param(ctid), 0);
 }
 
 int vzctl_apply_param(ctid_t ctid)
