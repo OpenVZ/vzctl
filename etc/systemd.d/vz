@@ -4,7 +4,10 @@ VE_PARALLEL=0
 
 VZCTL=/usr/sbin/vzctl
 VZLIST=/usr/sbin/vzlist
+VZTACTL=/usr/sbin/vztactl
+
 VZCONF=/etc/vz/vz.conf
+NETCLASSES=/etc/vz/conf/networks_classes
 OOM_GROUPS_CONF=/etc/vz/oom-groups.conf
 SYSFS_PERM=/sys/fs/cgroup/ve/ve.default_sysfs_permissions
 
@@ -158,11 +161,17 @@ setup_net()
 	return 0
 }
 
+setup_tc()
+{
+	$VZTACTL class_load -s $NETCLASSES 2>&1
+}
+
 start()
 {
 	setup_oom_groups
 	setup_ve_sysfs
 	setup_net
+	setup_tc
 }
 
 stop()
