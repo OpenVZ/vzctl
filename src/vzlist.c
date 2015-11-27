@@ -1830,28 +1830,6 @@ static int get_ve_list(void)
 	return 0;
 }
 
-static int update_ves_io_info(void)
-{
-#if 0
-	int limit, i;
-	for (i = 0; i < n_veinfo; i++) {
-		if (veinfo[i].status != ENV_STATUS_RUNNING)
-			continue;
-		if (vzctl_get_iolimit(veinfo[i].ctid, &limit) == 0) {
-			if (veinfo[i].io.limit == NULL)
-				veinfo[i].io.limit = x_malloc(sizeof(int));
-			veinfo[i].io.limit[0] = limit;
-		}
-		if (vzctl_get_iopslimit(veinfo[i].ctid, &limit) == 0) {
-			if (veinfo[i].io.iopslimit == NULL)
-				veinfo[i].io.iopslimit = x_malloc(sizeof(int));
-			veinfo[i].io.iopslimit[0] = limit;
-		}
-	}
-#endif
-	return 0;
-}
-
 static int search_field(char *name)
 {
 	int i;
@@ -1958,8 +1936,6 @@ static int collect(void)
 	if (check_param(RES_LA) || check_param(RES_UPTIME))
 		get_ves_la();
 	read_ves_param();
-	if (check_param(RES_IO))
-		update_ves_io_info();
 	if (check_param(RES_QUOTA))
 		get_quota_stat();
 	do_filter();
