@@ -1768,23 +1768,29 @@ static int get_quota_stat(void)
 
 static int get_ves_la(void)
 {
-#if 0
 	int i, ret;
+	struct vzctl_env_handle *h;
 
 	for (i = 0; i < n_veinfo; i++) {
 		if (veinfo[i].hide)
 			continue;
+
+		h = vzctl2_env_open(veinfo[i].ctid, VZCTL_CONF_SKIP_PARSE, &ret);
+		if (h == NULL)
+			continue;
+
 		veinfo[i].cpustat = x_malloc(sizeof(struct vzctl_cpustat));
 
-		ret = vzctl_env_cpustat(veinfo[i].veid, veinfo[i].cpustat,
+
+		ret = vzctl2_env_cpustat(h, veinfo[i].cpustat,
 			sizeof(struct vzctl_cpustat));
 		if (ret != 0) {
 			free(veinfo[i].cpustat);
 			veinfo[i].cpustat = NULL;
 		}
+		vzctl2_env_close(h);
 	}
-	vzctl_close();
-#endif
+
 	return 0;
 }
 
