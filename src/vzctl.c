@@ -182,7 +182,7 @@ static struct option set_options[] =
 	{"burst_cpu_avg_usage",	required_argument, NULL, VZCTL_PARAM_BURST_CPU_AVG_USAGE,},
 	{"burst_cpulimit", required_argument, NULL, VZCTL_PARAM_BURST_CPULIMIT,},
 
-	{"capability",	required_argument, NULL, VZCTL_PARAM_CAP},
+	{"capability",	required_argument, NULL, PARAM_CAP},
 /*	Devices	*/
 	{"devices",	required_argument, NULL, VZCTL_PARAM_DEVICES},
 	{"devnodes",	required_argument, NULL, VZCTL_PARAM_DEVNODES},
@@ -1086,6 +1086,10 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			c = veth ? VZCTL_PARAM_NETIF_IPDEL:
 					VZCTL_PARAM_IPDEL;
 			break;
+		case PARAM_CAP:
+			fprintf(stderr, "Warning: The --capability option"
+					" is deprecated\n");
+			continue;
 		}
 
 		if (isalpha(c))
