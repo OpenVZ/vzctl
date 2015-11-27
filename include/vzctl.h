@@ -132,7 +132,6 @@
 #define ACTION_ENTER		15
 #define ACTION_QUOTA		16
 #define ST_QUOTA_INIT		"initializing-quota"
-#define ACTION_CAP		17
 #define ACTION_REINSTALL	19
 #define ST_REINSTALL		"reinstalling"
 #define ST_UPDATING		"updating"

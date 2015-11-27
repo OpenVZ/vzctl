@@ -390,8 +390,7 @@ void Usage(void)
 "   [--cpus <N>] [--cpumask <{N[,N][.N-N]|all}>] [--nodemask <{N[,N][.N-N]|all}>]\n"
 "   [--diskspace <soft>[:<hard>]] [--quotaugidlimit <N>] [--jquota <on|of>]\n"
 "   [--rate <dev>:<class>:<Kbits>] [--ratebound yes|no]\n"
-"   [--noatime yes|no] [--capability <name>:on|off ...]\n"
-"   [--devnodes device:r|w|rw|none]\n"
+"   [--noatime yes|no] [--devnodes device:r|w|rw|none]\n"
 "   [--pci_add [<domain>:]<bus>:<slot>.<func>] [--pci_del <d:b:s.f>]\n");
 fprintf(stdout,
 "   [--applyconfig <name>] [--setmode restart|ignore] [--description <desc>]\n"

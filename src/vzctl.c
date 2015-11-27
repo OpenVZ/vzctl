@@ -1568,10 +1568,6 @@ int main(int argc, char **argv, char *envp[])
 	{
 		action = ACTION_STATUS;
 	}
-	else if (!strcmp(argv[1], "capability"))
-	{
-		action = ACTION_CAP;
-	}
 	else if (!strcmp(argv[1], "reinstall"))
 	{
 		action = ACTION_REINSTALL;
@@ -1852,7 +1848,6 @@ skip_eid:
 			action != ACTION_STOP_FORCE &&
 			action != ACTION_SET &&
 			action != ACTION_SET_RATE &&
-			action != ACTION_CAP &&
 			action != ACTION_STATUS &&
 			action != ACTION_REGISTER)
 		{

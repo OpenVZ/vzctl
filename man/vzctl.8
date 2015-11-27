@@ -75,9 +75,6 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB--bindmount_del\fR \fIdst\fR|\fBall\fR]
 [\fB--mount_opts\fR \fIopt\fR[,\fIopt\fR]]
 .br
-.\" capability
-[\fB--capability\fR \fIcapname\fR:\fBon\fR|\fBoff\fR[\fB,\fR...]]
-.br
 .\" devices
 [\fB--devnodes\fR \fIdevice\fR:\fBr\fR|\fBw\fR|\fBrw\fR|\fBnone\fR]
 [\fB--netdev_add\fR \fIname\fR]
@@ -160,7 +157,7 @@ in case \fB--setmode\fR option specified apply logic for parameters that can't
 be applied or tunning CT will be changed, if \fBrestart\fR - restart CT,
 if \fBignore\fR - ignore error.
 Parameters that can not be applied runtime are
-\fBcapability\fR, \fBquotaugidlimit\fR, \fBbindmount\fR, \fBfeatures\fR,
+\fBquotaugidlimit\fR, \fBbindmount\fR, \fBfeatures\fR,
 and \fBiptables\fR.
 
 The following options can be used with \fBset\fR command.
@@ -527,27 +524,6 @@ $VE_PRIVATE/mnt/\fIdst\fR with permissions taken from CT $VE_ROOT/\fIdst\fR.
 \fB--bindmount_del\fR \fIdst\fR|\fBall\fR
 Remove directory \fIdst\fR from config file
 .TP
-\fBCapability option\fR
-.TP
-\fB--capability\fR \fIcapname\fR:\fBon\fR|\fBoff\fR[\fB,\fR...]
-Sets a capability inside the CT. Multiple comma-separated values can be specified.
-Note that setting capability when the CT is running
-does not take immediate effect; restart CT in order for changes to take
-effect (consider using \fB--setmode\fR for that).
-CT has default set of capabilities, and any operations on capabilities is
-logical AND with the default capability mask.
-
-You can use the following values for \fIcapname\fR:
-\fBchown\fR, \fBdac_override\fR, \fBdac_read_search\fR, \fBfowner\fR,
-\fBfsetid\fR, \fBkill\fR, \fBsetgid\fR, \fBsetuid\fR,
-\fBsetpcap\fR, \fBlinux_immutable\fR, \fBnet_bind_service\fR,
-\fBnet_broadcast\fR, \fBnet_admin\fR, \fBnet_raw\fR,
-\fBipc_lock\fR, \fBipc_owner\fR, \fBsys_module\fR, \fBsys_rawio\fR,
-\fBsys_chroot\fR, \fBsys_ptrace\fR, \fBsys_pacct\fR,
-\fBsys_admin\fR, \fBsys_boot\fR, \fBsys_nice\fR, \fBsys_resource\fR,
-\fBsys_time\fR, \fBsys_tty_config\fR, \fBmknod\fR, \fBlease\fR,
-\fBve_admin\fR.
-.TP
 \fBDevice access management\fR
 .TP
 \fB--devnodes\fR \fIdevice\fR:\fBr\fR|\fBw\fR|\fBrw\fR|\fBnone\fR
@@ -810,8 +786,6 @@ One of \fBvzctl\fR helper scripts not found
 .IP 12
 VZ license not loaded, or invalid class ID
 .SS Parameter errors
-.IP 13
-Setting capability failed
 .IP 20
 Invalid command line parameter
 .IP 21
