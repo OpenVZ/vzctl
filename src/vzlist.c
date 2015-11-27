@@ -1553,7 +1553,7 @@ static void parse_conf(ctid_t ctid, struct Cveinfo *ve)
 	int err;
 	struct vzctl_env_handle *h;
 
-	h = vzctl2_env_open(ctid, 0, &err);
+	h = vzctl2_env_open(ctid, VZCTL_CONF_RUNTIME_PARAM, &err);
 	if (h == NULL)
 		return;
 
@@ -1788,49 +1788,6 @@ static int get_ves_la(void)
 	return 0;
 }
 
-static int get_ves_cpu(void)
-{
-#if 0
-	unsigned long tmp;
-	ctid_t ctid, id, weight, rate;
-	FILE *fp;
-	char buf[128];
-	struct vzctl_cpuinfo info;
-
-	if ((fp = fopen(PROCFSHED, "r")) == NULL) {
-		fprintf(stderr, "Unable to open %s: %s\n",
-				PROCFSHED, strerror(errno));
-		return 1;
-	}
-
-	if (vzctl_get_cpuinfo(&info))
-		return -1;
-	veid = 0;
-	while (!feof(fp)) {
-		if (fgets(buf, sizeof(buf), fp) == NULL)
-			break;
-		if (sscanf(buf, "%d %d %lu %d %d",
-			&veid, &id, &tmp, &weight, &rate) != 5)
-		{
-			continue;
-		}
-		if (id && !veid) {
-			struct Cveinfo *ve;
-
-			if ((ve = find_ve(id)) == NULL)
-				continue;
-
-			ve->cpu = x_malloc(sizeof(struct Ccpu));
-			ve->cpu->limit[0] = rint((double)rate * 100 / 1024);
-			ve->cpu->limit[1] = rint((double)info.freq * rate / (1000 * 1024 * info.ncpu));
-			ve->cpu->limit[2] = MAXCPUUNITS / weight;
-		}
-	}
-	fclose(fp);
-#endif
-	return 0;
-}
-
 static int get_ve_list(void)
 {
 	DIR *dp;
@@ -1980,7 +1937,6 @@ static void do_filter(void)
 static int collect(void)
 {
 	int update = 0;
-	int ret;
 
 	vzctl_open();
 
@@ -2001,9 +1957,6 @@ static int collect(void)
 	}
 	if (check_param(RES_LA) || check_param(RES_UPTIME))
 		get_ves_la();
-	if (check_param(RES_CPU))
-		if ((ret = get_ves_cpu()))
-			return 1;
 	read_ves_param();
 	if (check_param(RES_IO))
 		update_ves_io_info();
