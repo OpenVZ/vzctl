@@ -423,11 +423,9 @@ int vzctl_env_restart(ctid_t ctid, int wait, int skip_ve_setup)
 	return vzctl2_env_restart(h, flags);
 }
 
-int vzctl_env_stop(ctid_t ctid, int stop_mode, int skip_action_script, int skip_umount)
+int vzctl_env_stop(ctid_t ctid, int stop_mode, int flags)
 {
 	int ret;
-	int flags = (skip_action_script ? VZCTL_SKIP_ACTION_SCRIPT : 0) |
-			(skip_umount ? VZCTL_SKIP_UMOUNT : 0);
 	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
 	if (h == NULL)
 		return ret;

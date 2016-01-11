@@ -262,7 +262,7 @@ static struct option convert_options[] =
 static struct option stop_options[] =
 {
 	{"fast", no_argument, NULL, PARAM_FAST},
-		{"force", no_argument, NULL, PARAM_FAST},
+	{"force", no_argument, NULL, PARAM_FORCE},
 	{"skip-umount", no_argument, NULL, PARAM_SKIP_UMOUNT},
 	{ NULL, 0, NULL, 0 }
 };
@@ -510,8 +510,11 @@ int ParseStopOptions(struct CParam *param, int argc, char **argv)
 			case PARAM_FAST	:
 				gparam->fastkill = 1;
 				break;
+			case PARAM_FORCE	:
+				gparam->stop_flags |= VZCTL_FORCE;
+				break;
 			case PARAM_SKIP_UMOUNT:
-				gparam->skip_umount = 1;
+				gparam->stop_flags |= VZCTL_SKIP_UMOUNT;
 				break;
 			default		:
 				ret = VZ_INVALID_PARAMETER_SYNTAX;
@@ -1962,13 +1965,13 @@ skip_eid:
 		}
 		case ACTION_STOP_FORCE	:
 		{
-			ret = vzctl_env_stop(ctid, M_KILL_FORCE, 0, gparam->skip_umount);
+			ret = vzctl_env_stop(ctid, M_KILL_FORCE, gparam->stop_flags);
 			break;
 		}
 		case ACTION_STOP	:
 		{
-			ret = vzctl_env_stop(ctid, gparam->fastkill ? M_KILL : M_HALT, 0,
-					gparam->skip_umount);
+			ret = vzctl_env_stop(ctid, gparam->fastkill ? M_KILL : M_HALT,
+					gparam->stop_flags);
 			break;
 		}
 		case ACTION_RESTART	:

@@ -545,7 +545,7 @@ struct CParam
 	char *snapshot_component_name;
 	char *guid;
 	int apply_iponly;
-	int skip_umount; /* for vzctl stop */
+	int stop_flags;
 	char *target_dir;
 	int ha_enable;
 	unsigned long *ha_prio;
@@ -578,7 +578,7 @@ int vzctl_env_enter(ctid_t ctid);
 int vzctl_env_start(ctid_t ctid, int skip_action_script, int wait,
 		int skip_ve_setup, int skip_fsck);
 int vzctl_env_restart(ctid_t ctid, int wait, int skip_ve_setup);
-int vzctl_env_stop(ctid_t ctid, int stop_mode, int skip_action_script, int skip_umount);
+int vzctl_env_stop(ctid_t ctid, int stop_mode, int flags);
 int vzctl_env_set_userpasswd(ctid_t ctid, const char *user, const char *passwd, int is_crypted);
 int vzctl_env_mount(ctid_t ctid, int skip_fsck);
 int vzctl_env_umount(ctid_t ctid);
