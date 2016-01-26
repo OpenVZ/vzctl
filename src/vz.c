@@ -418,7 +418,7 @@ fprintf(stdout,
 "   --shmpages P[:P]	--numfile N[:N]		--numflock N[:N]\n"
 "   --numpty N[:N]	--numsiginfo N[:N]\n"
 "   --numiptent N[:N]	--physpages P[:P]	--avnumproc N[:N]\n"
-"   --swappages P[:P] --ram N --swap N\n");
+"   --swappages P[:P] --ram N --swap N --memguaranty <auto|N>\n");
 if (is_vswap_mode())
 	fprintf(stdout,
 "   --vm_overcommit N\n");

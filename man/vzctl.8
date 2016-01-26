@@ -26,6 +26,7 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB--physpages\fR \fIpages\fR[:\fIpages\fR]]
 [\fB--ram\fR \fIbytes\fR]
 [\fB--swap\fR \fIbytes\fR]
+[\fB--memguarantee\fR \fIauto|value\fR]
 
 [\fB--vm_overcommit \fR \fIN\fR]
 .br
@@ -409,6 +410,12 @@ The amount of swap space that can be used by the Container for swapping out memo
 \fB--vm_overcommit\fR \fIN\fR
 This parameter controls the memory allocation guarantee. It is calculated as
 (physpages + swappages) * N. By default, the parameter is equal to 1.
+.TP
+\fB--memguarantee\fR \fIauto|value\fR
+Set the amount of memory (RAM) that will be guaranteed to a Container.
+The guaranteed memory is a percentage of total RAM that is set for the
+Container with the '--memsize' option. By default, memory guarantee is
+set to 'auto' (20%).
 .TP
 \fBCPU fair scheduler parameters\fR
 These parameters control CPU usage by CT.

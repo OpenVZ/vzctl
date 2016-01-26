@@ -174,6 +174,7 @@ static struct option set_options[] =
 	{"totvmpages",	required_argument, NULL, VZCTL_PARAM_TOTVMPAGES},
 	{"memory",	required_argument, NULL, VZCTL_PARAM_MEMORY},
 		{"ram", required_argument, NULL, VZCTL_PARAM_MEMORY},
+	{"memguarantee",required_argument, NULL, VZCTL_PARAM_MEMGUARANTEE},
 	{"vm_overcommit",  required_argument, NULL, VZCTL_PARAM_VM_OVERCOMMIT},
 /* CPU */
 	{"cpuweight",	required_argument, NULL, VZCTL_PARAM_CPUWEIGHT},
