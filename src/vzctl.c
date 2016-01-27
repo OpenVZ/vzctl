@@ -447,7 +447,7 @@ int ParseCreateOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 				return VZ_INVALID_PARAMETER_SYNTAX;
 		} else if (c == PARAM_OSTEMPLATE) {
 			gparam->ostmpl = strdup(optarg);
-		} else if (c == PARAM_OSTEMPLATE) {
+		} else if (c == PARAM_SKIP_APP) {
 			gparam->skip_app_templates = 1;
 		} else if (c == PARAM_CONFIG) {
 			gparam->config = strdup(optarg);
