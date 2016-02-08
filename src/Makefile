@@ -9,7 +9,7 @@
 	  CC = gcc
 
      VERSION ?= $(shell cat ../Makefile.version)
-      CFLAGS = -pipe -Werror -Wall -Winline -Wcast-align -Wno-unused-parameter -Wstrict-prototypes -Wunused-variable -g2 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DVERSION=\"$(VERSION)\"
+      CFLAGS += -pipe -Werror -Wall -Winline -Wcast-align -Wno-unused-parameter -Wstrict-prototypes -Wunused-variable -g2 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DVERSION=\"$(VERSION)\"
 	 INC = -I../include -Ilib
      LDFLAGS += -L lib
 
