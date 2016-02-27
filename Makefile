@@ -22,6 +22,7 @@ MODULESLOADDDIR = /etc/modules-load.d
      VENAMESDIR = $(VZDIR)/names
        VZDEVDIR = $(VZDIR)/dev
      VZEVENTDIR = $(VZDIR)/vzevent.d
+ DRACUT_MOD_DIR = /usr/lib/dracut/modules.d
 
 ### Target names
  SBINSCRIPTS = vzpurge vzgetpa vzcpucheck vzdiskcheck vzpid
@@ -32,6 +33,7 @@ MODULESLOADDDIR = /etc/modules-load.d
 SYSTEMDUNITS = vzevent.service vz.service
 SYSTEMDSCRIPTS = vz
 VZCTLSCRIPTS = iptables-config.py
+  DRACUTMODS = 99vzctl
 
    VE0CONFIG = 0.conf networks_classes
 VECONFIG_VSWAP = ve-vswap.256MB.conf-sample ve-vswap.512MB.conf-sample \
@@ -143,6 +145,14 @@ installvzevent:
 installvzctlscripts:
 	for file in $(VZCTLSCRIPTS); do \
 		$(INSTALL) -m 755 $$file $(DESTDIR)$(VZCTLSCRIPTDIR)/$$file; \
+	done
+
+installdracutmod:
+	for dir in $(DRACUTMODS); do \
+		$(INSTALL) -d $(DESTDIR)$(DRACUT_MOD_DIR)/$$dir || : ; \
+		for file in etc/dracut/$$dir/*; do \
+			$(INSTALL) -m 755 $$file $(DESTDIR)$(DRACUT_MOD_DIR)/$$dir/`basename $$file`; \
+		done; \
 	done
 
 installdirs:
