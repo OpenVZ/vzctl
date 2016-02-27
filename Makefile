@@ -183,7 +183,7 @@ install: installdirs installsbinscripts installmans \
 	installveconfig install-sysctld \
 	install-modules-load \
 	installbashcompl installvzevent \
-	installvzctlscripts
+	installvzctlscripts installdracutmod
 	(cd src && ${MAKE} $@)
 
 
