@@ -293,6 +293,7 @@ static struct option chkpnt_options[] =
 	{"keep_pages",	no_argument, NULL, PARAM_KEEP_PAGES},
 	{"unfreeze",	no_argument, NULL, PARAM_UNFREEZE},
 	{"stop-tracker",no_argument, NULL, PARAM_CPT_STOP_TRACKER},
+	{"create-devmap",no_argument, NULL, PARAM_CPT_CREATE_DEVMAP},
 	{ NULL, 0, NULL, 0 }
 };
 
@@ -614,6 +615,9 @@ int ParseMigrationOptions(struct CParam *param, struct option *opt,
 				break;
 			case PARAM_CPT_STOP_TRACKER:
 				gparam->cpt_flags |= VZCTL_CPT_STOP_TRACKER;
+				break;
+			case PARAM_CPT_CREATE_DEVMAP:
+				gparam->cpt_flags |= VZCTL_CPT_CREATE_DEVMAP;
 				break;
 			default		:
 				ret = VZ_INVALID_PARAMETER_SYNTAX;
