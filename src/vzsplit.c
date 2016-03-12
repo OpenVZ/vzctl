@@ -183,8 +183,7 @@ void header(FILE *fp)
 "# on HN with total amount of physical memory %llu Mb\n"
 "# low memory %llu Mb, swap size %llu Mb, max threads %lu\n"
 "# Resource commit level %d:\n# %s\n"
-"# Please read OpenVZ Management of System Resources\n"
-"# (SLMGuide.pdf) before changing these values\n\n",
+"# Please read OpenVZ User's Guide before changing these values\n\n",
 		 num_ve, (mem_total >> 20), (low_total >> 20), (swap_total >> 20),
 		 proc_calc, osl, level_string[osl]);
 	fprintf(fp, "VERSION=\"2\"\n\n");
