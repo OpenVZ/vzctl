@@ -1941,8 +1941,10 @@ skip_eid:
 			if (ret)
 				break;
 			/* ignore start error */
-			if (reg_flags & VZ_REG_START)
+			if (reg_flags & VZ_REG_START) {
+				vzctl_env_close();
 				vzctl_env_start(ctid, 0, gparam->wait, 0, 0);
+			}
 			break;
 		}
 		case ACTION_START	:

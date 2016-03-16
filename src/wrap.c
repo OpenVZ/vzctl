@@ -45,6 +45,14 @@ struct vzctl_env_handle *vzctl_env_open(ctid_t ctid, const char *conf,
 	return _g_h;
 }
 
+void vzctl_env_close(void)
+{
+	if (_g_h != NULL) {
+		vzctl2_env_close(_g_h);
+		_g_h = NULL;
+	}
+}
+
 int vzctl_env_unregister(const char *path, ctid_t ctid, int flags)
 {
 	return vzctl2_env_unregister(path, ctid, flags);

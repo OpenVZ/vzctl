@@ -647,6 +647,7 @@ int vzctl_set_log_verbose(int quiet);
 int vzctl_get_vzctlfd(void);
 int vzctl_env_exec(ctid_t ctid, int exec_mode,
                 char *const argv[], char *const envp[], char *std_in, int timeout, int flags);
+void vzctl_env_close(void);
 int vzctl_is_networkid_valid(char const *name);
 int vzctl_env_layout_version(const char *path);
 int vzctl_convertstr(const char *src, char *dst, int dst_size);
