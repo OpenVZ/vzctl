@@ -421,14 +421,11 @@ set to 'auto' (0% - no gurantee).
 These parameters control CPU usage by CT.
 .TP
 \fB--cpuunits\fR \fInum\fR
-sets CPU weight for CT. Argument is positive non-zero number, which passed to
+sets CPU weight for CT. Argument is positive number, which passed to
 and used in kernel fair scheduler. The larger the number is, the more CPU time
 this CT get. Maximum value is 500000, minimal is 8. Number is relative to
-weights of all the other running CTs. If cpuunits not specified default values
-are used (250 for CT belong to first class, 1000 for CT belong to second class)
-
-You can set CPU weight for host server itself as well
-(use \fBvzctl set 0 --cpuunits \fInum\fR).
+weights of all the other running CTs. If cpuunits not specified the default value
+1000 is used.
 .TP
 \fB--cpulimit\fR \fInum\fR
 Sets the CPU limit, in percent or megahertz (MHz), the Container is not allowed to exceed.
