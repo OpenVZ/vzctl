@@ -31,7 +31,7 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB--vm_overcommit \fR \fIN\fR]
 .br
 .\" Disk quota parameters
-[\fB--diskspace\fR \fInum\fR[:\fInum\fR]]
+[\fB--diskspace\fR \fInum\fR]
 [\fB--quotaugidlimit\fR \fInum\fR]
 [\fB--jquota\fR \fBon\fR|\fBoff\fR]
 
@@ -486,9 +486,8 @@ delete network device from specified CT
 .TP
 \fBDisk quota parameters\fR
 .TP
-\fB--diskspace\fR \fInum\fR[:\fInum\fR]
-Sets soft and hard disk quotas, in blocks. First parameter is soft quota,
-second is hard quota. One block is currently equal to 1Kb.
+\fB--diskspace\fR \fInum\fR
+Sets disk quota, in blocks. One block is currently equal to 1Kb.
 .TP
 \fB--quotaugidlimit\fR \fInum\fR
 sets maximum number of user/group IDs in CT for which disk quota in CT
