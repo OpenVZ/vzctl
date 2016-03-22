@@ -27,11 +27,11 @@ Corresponds to the \fB--onboot\fR option.
 .IP \fBBOOTORDER\fR="\fInumber\fR"
 Specifies the CT boot order priority. Corresponds to the
 \fB--bootorder\fR option.
-.IP \fBOSTEMPLATE\fR="\fItmpl_name[/version]\fR"
-Corresponds to the \fB--pkgset\fR option.
-.IP \fBTEMPLATES\fR="\fIapp_name[/version]\ ...\fR"
+.IP \fBOSTEMPLATE\fR="\fItmpl_name\fR"
+Corresponds to the \fB--ostemplate\fR option.
+.IP \fBTEMPLATES\fR="\fIapp_name\ ...\fR"
 This is a list of the templates installed inside a CT by the
-\fBvzpkgadd\fR command.
+\fBvzpkg\fR command.
 .IP \fBVE_ROOT\fR="\fIdirectory\fR"
 Corresponds to the \fB--root\fR option.
 .IP \fBVE_PRIVATE\fR="\fIdirectory\fR"
@@ -75,8 +75,6 @@ Corresponds to the \fB--noatime\fR option.
 Corresponds to the \fB--rate\fR option.
 .IP \fBRATEBOUND\fR="\fIyse|no\fR"
 Corresponds to the \fB--ratebound\fR option.
-.IP \fBCAPABILITY\fR="\fIcapname\fR:\fBon\fR|\fBoff\fR\ [\fIcapname:\fBon\fR|\fBoff\fR\ ...]"
-Corresponds to the \fB--capability\fR option
 .SS Network related parameters
 .IP \fBIP_ADDRESS\fR="\fIaddress\ [address]\fR"
 Specifies the \fIaddress\fR the CT will be assigned. Several addresses
