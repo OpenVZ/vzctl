@@ -83,28 +83,6 @@ Validation of CT parameters on start. Possible values are:
  \(bu \fBerror\fR - exit with error,
 .br
  \(bu \fBfix\fR - fix invalid parameters and continue.
-.SS Overcommitment parameters
-.IP \fBOVERCOMMITMENT_ACTION\fR=\fBnone\fR|\fBwarning\fR|\fBerror\fR
-Check host server overcommitment on CT start. Possible values:
-.br
- \(bu \fBnone\fR - do not check,
-.br
- \(bu \fBwarning\fR - display warning and continue,
-.br
- \(bu \fBerror\fR - exit with error.
-.IP \fBOVERCOMMITMENT_LEVEL_LOWMEM\fR=\fInumber%\fR
-The part of memory residing at lower addresses and directly accessed by the kernel.
-.IP \fBOVERCOMMITMENT_LEVEL_MEMSWAP\fR=\fInumber%\fR
-Amount of memory available for applications as a sum of RAM and swap space.
-.IP \fBOVERCOMMITMENT_LEVEL_ALLOCMEM\fR=\fInumber%\fR
-Allocation memory commitment level is the ratio of the memory size guaranteed to
-be available for allocation to the capacity of the system.
-.IP \fBOVERCOMMITMENT_LEVEL_ALLOCMEM_TOT\fR=\fInumber%\fR
-The number shows how much memory applications are allowed to be allocated in comparison
-with the capacity of the system.
-.IP \fBOVERCOMMITMENT_LEVEL_ALLOCMEM_MAX\fR=\fInumber%\fR
-Allocation memory utilization level is the ratio of the amount allocated memory
-to the capacity of the system.
 .SS Logging parameters
 .IP "\fBLOGGING\fR=\fByes\fR|\fBno\fR"
 Enables or disables logging. This parameter can be set to \fByes\fR or
