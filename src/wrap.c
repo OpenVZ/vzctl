@@ -759,7 +759,7 @@ int vzctl_add_disk(ctid_t ctid, struct vzctl_disk_param *param)
 		return ret;
 
 	/* generate default disk name */
-	if (param->path == NULL) {
+	if (param->path == NULL && param->storage_url == NULL) {
 		char u[39] = "";
 
 		snprintf(path, sizeof(path), "disk-%s.hdd",

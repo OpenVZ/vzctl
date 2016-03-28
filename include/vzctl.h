@@ -330,6 +330,7 @@
 #define PARAM_NO_HDD		431
 #define PARAM_DEVICE		432
 #define PARAM_CPT_CREATE_DEVMAP	433
+#define PARAM_DISK_STORAGE_URL	434
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"

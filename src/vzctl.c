@@ -77,6 +77,7 @@ static struct option set_options[] =
 	  {"device-uuid", required_argument, NULL, PARAM_DEVICE_UUID},
 	  {"mnt", required_argument, NULL, PARAM_DISK_MNT},
 	  {"offline", no_argument, NULL, PARAM_DISK_OFFLINE},
+	  {"storage-url", required_argument, NULL, PARAM_DISK_STORAGE_URL},
 	{"enable", no_argument, NULL, PARAM_ENABLE},
 	{"disable", no_argument, NULL, PARAM_DISABLE},
 	{"device-del", required_argument, NULL, PARAM_DEVICE_DEL},
@@ -977,8 +978,11 @@ static int add_disk_param(struct CParam *param, struct vzctl_disk_param **disk,
 		xstrdup(&(*disk)->mnt, val);
 	} else if (id == PARAM_DISK_OFFLINE) {
 		(*disk)->offline_resize = 1;
+	} else if (id == PARAM_DISK_STORAGE_URL) {
+		(*disk)->storage_url = strdup(val);
 	} else if (id == PARAM_DISK_DETACH)
 		gparam->disk_op = DEVICE_ACTION_DETACH;
+
 
 	return 0;
 }
@@ -1081,6 +1085,7 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 		case PARAM_DISABLE:
 		case PARAM_DISK_MNT:
 		case PARAM_DISK_OFFLINE:
+		case PARAM_DISK_STORAGE_URL:
 		case PARAM_DISK_DETACH:
 			ret = add_disk_param(&tmpparam, &disk, c, optarg);
 			if (ret)
