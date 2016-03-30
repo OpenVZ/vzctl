@@ -45,7 +45,7 @@ struct CParam *gparam;
 static void cleanup_callback(int sig)
 {
 	fprintf(stderr, "Cancelling...\n");
-	run_cleanup();
+	vzctl2_cancel_last_operation();
 }
 
 struct option_alternative {
