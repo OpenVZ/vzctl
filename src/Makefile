@@ -27,8 +27,8 @@ endif
 	       list.o \
 	       distrconf.o \
 	       vzmonitor.o \
-	       veth.o ha.o \
-	       snapshot-list.o cleanup.o cpu.o technologies.o wrap.o util.o
+	       veth.o \
+	       snapshot-list.o cpu.o technologies.o wrap.o util.o
 
    OBJS_vzctl = vzctl.o enter.o $(OBJS)
  OBJ_vzeventd = vzeventd.o

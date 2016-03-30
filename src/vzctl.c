@@ -26,7 +26,6 @@
 #include "script.h"
 #include "distrconf.h"
 #include "util.h"
-#include "cleanup.h"
 #include "ha.h"
 
 #define VZCTL_VEID_MAX	2147483644

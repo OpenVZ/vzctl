@@ -45,7 +45,6 @@
 #include "util.h"
 #include "vzerror.h"
 #include "config.h"
-#include "cleanup.h"
 
 #ifndef NR_OPEN
 #define NR_OPEN 1024
@@ -851,58 +850,6 @@ char **list2ar_str(list_head_t *head)
 }
 
 #define ENV_SIZE 256
-int run_script(char *argv[], char *env[], int quiet)
-{
-	int child, fd, ret, i, j;
-	char *cmd;
-	char *envp[ENV_SIZE];
-	struct vzctl_cleanup_handler *h;
-
-	if (!stat_file(argv[0])) {
-		logger(-1, 0, "run_script: executable %s not found", argv[0]);
-		return VZ_NOSCRIPT;
-	}
-
-	cmd = arg2str(argv);
-	if (cmd != NULL) {
-		logger(2, 0, "running: %s", cmd);
-		free(cmd);
-	}
-	i = 0;
-	if (env != NULL) {
-		for (i = 0; i < ENV_SIZE - 1 && env[i] != NULL; i++)
-			envp[i] = env[i];
-	}
-	for (j = 0; i < ENV_SIZE - 1 && envp_bash[j] != NULL; i++, j++)
-		envp[i] = envp_bash[j];
-	envp[i] = NULL;
-	if ((child = fork()) == 0) {
-		fd = open("/dev/null", O_WRONLY);
-		if (fd < 0)
-			close(0);
-		else
-			dup2(fd, 0);
-
-		if (quiet) {
-			dup2(fd, 1);
-			dup2(fd, 2);
-		}
-		execve(argv[0], argv, envp);
-		logger(-1, errno, "Error exec %s", argv[0]);
-		_exit(1);
-	} else if (child == -1) {
-		logger(-1, errno, "Unable to fork");
-		ret = VZ_RESOURCE_ERROR;
-		goto err;
-	}
-	h = add_cleanup_handler(cleanup_kill_process, (void *) &child);
-//	ret = env_wait(child, 0);
-	del_cleanup_handler(h);
-err:
-
-	return ret;
-}
-
 FILE *vzctl_popen(char *argv[], char *env[], int quiet)
 {
 	int child, fd, i, j;
