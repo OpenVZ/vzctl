@@ -67,8 +67,6 @@ int check_ipv4(char *ip)
 	return 1;
 }
 
-
-
 int parse_ip(char *str, char **ipstr, unsigned int *mask)
 {
 	int ret;
@@ -102,116 +100,6 @@ int parse_ip(char *str, char **ipstr, unsigned int *mask)
 	return 0;
 }
 
-int vzctl_escapestr_eq(const char *src, char *dst, int size)
-{
-	unsigned char *s, *d, *ed;
-	int cnt = 0;
-
-#define EXTRA_CHAR	"-_."
-	s = (unsigned char *) src;
-	d = (unsigned char *) dst;
-	ed = d + size;
-	while (*s != '\0') {
-		if (isdigit(*s) || isalpha(*s) ||
-			strchr(EXTRA_CHAR, *s) != NULL || *s >= 127)
-		{
-			if (d < ed)
-				*d++ = *s;
-			cnt++;
-		} else {
-			if (d < ed)
-				d += snprintf((char *)d, ed - d + 1, "=%02X", *s);
-			cnt += 3;
-		}
-		s++;
-	}
-	if (d > ed)
-		*ed = 0;
-	else
-		*d = 0;
-	return cnt;
-}
-
-int vzctl_unescapestr_eq(const char *src, char *dst, int size)
-{
-	long val;
-	char *tail;
-	unsigned char *s, *d, *t, *ed;
-	char buf[3];
-	int i, cnt;
-
-	s = (unsigned char *) src;
-	d = (unsigned char *) dst;
-	cnt = 0;
-	ed = d + size;
-	while (*s != '\0') {
-		cnt++;
-		if (*s != '=') {
-			*d++ = *s++;
-		} else {
-			t = s++; /*  skip '=' */
-			for (i = 0; i < 2 && *s != '\0'; i++, s++)
-				buf[i] = *s;
-			buf[i] = 0;
-			val = strtol(buf, &tail, 16);
-			if (*tail != 0) {
-				val = *t;
-				s = t;
-				s++;
-			}
-			if (d < ed)
-				*d++ = (unsigned char)val;
-		}
-	}
-	*d = 0;
-	return cnt;
-}
-
-static int check_name(const char *name, const char *extra, int len)
-{
-	unsigned char *p;
-
-	if (name[0] == '\0' ||
-	    strlen(name) > len)
-	{
-		return 0;
-	}
-	for (p = (unsigned char *) name; *p != 0; p++) {
-		if (*p < 127 &&
-		    !isdigit(*p) &&
-		    !isalpha(*p) &&
-		    strchr(extra, *p) == NULL)
-		{
-			return 0;
-		}
-	}
-	return 1;
-}
-
-int vzctl_is_env_name_valid(const char *name)
-{
-	int id;
-
-	if (!parse_int(name, &id))
-		return 0;
-	return check_name(name, " +-_.", NAME_MAX);
-}
-
-int vzctl_is_networkid_valid(char const *name)
-{
-	return check_name(name, "#() -_.", 64);
-}
-
-int is_str_valid(const char *name)
-{
-	return check_name(name, "-_.", NAME_MAX);
-}
-
-int vzctl_is_str_valid(const char *name)
-{
-	return is_str_valid(name);
-}
-
 int xstrdup(char **dst, const char *src)
 {
 	char *t;
@@ -226,7 +114,7 @@ int xstrdup(char **dst, const char *src)
 	return 0;
 }
 
-char *unescapestr(char *src)
+static char *unescapestr(char *src)
 {
 	char *p1, *p2;
 	int fl;
@@ -257,8 +145,7 @@ char *unescapestr(char *src)
   ...a word beginning with # causes that word and all remaining characters on that line to be
   ignored.
  */
-
-char * uncommentstr(char * str)
+static char *uncommentstr(char * str)
 {
 	char * p1;
 	int inb1 = 0, inb2 = 0, inw = 1;
@@ -393,34 +280,6 @@ int parse_int(const char *str, int *val)
 		return 1;
 	*val = (int)n;
 	return 0;
-}
-
-int parse_ul(const char *str, unsigned long *val)
-{
-	char *tail;
-
-	if (*str == '\0')
-		return 1;
-
-	errno = 0;
-	*val = strtoul(str, (char **)&tail, 10);
-	if (*tail != '\0' || errno == ERANGE)
-		return 1;
-	return 0;
-}
-
-void str_tolower(const char *from, char *to)
-{
-	if (from == NULL || to == NULL)
-		return;
-	while ((*to++ = tolower(*from++)));
-}
-
-void str_toupper(const char *from, char *to)
-{
-	if (from == NULL || to == NULL)
-		return;
-	while ((*to++ = toupper(*from++)));
 }
 
 int check_var(const void *val, const char *message)
@@ -609,18 +468,6 @@ inline unsigned long min_ul(unsigned long val1, unsigned long val2)
 	return (val1 < val2) ? val1 : val2;
 }
 
-int set_not_blk(int fd)
-{
-	int oldfl, ret;
-
-	if ((oldfl = fcntl(fd, F_GETFL)) == -1)
-		return -1;
-	oldfl |= O_NONBLOCK;
-	ret = fcntl(fd, F_SETFL, oldfl);
-
-	return ret;
-}
-
 /*
  * Reset standard file descriptors to /dev/null in case they are closed.
  */
@@ -680,36 +527,6 @@ int get_netaddr(const char *ipstr, unsigned int *ip)
 	return family;
 }
 
-#define MERGE_STR(x)						\
-	if ((src->x) != NULL) {					\
-		free(dst->x);					\
-		dst->x = strdup(src->x);			\
-	}
-
-int vzctl_get_dump_file(unsigned veid, char *ve_private, char *dumpdir,
-	char *buf, int size)
-{
-	int ret;
-
-	if (vzctl_env_layout_version(ve_private) < 4)
-		ret = snprintf(buf, size, "%s/" DEF_DUMPFILE,
-			dumpdir != NULL ? dumpdir : DEF_DUMPDIR, veid);
-	else
-		ret = snprintf(buf, size,
-			"%s" VZCTL_VE_DUMP_DIR "/" VZCTL_VE_DUMP_FILE,
-			ve_private);
-	return ret;
-}
-
-char *get_ip4_name(unsigned int ip)
-{
-	struct in_addr addr;
-
-	addr.s_addr = ip;
-	return inet_ntoa(addr);
-}
-
-
 static void free_str_param(struct vzctl_str_param *p)
 {
 	if (p == NULL)
@@ -745,55 +562,6 @@ struct vzctl_str_param *add_str_param(list_head_t *head, const char *str)
 	return p;
 }
 
-const struct vzctl_str_param *find_str(list_head_t *head, const char *str)
-{
-	struct vzctl_str_param *it;
-
-	list_for_each(it, head, list) {
-		if (!strcmp(it->str, str))
-			return it;
-	}
-	return NULL;
-}
-
-int copy_str(list_head_t *dst, list_head_t *src)
-{
-	struct vzctl_str_param *it;
-
-	free_str(dst);
-	list_for_each(it, src, list) {
-		add_str_param(dst, it->str);
-	}
-	return 0;
-}
-
-int merge_str_list(list_head_t *old, list_head_t *add,
-		list_head_t *del, int delall, list_head_t *merged)
-{
-	struct vzctl_str_param *str;
-
-	if (!delall && list_empty(add) && list_empty(del))
-		return 0;
-	if (!delall && !list_empty(old)) {
-		/* add old values */
-		list_for_each(str, old, list) {
-			if (find_str(del, str->str))
-				continue;
-			add_str_param(merged, str->str);
-		}
-	}
-	if (!list_empty(add)) {
-		list_for_each(str, add, list) {
-			if (find_str(merged, str->str))
-				continue;
-			if (find_str(del, str->str))
-				continue;
-			add_str_param(merged, str->str);
-		}
-	}
-	return 0;
-}
-
 char *list2str(const char *prefix, list_head_t *head)
 {
 	struct vzctl_str_param *it;
@@ -819,34 +587,6 @@ char *list2str(const char *prefix, list_head_t *head)
 		sp += sprintf(sp, "%s ", it->str);
 	}
 	return str;
-}
-
-char **list2ar_str(list_head_t *head)
-{
-	struct vzctl_str_param *it;
-	char **ar;
-	int cnt = 0;
-
-
-	list_for_each(it, head, list) { cnt++; }
-
-	ar = malloc(++cnt * sizeof(char *));
-	if (ar == NULL) {
-		logger(-1, ENOMEM, "list2ar_str function returned error");
-		return NULL;
-	}
-	cnt = 0;
-	list_for_each(it, head, list) {
-		if ((ar[cnt++] = strdup(it->str)) == NULL) {
-			ar[cnt] = 0;
-			free_ar_str(ar);
-			free(ar);
-			logger(-1, ENOMEM, "list2ar_str function returned error");
-			return NULL;
-		}
-	}
-	ar[cnt] = 0;
-	return ar;
 }
 
 #define ENV_SIZE 256
@@ -921,16 +661,6 @@ int is_vswap_mode()
 	return (stat_file("/proc/vz/vswap") == 1);
 }
 
-int vzctl_get_config_fname(char *param_conf, char *config, int len)
-{
-	return snprintf(config, len, SAMPLE_CONF_PATTERN, param_conf);
-}
-
-int vzctl_get_config_full_fname(char *param_conf, char *config, int len)
-{
-	return snprintf(config, len, CFG_DIR SAMPLE_CONF_PATTERN, param_conf);
-}
-
 /* fbcdf284-5345-416b-a589-7b5fcaa87673 -> {fbcdf284-5345-416b-a589-7b5fcaa87673} */
 int vzctl_get_normalized_guid(const char *str, char *buf, int len)
 {
@@ -1000,36 +730,10 @@ int get_mul(char c, unsigned long long *n)
 	return 0;
 }
 
-
 char *get_ipname(unsigned int ip)
 {
 	struct in_addr addr;
 
 	addr.s_addr = ip;
 	return inet_ntoa(addr);
-}
-
-char *get_script_path(const char *name, char *buf, int size)
-{
-	snprintf(buf, size, SCRIPT_D_DIR"%s", name);
-	if (stat_file(buf))
-		return buf;
-
-	snprintf(buf, size, SCRIPT_DIR"%s", name);
-
-	return buf;
-}
-
-const char *get_dir_lock_file(const char *dir, char *buf, int size)
-{
-	int len;
-
-	snprintf(buf, size - 5, "%s", dir);
-	len = strlen(buf);
-	if (buf[len - 1] == '/')
-		buf[len - 1] = '\0';
-
-	strcat(buf, ".lck");
-
-	return buf;
 }

@@ -30,9 +30,6 @@
 #include "vzerror.h"
 #include "tmplmn.h"
 #include "util.h"
-#include "cpu.h"
-
-int vzctl_unescapestr_eq(char *src, char *dst, int size);
 
 long _PAGE_SIZE = 4096;
 struct Cconfig Config[] = {
@@ -607,20 +604,6 @@ int SetParam(int i, char *sp, int checkdup, int version, int unset)
 		*p = strdup(guid + 1);
 		break;
 	}
-	case STR_ESC	:
-	{
-		char **p = (char**)Config[i].pvar;
-		char *buf;
-		int len;
-
-		if (checkdup && *p != NULL)
-			return ERR_DUP;
-		len = strlen(sp) * 3;
-		buf = xmalloc(len + 1);
-		vzctl_unescapestr_eq(sp, buf, len);
-		*p = buf;
-		break;
-	}
 	case STR_UTF8	:
 	{
 		char **p = (char**)Config[i].pvar;
@@ -632,23 +615,6 @@ int SetParam(int i, char *sp, int checkdup, int version, int unset)
 		*p = xmalloc(len);
 		if (vzctl_convertstr(sp, *p, len)) {
 			free(*p);
-			return ERR_INVAL;
-		}
-		break;
-	}
-	case STR_NAME	:
-	{
-		char **p = (char**)Config[i].pvar;
-		int len;
-
-		if (checkdup && *p != NULL)
-			return ERR_DUP;
-		if (sp[0] != 0 && !vzctl_is_env_name_valid(sp))
-			return ERR_INVAL;
-		len = strlen(sp) * 2 + 2;
-		*p = xmalloc(len);
-		if (vzctl_convertstr(sp, *p, len)) {
-			free(*p); *p = NULL;
 			return ERR_INVAL;
 		}
 		break;

@@ -27,21 +27,20 @@ endif
 	       list.o \
 	       distrconf.o \
 	       vzmonitor.o \
-	       veth.o \
-	       snapshot-list.o cpu.o technologies.o wrap.o util.o
+	       snapshot-list.o technologies.o wrap.o util.o
 
    OBJS_vzctl = vzctl.o enter.o $(OBJS)
  OBJ_vzeventd = vzeventd.o
        OBJ_nd = ndsend.o
  OBJS_ubclogd = ubclogd.o timeutils.o
    OBJS_split = vzsplit.o
-    OBJS_calc = vzcalc.o validate.o mm.o $(OBJS)
+    OBJS_calc = vzcalc.o validate.o $(OBJS)
  OBJS_convert = vzcfgconvert.o config.o list.o
 OBJS_memcheck = vzmemcheck.o validate.o $(OBJS)
 OBJS_cfgscale = vzcfgscale.o mm.o $(OBJS)
 OBJS_vzauth   = vzauth.o
 OBJS_proxyctl = vzproxyctl.o
-OBJS_vztactl  = vztactl.o tc.o list.o util.o wrap.o cleanup.o
+OBJS_vztactl  = vztactl.o tc.o list.o util.o wrap.o
 OBJS_vznetstat= vznetstat.o tc.o
 OBJS_vzlist   = vzlist.o $(OBJS)
 ### Target names

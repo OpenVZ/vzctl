@@ -560,7 +560,6 @@ int monitoring(ctid_t ctid);
 int parse_ip(char *str, char **ipstr, unsigned int *mask);
 int vzctl_configure_disk(ctid_t ctid, int op, struct vzctl_disk_param *param);
 int VZExecScript(ctid_t ctid, char *name, struct CList *env, int log, int timeout);
-char *MakeEnvVar(char *name, struct CList *list, int extended);
 int env_is_running(ctid_t ctid);
 int Exec(ctid_t ctid, char **arg, int argc, int mode);
 int Set(ctid_t ctid, struct CParam *param);
@@ -593,9 +592,6 @@ int vzctl_set_cpu_param(ctid_t ctid,
 		struct vzctl_nodemask *nodemask);
 int vzctl_set_node_cpu_param(unsigned long units);
 int vzctl_env_convert_layout(ctid_t ctid, const char *ve_conf, int new_layout);
-int vzctl_mount(ctid_t ctid, const char *ve_private, const char *ve_root,
-		unsigned long *ds, unsigned long *di);
-int vzctl_umount(ctid_t ctid, const char *ve_private, const char *ve_root);
 int vzctl_env_set_rate(ctid_t ctid);
 int vzctl_add_env_param_by_name(ctid_t ctid, const char *name, const char *str);
 int vzctl_add_env_param_by_id(ctid_t ctid, int id, const char *str);
@@ -632,13 +628,9 @@ int vzctl_env_restore(ctid_t ctid, int cmd,
 		int cpt_flags,
 		int skip_arpdetect,
 		int skip_fsck);
-int vzctl_get_iolimit(unsigned int veid, int *limit);
-int vzctl_get_iopslimit(unsigned int veid, int *limit);
 int vzctl_lib_init(void);
 int vzctl_apply_param(ctid_t ctid);
 int vzctl_del_param_by_id(ctid_t ctid, int id);
-int vzctl_env_conf_lock(ctid_t ctid, int mode);
-void vzctl_env_conf_unlock(int lckfd);
 int vzctl_init_log(ctid_t ctid, int quiet, const char *progname);
 void vzctl_set_log_level(int level);
 int vzctl_set_log_enable(int enable);
@@ -649,11 +641,8 @@ int vzctl_get_vzctlfd(void);
 int vzctl_env_exec(ctid_t ctid, int exec_mode,
                 char *const argv[], char *const envp[], char *std_in, int timeout, int flags);
 void vzctl_env_close(void);
-int vzctl_is_networkid_valid(char const *name);
 int vzctl_env_layout_version(const char *path);
 int vzctl_convertstr(const char *src, char *dst, int dst_size);
-int vzctl_is_env_name_valid(const char *name);
-unsigned long vzctl_name2tech(const char *name);
 int vzctl_open(void);
 void vzctl_close(void);
 int vzctl_get_env_status(ctid_t ctid, vzctl_env_status_t *status, int mask);
@@ -666,7 +655,6 @@ extern void vzctl2_log(int level, int err_no, const char *format, ...)
 int vzctl_err(int err, int eno, const char *format, ...)
        __attribute__ ((__format__ (__printf__, 3, 4)));
 
-const char *vzctl_veformat2fs(int format);
 int get_vzctlfd(void);
 int vzcon_attach(struct vzctl_env_handle *h, int ntty);
 #endif

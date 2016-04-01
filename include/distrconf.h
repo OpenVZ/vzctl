@@ -28,7 +28,6 @@ typedef struct {
 	char *netif_del;
 } dist_actions;
 
-struct CParam;
 extern dist_actions *distActions;
 int read_dist_actions(void);
 int get_dist_action(char *name, char **script);

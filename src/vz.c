@@ -33,7 +33,6 @@
 #include "config.h"
 #include "script.h"
 #include "tmplmn.h"
-#include "net.h"
 #include "distrconf.h"
 #include "util.h"
 #include "util.h"
