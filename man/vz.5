@@ -100,10 +100,6 @@ written to a log file. Default value is \fB0\fR. Some useful values are:
 .IP \fBDISK_QUOTA\fR=\fByes\fR|\fBno\fR
 In case the value of this parameter is set to \fBno\fR, all disk
 quota operations are disabled.
-.IP \fBVZFASTBOOT\fR=\fByes\fR|\fBno\fR
-This parameter is used by \f(CR/etc/init.d/vz start\fR script. In case the value
-of this parameter is set to \fByes\fR, CT with incorrectly shutdown quota state
-started without quota check and after all CTs started marked CTs restarted.
 .SS Network interface parameters
 .IP \fBVE_ROUTE_SRC_DEV\fR="\fIdevice\fR"
 This parameter specifies the network device name which IP address will be
@@ -136,15 +132,6 @@ Enables disk IO limits for backup, restore, and migration operations. Make sure 
 Sets the disk IO \fIlimit\fR for backup, restore, and migration operations, in bytes per second.
 .IP \fBVZ_TOOLS_MEMLIMIT\fR="\fIlimit\fR"
 Sets the memory \fIlimit\fR for backup, restore, and migration operations, in bytes.
-.SS Parallels File Caching parameters
-.IP \fBPFCACHE_BCID\fR="\fIID\fR"
-Enables disk IO limits for the Parallels File Cache. Make sure that no Container with the specified \fIID\fR exists on the Node.
-.IP \fBPFCACHE_INCLUDES\fR="\fIdirectory\fR\ [\fIdirectory\fR\ ...]\fR"
-Specify the directories inside Containers to enable the Parallels File Caching feature for.
-.IP \fBPFCACHE\fR="\fIdirectory\fR"
-Specify the path to the Parallels File Caching directory that will store Container common files.
-.IP \fBPFCACHE_IMAGE\fR="\fIdirectory\fR"
-Specify the path to the Parallels File Caching ploop image.
 .SS Template parameters
 .IP \fBTEMPLATE\fR="\fIdirectory\fR"
 Value of this parameter is the \fIdirectory\fR in which all
