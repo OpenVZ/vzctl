@@ -179,12 +179,45 @@ setup_tc()
 	$VZTACTL class_load -s $NETCLASSES 2>&1
 }
 
+mount_vz()
+{
+	local m ret
+
+	[ -f /etc/fstab ] || return
+	eval $(. ${VZCONF} && echo VZMOUNTS="${VZMOUNTS}")
+
+	for m in ${VZMOUNTS}; do
+		if ! grep -wq -E "${m}.*noauto" /etc/fstab; then
+			continue
+		fi
+		if grep -wq "${m}" /proc/mounts; then
+			continue
+		fi
+		echo -n $"Checking Virtuozzo partition $m file system..."
+		fsck -V -T -a ${m} 2>&1
+		ret=$?
+		# The exit code returned by fsck is the sum of:
+		# 0    - No errors
+		# 1    - File system errors corrected
+		if [ $ret -ne 0 -a $ret -ne 1 ]; then
+			return 1
+		fi
+
+		echo "Mount Virtuozzo partition: $m"
+		mount ${m}
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+	done
+}
+
 start()
 {
 	setup_oom_groups
 	setup_ve_sysfs
 	setup_net
 	setup_tc
+	mount_vz
 }
 
 stop()
@@ -240,6 +273,9 @@ stop()
 }
 
 case "$1" in
+  mount)
+	mount_vz
+	;;
   start)
 	start
 	;;
