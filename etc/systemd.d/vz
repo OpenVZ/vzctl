@@ -10,6 +10,7 @@ VZCONF=/etc/vz/vz.conf
 NETCLASSES=/etc/vz/conf/networks_classes
 OOM_GROUPS_CONF=/etc/vz/oom-groups.conf
 SYSFS_PERM=/sys/fs/cgroup/ve/ve.default_sysfs_permissions
+SUSPEND_CONF_DIR=/etc/vz/vzreboot
 
 get_parallel()
 {
@@ -223,40 +224,33 @@ start()
 stop()
 {
 	local cmd pid pids cmd iter velist veid
-	local stages="prepare stop"
+	local action=suspend
 
+	eval $(. ${VZCONF} && echo VE_STOP_MODE="${VE_STOP_MODE}")
+	[ "$VE_STOP_MODE" = "stop" ] && action=stop
+	mkdir -p ${SUSPEND_CONF_DIR}
+		
 	get_parallel
 
 	velist=`$VZLIST -H -o ctid`
-	for stage in $stages; do
-		for veid in $velist; do
-			case $stage in
-			prepare)
-				$VZCTL --skiplock set $veid --cpulimit 0 --iolimit 0 --iopslimit 0 >/dev/null 2>&1
-				continue
-				;;
-			stop)
-				cmd="$VZCTL --skiplock stop $veid"
-				;;
-			esac
+	for veid in $velist; do
+		[ "$action" = "suspend" ] && touch "${SUSPEND_CONF_DIR}/${veid}"
+		# Run command
+		$VZCTL --skiplock $action $veid
+		pid=$!
+		pids="$pids $pid"
+		let iter++
+		if [ $iter -ge $VE_PARALLEL ]; then
+			for pid in $pids; do
+				wait $pid
+			done
+			pids=
+			iter=0
+		fi
+	done
 
-			# Run command
-			$cmd >/dev/null 2>&1 &
-			pid=$!
-			pids="$pids $pid"
-			let iter++
-			if [ $iter -ge $VE_PARALLEL ]; then
-				for pid in $pids; do
-					wait $pid
-				done
-				pids=
-				iter=0
-			fi
-		done
-
-		for pid in $pids; do
-			wait $pid
-		done
+	for pid in $pids; do
+		wait $pid
 	done
 
 	# forcible stop the rest
