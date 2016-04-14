@@ -1098,6 +1098,17 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			c = veth ? VZCTL_PARAM_NETIF_IPDEL:
 					VZCTL_PARAM_IPDEL;
 			break;
+		case VZCTL_PARAM_NETIF_ADD:
+			/* use ifname from --netif_add <ifname> */
+			if (!find_arg(argv, "--ifname")) {
+				ret = vzctl_add_env_param_by_id(ctid,
+						VZCTL_PARAM_NETIF_IFNAME, optarg);
+				if (ret)
+					return vzctl_err(ret, 0, "Bad parameter for"
+							" --%s: %s",
+							set_options[option_index].name, optarg);
+			}
+			break;
 		case PARAM_CAP:
 			fprintf(stderr, "Warning: The --capability option"
 					" is deprecated\n");
