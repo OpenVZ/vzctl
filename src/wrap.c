@@ -724,6 +724,7 @@ int vzctl_apply_param(ctid_t ctid)
 		if (ret)
 			return ret;
 		param = vzctl2_get_env_param(_g_apply_conf);
+		flags |= VZCTL_APPLY_CONF;
 	}
 
 	return vzctl2_apply_param(h, param, flags);
