@@ -296,7 +296,9 @@ static int fsremount(ctid_t ctid, const char *dst, int noatime)
 int Set(ctid_t ctid, struct CParam *param)
 {
 	int ret = 0;
+	int setmode = 0;
 	int is_mount;
+
 
 	is_mount = env_is_mounted(ctid);
 
@@ -348,7 +350,12 @@ int Set(ctid_t ctid, struct CParam *param)
 			return ret;
 	}
 
-	return vzctl_apply_param(ctid);
+	if (param->setmode)
+		setmode = param->setmode == SET_RESTART ?
+					VZCTL_SET_RESTART : VZCTL_SET_IGNORE;
+
+	return vzctl_apply_param(ctid, setmode);
+
 }
 
 void Version(void)

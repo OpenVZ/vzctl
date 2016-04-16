@@ -704,7 +704,7 @@ int vzctl_env_set_rate(ctid_t ctid)
 	return vzctl2_set_tc_param(h, get_env_param(ctid), 0);
 }
 
-int vzctl_apply_param(ctid_t ctid)
+int vzctl_apply_param(ctid_t ctid, int setmode)
 {
 	struct vzctl_env_handle *h;
 	struct vzctl_env_param *param;
@@ -726,6 +726,9 @@ int vzctl_apply_param(ctid_t ctid)
 		param = vzctl2_get_env_param(_g_apply_conf);
 		flags |= VZCTL_APPLY_CONF;
 	}
+
+	if (setmode)
+		vzctl2_env_set_setmode(param, setmode);
 
 	return vzctl2_apply_param(h, param, flags);
 }

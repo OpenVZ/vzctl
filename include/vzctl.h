@@ -629,7 +629,7 @@ int vzctl_env_restore(ctid_t ctid, int cmd,
 		int skip_arpdetect,
 		int skip_fsck);
 int vzctl_lib_init(void);
-int vzctl_apply_param(ctid_t ctid);
+int vzctl_apply_param(ctid_t ctid, int setmode);
 int vzctl_del_param_by_id(ctid_t ctid, int id);
 int vzctl_init_log(ctid_t ctid, int quiet, const char *progname);
 void vzctl_set_log_level(int level);
