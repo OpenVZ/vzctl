@@ -234,7 +234,6 @@ stop()
 
 	velist=`$VZLIST -H -o ctid`
 	for veid in $velist; do
-		[ "$action" = "suspend" ] && touch "${SUSPEND_CONF_DIR}/${veid}"
 		# Run command
 		$VZCTL --skiplock $action $veid
 		pid=$!
