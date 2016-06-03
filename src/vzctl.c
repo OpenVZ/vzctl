@@ -1933,12 +1933,14 @@ skip_eid:
 			ret = VZ_SYSTEM_ERROR;
 			goto END;
 		}
-		sigemptyset(&act.sa_mask);
-		act.sa_flags = 0;
-		act.sa_handler = cleanup_callback;
-		sigaction(SIGTERM, &act, NULL);
-		sigaction(SIGINT, &act, NULL);
 	}
+
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+	act.sa_handler = cleanup_callback;
+	sigaction(SIGTERM, &act, NULL);
+	sigaction(SIGINT, &act, NULL);
+	sigaction(SIGHUP, &act, NULL);
 
 	switch (action)
 	{
