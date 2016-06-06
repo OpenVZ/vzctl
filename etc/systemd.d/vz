@@ -212,6 +212,11 @@ mount_vz()
 	done
 }
 
+cleanup_stale_reg()
+{
+	[ -x /usr/sbin/shaman ] && $VZCTL cleanup-stail-registration
+}
+
 start()
 {
 	setup_oom_groups
@@ -219,6 +224,7 @@ start()
 	setup_net
 	setup_tc
 	mount_vz
+	cleanup_stale_reg
 }
 
 stop()
