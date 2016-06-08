@@ -214,7 +214,7 @@ mount_vz()
 
 cleanup_stale_reg()
 {
-	[ -x /usr/sbin/shaman ] && $VZCTL cleanup-stail-registration
+	[ -x /usr/sbin/shaman ] && $VZCTL cleanup-stail-registration || :
 }
 
 start()
