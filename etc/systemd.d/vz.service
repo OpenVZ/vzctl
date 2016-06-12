@@ -1,6 +1,6 @@
 [Unit]
 Description=Virtuozzo Container service
-After=vcmmd.service
+After=vcmmd.service vstorage-fs.service
 Wants=vcmmd.service
 
 [Service]
