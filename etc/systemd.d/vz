@@ -271,6 +271,13 @@ stop()
 	done
 }
 
+shaperrestart()
+{
+	setup_tc
+	/usr/libexec/libvzctl/scripts/vz-setrate shaperon
+	exit $?
+}
+
 case "$1" in
   mount)
 	mount_vz
@@ -281,6 +288,9 @@ case "$1" in
   stop)
         stop
         ;;
+  shaperrestart)
+	shaperrestart
+	;;
   *)
         echo "Usage: $0 start|stop"
         exit 1
