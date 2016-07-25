@@ -75,36 +75,56 @@ static int parse_int(const char *str, int *val)
 	return 0;
 }
 
-static int read_uuid_map(void)
+static int get_veid_by_ctid(ctid_t ctid)
 {
-	int ret, n;
+	int flags = VZCTL_CONF_SKIP_GLOBAL|VZCTL_CONF_SKIP_PARSE;
 	struct vzctl_env_handle *h;
-	int flags = VZCTL_CONF_SKIP_GLOBAL | VZCTL_CONF_BASE_SET;
-	vzctl_ids_t *ctids = vzctl2_alloc_env_ids();
+	int ret, veid;
 
+	h = vzctl2_env_open(ctid, flags, &ret);
+	if (h == NULL)
+		return -1;
+
+	veid = vzctl2_env_get_veid(h);
+
+	vzctl2_env_close(h);
+
+	return veid;
+}
+
+static int read_uuid_map(ctid_t ctid)
+{
+	int n;
+	vzctl_ids_t *ctids = NULL;
+
+	ctids = vzctl2_alloc_env_ids();
 	if (ctids == NULL)
 		return ERR_NOMEM;
-	
-	n = vzctl2_get_env_ids_by_state(ctids, ENV_STATUS_EXISTS);
+
+	if (EMPTY_CTID(ctid)) {
+		n = vzctl2_get_env_ids_by_state(ctids, ENV_STATUS_EXISTS);
+	} else {
+		n = 1;
+		SET_CTID(ctids->ids[0], ctid);
+	}
+
 	if (n > 0) {
-		_uuidmap = malloc(sizeof(struct uuidmap_t) * n);
+		_uuidmap = calloc(1, sizeof(struct uuidmap_t) * n);
 		if (_uuidmap == NULL)
 			return ERR_NOMEM;
 
 		_uuidmap_size = n;
 		for (n = 0; n < _uuidmap_size; n++) {
-			h = vzctl2_env_open(ctids->ids[n], flags, &ret);
-			if (ret)
-				continue;
-
-			SET_CTID(_uuidmap[n].ctid, ctids->ids[n]);
-			_uuidmap[n].veid = vzctl2_env_get_veid(h);
-
-			vzctl2_env_close(h);
+			int veid = get_veid_by_ctid(ctids->ids[n]);
+			if (veid != -1) {
+				SET_CTID(_uuidmap[n].ctid, ctids->ids[n]);
+				_uuidmap[n].veid = veid;
+			}
 		}
 	}
 
-	vzctl2_free_env_ids(ctids);
+	if (ctids != NULL)
+		vzctl2_free_env_ids(ctids);
 
 	return n == -1 ? -1 : 0;
 }
@@ -116,17 +136,6 @@ static struct uuidmap_t *find_uuid_by_id(unsigned int id)
 	for (i = 0; i < _uuidmap_size; i++)
 		if (_uuidmap[i].veid == id)
 			return &_uuidmap[i];
-	return NULL;
-}
-
-static struct uuidmap_t *find_id_by_uuid(const char *ctid)
-{
-	unsigned int i;
-
-	for (i = 0; i < _uuidmap_size; i++)
-		if (!strcmp(_uuidmap[i].ctid, ctid))
-			return &_uuidmap[i];
-
 	return NULL;
 }
 
@@ -391,14 +400,15 @@ int main(int argc, char **argv)
 
 	if (tc_get_v6_class_num() == 0)
 		ipv6 = 0;
-	if (read_uuid_map())
+	if (read_uuid_map(ctid))
 		return ERR_READ_UUIDMAP;
 
 	if (!EMPTY_CTID(ctid)) {
-		struct uuidmap_t *map = find_id_by_uuid(ctid);
-
 		velist.list = realloc(velist.list, sizeof(int));
-		velist.list[0] = map != NULL ? map->veid : -1;
+		if (velist.list == NULL)
+			return ERR_NOMEM;
+
+		velist.list[0] = get_veid_by_ctid(ctid);
 		velist.length = 1;
 	} else if ((ret = get_ve_list(&velist)) < 0)
 		return ret;
