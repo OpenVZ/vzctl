@@ -389,6 +389,7 @@ static struct option register_options[] =
 	{"start",	no_argument, NULL, PARAM_REG_START},
 	{"id",  required_argument, NULL, PARAM_GUID},
 		{"uuid", required_argument, NULL, PARAM_GUID},
+	{"name",	required_argument, NULL, PARAM_NAME},
 
 	{ NULL, 0, NULL, 0 }
 };
@@ -912,7 +913,11 @@ int ParseRegisterOptions(int argc, char **argv, int *flags, struct CParam *param
 				return VZ_INVALID_PARAMETER_SYNTAX;
 			}
 			param->guid = strdup(ctid);
+			break;
 		}
+		case PARAM_NAME:
+			param->name = strdup(optarg);
+			break;
 		}
 	}
 	ret = check_argv_tail(argc, argv);
@@ -1947,7 +1952,8 @@ skip_eid:
 		case ACTION_REGISTER:
 		{
 			struct vzctl_reg_param reg = {
-				.uuid = param->guid
+				.uuid = param->guid,
+				.name = param->name,
 			};
 
 			if (!EMPTY_CTID(ctid)) {
