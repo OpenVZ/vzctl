@@ -331,6 +331,7 @@
 #define PARAM_DEVICE		432
 #define PARAM_CPT_CREATE_DEVMAP	433
 #define PARAM_DISK_STORAGE_URL	434
+#define PARAM_ENC_KEYID		435
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"
@@ -552,6 +553,7 @@ struct CParam
 	int ha_enable;
 	unsigned long *ha_prio;
 	int skip_fsck;
+	char *enc_keyid;
 };
 
 extern struct CParam *gparam;
@@ -607,6 +609,7 @@ int vzctl_env_create(ctid_t ctid,
 		char *ve_private,
 		char *ve_root,
 		char *name,
+		char *enc_keyid,
 		int no_hdd,
 		int layout);
 int vzctl_env_reinstall(ctid_t ctid,

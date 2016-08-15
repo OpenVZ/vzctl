@@ -77,6 +77,7 @@ static struct option set_options[] =
 	  {"mnt", required_argument, NULL, PARAM_DISK_MNT},
 	  {"offline", no_argument, NULL, PARAM_DISK_OFFLINE},
 	  {"storage-url", required_argument, NULL, PARAM_DISK_STORAGE_URL},
+	  {"encryption-keyid",required_argument, NULL, PARAM_ENC_KEYID},
 	{"enable", no_argument, NULL, PARAM_ENABLE},
 	{"disable", no_argument, NULL, PARAM_DISABLE},
 	{"device-del", required_argument, NULL, PARAM_DEVICE_DEL},
@@ -249,6 +250,7 @@ static struct option create_options[] =
 	{"diskspace",	required_argument, NULL, VZCTL_PARAM_DISKSPACE},
 	{"diskinodes",	required_argument, NULL, VZCTL_PARAM_DISKINODES},
 	{"no-hdd",      no_argument, NULL, PARAM_NO_HDD},
+	{"encryption-keyid",required_argument, NULL, PARAM_ENC_KEYID},
 
 	{ NULL, 0, NULL, 0 }
 };
@@ -465,6 +467,8 @@ int ParseCreateOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			gparam->force = 1;
 		} else if (c == PARAM_NO_HDD) {
 			gparam->no_hdd = 1;
+		} else if (c == PARAM_ENC_KEYID) {
+			gparam->enc_keyid = optarg;
 		} else if (c == PARAM_GUID) {
                         ctid_t ctid;
 			if (vzctl2_parse_ctid(optarg, ctid)) {
@@ -980,6 +984,8 @@ static int add_disk_param(struct CParam *param, struct vzctl_disk_param **disk,
 		(*disk)->enabled = VZCTL_PARAM_OFF;
 	} else if (id == PARAM_DISK_MNT) {
 		xstrdup(&(*disk)->mnt, val);
+	} else if (id == PARAM_ENC_KEYID) {
+		xstrdup(&(*disk)->enc_keyid, val);
 	} else if (id == PARAM_DISK_OFFLINE) {
 		(*disk)->offline_resize = 1;
 	} else if (id == PARAM_DISK_STORAGE_URL) {
@@ -1088,6 +1094,7 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 		case PARAM_ENABLE:
 		case PARAM_DISABLE:
 		case PARAM_DISK_MNT:
+		case PARAM_ENC_KEYID:
 		case PARAM_DISK_OFFLINE:
 		case PARAM_DISK_STORAGE_URL:
 		case PARAM_DISK_DETACH:
@@ -2017,7 +2024,8 @@ skip_eid:
 					gparam->ostmpl,
 					gparam->ve_private,
 					gparam->ve_root,
-					gparam->name ,
+					gparam->name,
+					gparam->enc_keyid,
 					gparam->no_hdd,
 					gparam->ve_layout);
 			break;

@@ -890,6 +890,7 @@ int vzctl_env_create(ctid_t ctid,
 		char *ve_private,
 		char *ve_root,
 		char *name,
+		char *enc_keyid,
 		int no_hdd,
 		int layout)
 {
@@ -904,6 +905,7 @@ int vzctl_env_create(ctid_t ctid,
 		.name = name,
 		.layout = layout,
 		.no_root_disk = no_hdd,
+		.enc_keyid = enc_keyid,
 	};
 
 	SET_CTID(create_param.ctid, ctid)
