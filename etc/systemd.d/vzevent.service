@@ -7,6 +7,8 @@ Type=forking
 PIDFile=/var/run/vzeventd.pid
 ExecStart=/usr/sbin/vzeventd
 KillMode=process
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
