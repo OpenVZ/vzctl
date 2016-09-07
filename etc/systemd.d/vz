@@ -229,10 +229,11 @@ start()
 
 stop()
 {
-	local cmd pid pids cmd iter velist veid
+	local cmd pid pids iter velist veid
 	local action=suspend
 
 	eval $(. ${VZCONF} && echo VE_STOP_MODE="${VE_STOP_MODE}")
+
 	[ "$VE_STOP_MODE" = "stop" ] && action=stop
 	mkdir -p ${SUSPEND_CONF_DIR}
 		
@@ -241,7 +242,12 @@ stop()
 	velist=`$VZLIST -H -o ctid`
 	for veid in $velist; do
 		# Run command
-		$VZCTL --skiplock $action $veid
+		cmd=$action
+		if [ -z "$VE_STOP_MODE" ]; then
+			a=`$VZLIST -H -o autostop $veid`
+			[ "$a" = "stop" -o "$a" = "suspend" ] && cmd=$a
+		fi
+		$VZCTL --skiplock $cmd $veid
 		pid=$!
 		pids="$pids $pid"
 		let iter++
