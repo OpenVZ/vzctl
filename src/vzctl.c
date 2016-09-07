@@ -114,6 +114,7 @@ static struct option set_options[] =
 	 * processed by vzctl_add_env_param_by_id
 	 **/
 	{"onboot",	required_argument, NULL, VZCTL_PARAM_ONBOOT},
+	{"autostopt",	required_argument, NULL, VZCTL_PARAM_AUTOSTOP},
 	{"root",	required_argument, NULL, VZCTL_PARAM_VE_ROOT},
 	{"private",	required_argument, NULL, VZCTL_PARAM_VE_PRIVATE},
 	{"ip",		required_argument, NULL, PARAM_IP_ADD},
