@@ -200,6 +200,22 @@ static void print_onboot(struct Cveinfo *p, int index)
 	print_yesno("%-6s", p->onboot);
 }
 
+static void print_autostop(struct Cveinfo *p, int index)
+{
+	int r;
+	const char *s;
+
+	if (p->autostop == VZCTL_AUTOSTOP_SUSPEND)
+		s = "suspend";
+	else if (p->autostop == VZCTL_AUTOSTOP_SHUTDOWN)
+		s = "stop";
+	else
+		s = "-";
+
+	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-8s", s);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 8);
+}
+
 static void print_bootorder(struct Cveinfo *p, int index)
 {
 	if (p->bootorder == NULL)
@@ -641,6 +657,7 @@ UBC_FIELD(swappages, SWAPP),
 {"ifname", "IFNAME", "%-8s", 6, RES_IFNAME, print_netif_params, none_sort_fn},
 {"netif", "NET_INTERFACES", "%-32s", 0, RES_NETIF, print_dev_name, none_sort_fn},
 {"onboot", "ONBOOT", "%-6s", 0, RES_ONBOOT, print_onboot, none_sort_fn},
+{"autostop", "AUTOSTOP", "%-8s", 0, RES_ONBOOT, print_autostop, none_sort_fn},
 {"bootorder", "BOOTORDER", "%10s", 0, RES_BOOTORDER,
 	print_bootorder, bootorder_sort_fn},
 
@@ -1492,7 +1509,8 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 	enable = 0;
 	if (vzctl2_env_get_autostart(vzctl2_get_env_param(h), &enable) == 0)
 		ve->onboot = enable;
-
+	if (vzctl2_env_get_autostop(vzctl2_get_env_param(h), &i) == 0)
+		ve->autostop = i;
 	if (vzctl2_env_get_bootorder(vzctl2_get_env_param(h), &ul) == 0) {
 		ve->bootorder = x_malloc(sizeof(*ve->bootorder));
 		*ve->bootorder = ul;

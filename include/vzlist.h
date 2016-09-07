@@ -90,6 +90,7 @@ struct Cveinfo {
 	char *netfilter;
 	char *uuid;
 	char *devnodes;
+	int autostop;
 };
 
 #define RES_NONE	0
