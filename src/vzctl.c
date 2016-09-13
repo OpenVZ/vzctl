@@ -178,6 +178,7 @@ static struct option set_options[] =
 		{"ram", required_argument, NULL, VZCTL_PARAM_MEMORY},
 	{"memguarantee",required_argument, NULL, VZCTL_PARAM_MEM_GUARANTEE},
 	{"vm_overcommit",  required_argument, NULL, VZCTL_PARAM_VM_OVERCOMMIT},
+	{"pagecache-isolation",  required_argument, NULL, VZCTL_PARAM_PAGECACHE_ISOLATION},
 /* CPU */
 	{"cpuweight",	required_argument, NULL, VZCTL_PARAM_CPUWEIGHT},
 	{"cpulimit",	required_argument, NULL, VZCTL_PARAM_CPULIMIT},

@@ -417,6 +417,13 @@ The guaranteed memory is a percentage of total RAM that is set for the
 Container with the '--memsize' option. By default, memory guarantee is
 set to 'auto' (0% - no gurantee).
 .TP
+\fB--pagecache-isolation\fR \fIyes|no\fR
+By default page cache evicted from a memory cgroup (Container) on local
+pressure is stored in Nodes memory unmodified in case there is free RAM on
+the Node, thus the pages can be fetched back later without costly disk
+accesses improving the overall Node performance.
+Enable page cache isolation (set to \fIyes\fR) tuned off this logic.
+.TP
 \fBCPU fair scheduler parameters\fR
 These parameters control CPU usage by CT.
 .TP
