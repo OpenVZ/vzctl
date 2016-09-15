@@ -78,6 +78,8 @@ static struct option set_options[] =
 	  {"offline", no_argument, NULL, PARAM_DISK_OFFLINE},
 	  {"storage-url", required_argument, NULL, PARAM_DISK_STORAGE_URL},
 	  {"encryption-keyid",required_argument, NULL, PARAM_ENC_KEYID},
+	  {"reencrypt",no_argument, NULL, PARAM_ENC_REENCRYPT},
+	  {"wipe",no_argument, NULL, PARAM_ENC_WIPE},
 	{"enable", no_argument, NULL, PARAM_ENABLE},
 	{"disable", no_argument, NULL, PARAM_DISABLE},
 	{"device-del", required_argument, NULL, PARAM_DEVICE_DEL},
@@ -1103,6 +1105,12 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			ret = add_disk_param(&tmpparam, &disk, c, optarg);
 			if (ret)
 				return ret;
+			continue;
+		case PARAM_ENC_REENCRYPT:
+			gparam->enc_flags |= VZCTL_ENC_REENCRYPT;
+			continue;
+		case PARAM_ENC_WIPE:
+			gparam->enc_flags |= VZCTL_ENC_WIPE;
 			continue;
 		case PARAM_IP_ADD:
 			c = veth ? VZCTL_PARAM_NETIF_IPADD :

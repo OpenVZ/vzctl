@@ -332,6 +332,8 @@
 #define PARAM_CPT_CREATE_DEVMAP	433
 #define PARAM_DISK_STORAGE_URL	434
 #define PARAM_ENC_KEYID		435
+#define PARAM_ENC_REENCRYPT	436
+#define PARAM_ENC_WIPE		437
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"
@@ -554,6 +556,7 @@ struct CParam
 	unsigned long *ha_prio;
 	int skip_fsck;
 	char *enc_keyid;
+	int enc_flags;
 };
 
 extern struct CParam *gparam;
