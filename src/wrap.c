@@ -784,6 +784,16 @@ int vzctl_set_disk(ctid_t ctid, struct vzctl_disk_param *param)
 	return vzctl2_env_set_disk(h, param);
 }
 
+int vzctl_encrypt_disk(ctid_t ctid, struct vzctl_disk_param *param, int flags)
+{
+	int ret;
+	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
+	if (h == NULL)
+		return ret;
+
+	return vzctl2_env_encrypt_disk(h, param->uuid, param->enc_keyid, flags);
+}
+
 int vzctl_del_disk(ctid_t ctid, const char *guid, int detach)
 {
 	int ret;
@@ -802,8 +812,15 @@ int vzctl_configure_disk(ctid_t ctid, int op, struct vzctl_disk_param *param)
 		return vzctl_del_disk(ctid, param->uuid, 0);
 	else if (op == DEVICE_ACTION_DETACH)
 		return vzctl_del_disk(ctid, param->uuid, 1);
-	else if (op == DEVICE_ACTION_SET)
+	else if (op == DEVICE_ACTION_SET) {
+		if (param->enc_keyid) {
+			int ret = vzctl_encrypt_disk(ctid, param, 0);
+			if (ret)
+				return ret;
+		}
 		return vzctl_set_disk(ctid, param);
+	}
+
 	return VZCTL_E_INVAL;
 }
 
