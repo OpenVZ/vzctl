@@ -1718,47 +1718,40 @@ static int _get_run_ve(int update)
 
 static char *get_real_ips(ctid_t ctid)
 {
-#if 0
-	struct vznetwork_info *ni;
-	struct vznetif_info **ii;
-	vznetfilter_t fr;
-	char **p;
-	char *ip, *sp, *ep;
-	unsigned int mask;
-	char buf[4096];
-	int flags = VZNETIFFLD_IFACE | VZNETIFFLD_ACTUAL_ADDRLIST;
+	LIST_HEAD(ips);
+	FILE *fp;
+	char *s;
+	char ip[STR_SIZE];
+	char buf[STR_SIZE];
+	char *arg[] = {"/usr/sbin/ip", "netns", "exec", ctid, "ip", "a", "l", NULL};
 
-	flags |= VZNETIFFLD_ACTUAL_ADDR6LIST;
+	fp = vzctl_popen(arg, NULL, 0);
+	if (fp == NULL)
+		return NULL;
 
-	buf[0] = 0;
-	fr = vznet_get_simple_filter(VZNETIFTYPE_ALL,
-					NULL, NULL, NULL, veid, veid);
-	ni = vznet_get_info(flags, fr);
-	vznet_release_filter(fr);
-	if (ni == NULL || ni->info == NULL)
-		return strdup("");
-	sp = buf; ep = buf + sizeof(buf);
-	for (ii = ni->info; *ii; ii++) {
-		if ((*ii)->flags != VZNETIFFLAG_UP)
+	while (fgets(buf, sizeof(buf), fp)) {
+		if (sscanf(buf, "%*[\t ]inet%*[6 ] %s", ip) != 1)
 			continue;
-		for (p = (*ii)->actual_addrlist; p != NULL && *p != NULL; p++) {
-			if (!is_match_netif_pattern((*ii)->iface))
-				continue;
-			if (!parse_ip(*p, &ip, &mask)) {
-				if (strcmp(ip, "127.0.0.1") == 0 ||
-				    strcmp(ip, "::1") == 0 ||
-				    strcmp(ip, "::2") == 0 ||
-				    strncmp(ip, "fe80:", 5) == 0)
-					continue;
-				sp += snprintf(sp, ep - sp, "%s ", ip);
-				free(ip);
-			}
-		}
+
+		s = strrchr(ip, '/');
+		if (s != NULL)
+			*s = '\0';
+
+		if (strcmp(ip, "127.0.0.1") == 0 ||
+				strcmp(ip, "::1") == 0 ||
+				strcmp(ip, "::2") == 0 ||
+				strncmp(ip, "fe80:", 5) == 0)
+			continue;
+
+		add_str_param(&ips, ip);
 	}
-	vznet_release_info(ni);
-	return *buf != 0 ? strdup(buf) :  NULL;
-#endif
-	return 0;
+
+	s = list2str(NULL, &ips);
+
+	free_str(&ips);
+	vzctl_pclose(fp);
+
+	return s;
 }
 
 static int get_quota_stat(void)
