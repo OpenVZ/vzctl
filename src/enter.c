@@ -207,49 +207,32 @@ err:
 int vzcon_start(ctid_t ctid, int ntty)
 {
 	int ret;
-	int i = 0;
-	char *env[3];
-	char buf[64];
+	char tty[64] = "";
 	char term[64];
-	char *script;
+	char *env[] = {tty, term, NULL};
 	char *p;
 
 	/* Skip setup on preconfigured tty1 & tty2 */
 	if (ntty < 3)
 		return 0;
 
-	if ((ret = read_dist_actions()))
-		return ret;
-
-	if (distActions->set_console == NULL) {
-		fprintf(stderr, "No setup console script found");
-		return VZ_NOSCRIPT;
-	}
 	if (!env_is_running(ctid)) {
 		fprintf(stderr, "Container is not running.");
 		return VZ_VE_NOT_RUNNING;
 	}
 
-	script = readscript(distActions->set_console, 0);
-	if (script == NULL) {
-		fprintf(stderr, "Script %s is not found",
-				distActions->set_console);
-		return VZ_NOSCRIPT;
-	}
-	snprintf(buf, sizeof(buf), "START_CONSOLE_ON_TTY=%d", ntty);
-	env[i++] = buf;
+	snprintf(tty, sizeof(tty), "START_CONSOLE_ON_TTY=%d", ntty);
 	p = getenv("TERM");
-	if (p) {
+	if (p)
 		snprintf(term, sizeof(term), "TERM=%s", p);
-		env[i++] = term;
-	}
-	env[i] = NULL;
 
-	ret = vzctl_env_exec(ctid, MODE_BASH,
-			NULL, env, script, 0, 0);
+	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
+	if (h == NULL)
+		return ret;
+
+	ret = vzctl2_env_exec_action_script(h, "SET_CONSOLE", env, 0, 0);
 	if (ret)
 		fprintf(stderr, "Failed to start getty on tty%d", ntty);
-	free(script);
 
 	return ret;
 }

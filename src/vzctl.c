@@ -2271,10 +2271,12 @@ skip_eid:
 		}
 		case ACTION_CONSOLE:
 		{
-			if (start_console)
+			if (start_console) {
 				ret = vzcon_start(ctid, console_tty);
-			else
-				ret = vzcon_attach(h, console_tty);
+				if (ret)
+					break;
+			}
+			ret = vzcon_attach(h, console_tty);
 			break;
 		}
 		default :
