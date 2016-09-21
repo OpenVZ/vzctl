@@ -24,7 +24,6 @@
 #include "vzctl.h"
 #include "config.h"
 #include "script.h"
-#include "distrconf.h"
 #include "util.h"
 #include "ha.h"
 
@@ -2231,16 +2230,23 @@ skip_eid:
 		case ACTION_EXECACTION	:
 		{
 			int i;
-			char *script = NULL;
-			struct CList *env = NULL;
+			const char *action;
+			char **env = NULL;
 
-			if ((ret = get_dist_action(*(argv + 1), &script)))
-				break;
+			action = *(argv + 1);
 			if (argv != NULL) {
+				env = malloc(argc * sizeof(char*) +1);
+				if (env == NULL) {
+					ret = VZCTL_E_NOMEM;
+					break;
+				}
 				for (i = 0; argv[i] != NULL; i++)
-					env = ListAddElem(env, argv[i], NULL, NULL);
+					env[i] = argv[i];
+				env[i] = NULL;
 			}
-			ret = vz_run_script(ctid, script, env);
+			ret = vzctl2_env_exec_action_script(h, action, env, 0, 0);
+
+			free(env);
 			break;
 		}
 		case ACTION_RUNSCRIPT	:
