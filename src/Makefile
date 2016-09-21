@@ -25,7 +25,6 @@ endif
 	OBJS = script.o vz.o \
 	       config.o tmplmn.o \
 	       list.o \
-	       distrconf.o \
 	       vzmonitor.o \
 	       snapshot-list.o technologies.o wrap.o util.o
 
