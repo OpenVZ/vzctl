@@ -10,7 +10,6 @@
 #include "vzctl.h"
 #include "config.h"
 #include "validate.h"
-#include "distrconf.h"
 
 struct CParam *gparam, *lparam;
 

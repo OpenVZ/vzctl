@@ -32,7 +32,6 @@
 #include "vzerror.h"
 #include "vzctl.h"
 #include "util.h"
-#include "distrconf.h"
 #include "script.h"
 
 #define DEV_TTY		"/dev/tty"
