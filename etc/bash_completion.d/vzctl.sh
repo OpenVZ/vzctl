@@ -49,7 +49,8 @@ _vzctl()
 		console convert snapshot snapshot-switch snapshot-delete \
 		snapshot-mount snapshot-umount snapshot-list"
 	local vzctl_create_opts="--ostemplate --config --private --root \
-		--ipadd --hostname --name --description --skip_app_templates"
+		--ipadd --hostname --name --description --skip_app_templates \
+		--encryption-keyid"
 	local vzctl_set_opts="--save --onboot \
 		--numproc --oomguarpages \
 		--lockedpages --privvmpages --shmpages \
@@ -64,7 +65,8 @@ _vzctl()
 		--netdev_add --netdev_del \
 		--netif_add --netif_del \
 		--netfilter --disabled --applyconfig --setmode \
-		--bootorder --ha_enable --ha_prio"
+		--bootorder --ha_enable --ha_prio --encryption-keyid \
+		--reencrypt --wipe"
 	local vzctl_snapshot_create_opts="--id --name --description"
 	local vzctl_snapshot_mount_opts="--id --target"
 	local vzctl_snapshot_list_opts="-H --no-header -o --output --id \
