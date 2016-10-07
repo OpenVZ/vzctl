@@ -8,7 +8,7 @@ ExecStart=/usr/libexec/vz start
 ExecStop=/usr/libexec/vz stop
 Type=oneshot
 RemainAfterExit=yes
-TimeoutSec=infinity
+TimeoutSec=1h
 
 [Install]
 WantedBy=multi-user.target
