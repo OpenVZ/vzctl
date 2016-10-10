@@ -13,7 +13,7 @@ SWAPPAGES="262144"
 # privvmpages = ram + swap * VM_OVERCOMMIT (unlimited if not specified)
 #VM_OVERCOMMIT="1.5"
 
-NETFILTER="full"
+NETFILTER="stateless"
 
 CPUUNITS="1000"
 

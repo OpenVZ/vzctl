@@ -43,7 +43,7 @@ QUOTAUGIDLIMIT="150"
 # CPU fair sheduler parameter
 CPUUNITS="1000"
 
-NETFILTER="full"
+NETFILTER="stateless"
 
 
 ARCH="x86"
