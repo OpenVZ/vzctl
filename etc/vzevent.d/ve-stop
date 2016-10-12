@@ -4,12 +4,5 @@
 # This script clean CT resources on stop event
 #
 
-eval $(. /etc/vz/vz.conf && echo LOCKDIR="${LOCKDIR}")
-lckfile=$LOCKDIR/$ID.lck
-if [ -f "$lckfile" ]; then
-	pid=`head -n1 $lckfile`
-	[ -n "$pid" -a -e "/proc/$pid" ] && exit 0
-fi
-
-/usr/sbin/vzctl stop $ID --force >/dev/null 2>&1
-
+prvt=`/usr/sbin/vzlist -Ho private $ID 2>/dev/null`
+[ -f "$prvt/.running" ] && /usr/sbin/vzctl stop $ID --force >/dev/null 2>&1
