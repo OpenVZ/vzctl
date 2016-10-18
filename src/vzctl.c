@@ -1712,12 +1712,15 @@ skip_eid:
 		return monitoring(ctid);
 	get_pagesize();
 	vzctl_init_log(ctid, quiet, "vzctl");
-	vzctl2_set_flags(VZCTL_FLAG_DONT_USE_WRAP);
 	if (verbose)
 		vzctl2_set_log_verbose(5);
 
 	if ((ret = vzctl2_lib_init()))
 		goto END;
+
+	int f = VZCTL_FLAG_DONT_USE_WRAP |
+		(getenv("VZCTL_FLAG_DONT_SEND_EVT") ? VZCTL_FLAG_DONT_SEND_EVT : 0);
+	vzctl2_set_flags(f);
 
 	gparam->skiplock = skiplock;
 	switch (action)
