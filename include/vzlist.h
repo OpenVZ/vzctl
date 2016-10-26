@@ -10,7 +10,6 @@
 #define PROCUBC		"/proc/user_beancounters"
 #define PROC_BC_RES	"/proc/bc/resources"
 #define PROCVEINFO	"/proc/vz/veinfo"
-#define PROCFSHED	"/proc/fairsched"
 
 #define MAXCPUUNITS	500000
 #define MAX_STR		16384

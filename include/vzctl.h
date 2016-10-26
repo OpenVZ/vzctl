@@ -49,7 +49,6 @@
 #define VZCTLDEV		"/dev/vzctl"
 #define VEINFOPATH		"/proc/vz/veinfo"
 #define VEINFOPATHOLD		"/proc/veinfo"
-#define PROCFSHD		"/proc/fairsched"
 #define PROCMOUNTS		"/proc/mounts"
 #define PROCCPU			"/proc/cpuinfo"
 #define PROCUBC			"/proc/user_beancounters"
