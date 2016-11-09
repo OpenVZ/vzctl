@@ -122,7 +122,7 @@ static struct option set_options[] =
 	{"ipadd",	required_argument, NULL, PARAM_IP_ADD},
 	{"ipdel",	required_argument, NULL, PARAM_IP_DEL},
 /* Disk quota parameters */
-	{"diskspace",	required_argument, NULL, VZCTL_PARAM_DISKSPACE},
+	{"diskspace",	required_argument, NULL, PARAM_SIZE},
 	{"diskinodes",	required_argument, NULL, VZCTL_PARAM_DISKINODES},
 	{"quotatime",	required_argument, NULL, VZCTL_PARAM_QUOTATIME},
 	{"quotaugidlimit",required_argument,NULL,VZCTL_PARAM_QUOTAUGIDLIMIT},
