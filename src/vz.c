@@ -298,7 +298,6 @@ int Set(ctid_t ctid, struct CParam *param)
 	int setmode = 0;
 	int is_mount;
 
-
 	is_mount = env_is_mounted(ctid);
 
 	ret = vzctl_set_name(ctid, param->name);
@@ -353,6 +352,9 @@ int Set(ctid_t ctid, struct CParam *param)
 	if (param->setmode)
 		setmode = param->setmode == SET_RESTART ?
 					VZCTL_SET_RESTART : VZCTL_SET_IGNORE;
+
+	if (param->netif_mac_renew)
+		vzctl_renew_veth_mac(ctid, NULL);
 
 	return vzctl_apply_param(ctid, setmode);
 

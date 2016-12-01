@@ -652,6 +652,7 @@ int vzctl_env_layout_version(const char *path);
 int vzctl_convertstr(const char *src, char *dst, int dst_size);
 int vzctl_open(void);
 void vzctl_close(void);
+int vzctl_renew_veth_mac(ctid_t ctid, const char *ifname);
 int vzctl_get_env_status(ctid_t ctid, vzctl_env_status_t *status, int mask);
 struct vzctl_env_handle *vzctl_env_open(ctid_t ctid, const char *conf,
 		int flags, int *ret);
