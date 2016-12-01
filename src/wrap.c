@@ -970,3 +970,36 @@ int vzctl_del_param_by_id(ctid_t ctid, int id)
 
 	return vzctl2_del_param_by_id(h, id);
 }
+
+int vzctl_renew_veth_mac(ctid_t ctid, const char *ifname)
+{
+	int ret;
+	vzctl_veth_dev_iterator i = NULL, itd;
+	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
+	if (h == NULL)
+		return ret;
+
+	struct vzctl_env_param *env = get_env_param(ctid);
+	if (env == NULL)
+		return VZCTL_E_NOMEM;
+
+	while ((i = vzctl2_env_get_veth(vzctl2_get_env_param(h), i))) {
+		struct vzctl_veth_dev_param d = {};
+
+		vzctl2_env_get_veth_param(i, &d, sizeof(d));
+		if (ifname != NULL && strcmp(ifname, d.dev_name_ve))
+			continue;
+
+		struct vzctl_veth_dev_param dev = {
+			.dev_name_ve = d.dev_name_ve,
+			.mac_renew = 1,
+		};
+		itd = vzctl2_create_veth_dev(&dev, sizeof(dev));
+		if (itd == NULL)
+			return vzctl_err(VZCTL_E_INVAL, 0,
+					"vzctl2_create_veth_dev");
+		vzctl2_env_add_veth(env, itd);
+	}
+
+	return 0;
+}
