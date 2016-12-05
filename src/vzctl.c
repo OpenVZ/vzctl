@@ -1627,17 +1627,22 @@ int main(int argc, char **argv, char *envp[])
 	}
 	else if (!strcmp(argv[1], "register"))
 	{
-		if (argc < 3) {
-			fprintf(stderr, "Usage: vzctl register <path>\n");
+		if (argc < 4) {
+			fprintf(stderr, "Usage: vzctl register <ctid> <path>\n");
 			exit(VZ_INVALID_PARAMETER_SYNTAX);
 		}
 
-		ve_private = argv[2];
-		argv++; argc--;
-
+		ve_private = argv[3];
 		action = ACTION_REGISTER;
-		if (argc == 2)
-			goto skip_eid;
+		/* register {<ctid> | -} <path> */
+		if (vzctl2_parse_ctid(argv[2], ctid) && strcmp(argv[2], "-")) {
+			fprintf(stderr, "Usage: vzctl register <ctid> <path>\n");
+			exit(VZ_INVALID_PARAMETER_SYNTAX);
+		}
+
+		argc--; argv++;
+
+		goto skip_eid;
 	}
 	else if (!strcmp(argv[1], "unregister"))
 	{
@@ -1922,10 +1927,10 @@ skip_eid:
 			action == ACTION_UNREGISTER ||
 			action == ACTION_REGISTER))
 	{
-		const char *ve_private = NULL;
+		const char *prvt = NULL;
 
-		vzctl2_env_get_ve_private_path(vzctl2_get_env_param(h), &ve_private);
-		if ((ret = vzctl2_check_owner(ve_private)))
+		vzctl2_env_get_ve_private_path(vzctl2_get_env_param(h), &prvt);
+		if ((ret = vzctl2_check_owner(prvt)))
 			goto END;
 	}
 
