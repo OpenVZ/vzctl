@@ -993,6 +993,8 @@ int vzctl_renew_veth_mac(ctid_t ctid, const char *ifname)
 		struct vzctl_veth_dev_param dev = {
 			.dev_name_ve = d.dev_name_ve,
 			.mac_renew = 1,
+			.dhcp = -1,
+			.dhcp6 = -1,
 		};
 		itd = vzctl2_create_veth_dev(&dev, sizeof(dev));
 		if (itd == NULL)
