@@ -10,7 +10,8 @@ _get_ves()
 	case $cmd in
 		create)
 			# create a new VEID, by increasing the last one
-			local veids=`/usr/sbin/vzlist -H -a -octid | tail -1`
+			local veids
+			veids=`/usr/sbin/vzlist -H -a -octid | tail -1`
 			[ -n "$veids" ] || veids=100
 			echo $((veids+1))
 			;;
@@ -224,7 +225,7 @@ _vzctl()
 				# Get command and CTID
 				local cmd=${COMP_WORDS[1]}
 				local ve=${COMP_WORDS[2]}
-				if [ ${cmd::2} = "--" ] ; then
+				if [ ${cmd:0:2} = "--" ] ; then
 					# --verbose or --quiet used
 					cmd=${COMP_WORDS[2]}
 					ve=${COMP_WORDS[3]}
@@ -249,10 +250,10 @@ _vzctl()
 				COMPREPLY=( $( compgen -W "$ids" -- $cur ) )
 				;;
 			*)
-				if [[ "${prev::2}" != "--" || "$prev" = "--save" ]]; then
+				if [[ "${prev:0:2}" != "--" || "$prev" = "--save" ]]; then
 					# List options
 					local cmd=${COMP_WORDS[1]}
-					if [ ${cmd::2} = "--" ] ; then
+					if [ ${cmd:0:2} = "--" ] ; then
 						# --verbose or --quiet used
 						cmd=${COMP_WORDS[2]}
 					fi
