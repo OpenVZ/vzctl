@@ -712,6 +712,56 @@ Register the Container using the configuration file \fIpath\fR/ve.conf and havin
 If the \fB--force\fR option is specified, all validation checks will be skipped.
 .IP "\fBunregister\fR \fIctid\fR|\fIname\fR" 4
 Unregister the specified Container.
+.TP
+\fBContainer action scripts\fR
+.RS
+.PP
+Action scripts can be used to perform actions on containers at various stages of container operation. The following commands can trigger action scripts: \fBstart\fR, \fBstop\fR, \fBrestart\fR, \fBmount\fR, and \fBumount\fR.
+.PP
+Two types of scripts are supported: global, triggered for each container on host, and per-container, triggered for specific containers. Some of the scripts (default) are shipped with Virtuozzo. Other are not present by default but can be created manually and must be assigned specific file names to be triggered.
+.PP
+If you need to extend the functionality of default action scripts, it is recommended to create additional custom scripts and call them from the default scripts.
+.PP
+\fBDefault action scripts\fR
+.PP
+Default action scripts are located in the '/usr/libexec/libvzctl/scripts/' directory.
+.IP "\fBvz-create_prvt\fR" 4
+Creates a container private area from a private area template.
+.IP "\fBvz-net_add\fR" 4
+Sets up the necessary routing entries for container IP addresses and adds public ARP records on all interfaces.
+.IP "\fBvz-net_del\fR" 4
+Deletes routing entries and ARP records for container IP addresses from all interfaces.
+.IP "\fBvz-pci_configure\fR" 4
+Executed after a PCI device is added to or removed from a container.
+.IP "\fBvz-setrate\fR" 4
+Configures the network traffic shaping for a container.
+.IP "\fBvz-start\fR" 4
+Called just before a container is started; used for additional container configuration (such as network setup).
+.IP "\fBvz-stop\fR" 4
+Called just after a container is shut down; used for additional container cleanup (such as network cleanup).
+.PP
+\fBManually created action scripts\fR
+.PP
+Action scripts recognized by Virtuozzo but not shipped by default can be of two types:
+.sp -1
+.HP 2
+\(bu Global, executed for all containers on host. Such scripts must have the prefix 'vps' (e.g., 'vps.mount') and need to be placed in '/etc/vz/conf/'.
+.br
+.sp -1
+.HP 2
+\(bu per-container, executed for specific containers. Such scripts must not have the prefix 'vps' and need to be placed in '/vz/private/<CT_UUID>/scripts/'.
+.IP "\fBvps.mount\fR, \fBmount\fR" 4
+Executed after a container is mounted. Can be global or container-specific.
+.IP "\fBstart\fR" 4
+Executed in container context on container start.
+.IP "\fBstop\fR" 4
+Executed in container context on container stop.
+.IP "\fBvps.umount\fR, \fBumount\fR" 4
+Executed before a container unmounted. Can be global or container-specific.
+.PP
+\fBNOTE\fR: All action scripts except \fBstart\fR and \fBstop\fR are executed in the host context. The \fBstart\fR and \fBstop\fR scripts are executed in the container context.
+.PP
+The environment passed to the \fBmount\fR and \fBumount\fR scripts is the standard environment of the parent (e.g., vzctl) with two additional variables: \fB$VEID\fR and \fB$VE_CONFFILE\fR. The first has the container UUID and the second has the full path to container's configuration file. Other container configuration parameters required for the script (such as \fB$VE_ROOT\fR) can be obtained from the global and per-container configuration files.
 .SS Suspend/Restore
 Checkpointing is an extension of OpenVZ kernel 2.6 which
 allows to save full state of running CT and to restore it later.
