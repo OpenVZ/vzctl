@@ -620,7 +620,8 @@ int vzctl_env_reinstall(ctid_t ctid,
 		int resetpwdb,
 		int skipscripts,
 		char *reinstall_scripts,
-		char *reinstall_opts);
+		char *reinstall_opts,
+		char *ostemplate);
 int vzctl_env_chkpnt(ctid_t ctid, int cmd,
 		char *dumpfile,
 		unsigned ctx,

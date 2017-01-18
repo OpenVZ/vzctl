@@ -942,7 +942,8 @@ int vzctl_env_reinstall(ctid_t ctid,
 		int resetpwdb,
 		int skipscripts,
 		char *reinstall_scripts,
-		char *reinstall_opts)
+		char *reinstall_opts,
+		char *ostemplate)
 {
 	struct vzctl_reinstall_param param = {
 		.skipbackup = skipbackup,
@@ -950,6 +951,7 @@ int vzctl_env_reinstall(ctid_t ctid,
 		.skipscripts = skipscripts,
 		.reinstall_scripts = reinstall_scripts,
 		.reinstall_opts = reinstall_opts,
+		.ostemplate = ostemplate,
 	};
 	int ret;
 	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);

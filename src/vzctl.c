@@ -383,6 +383,7 @@ static struct option reinstall_options[] =
 	{"listscripts", no_argument, NULL, PARAM_REINSTALL_LIST},
 	{"desc", no_argument, NULL, PARAM_REINSTALL_DESC},
 	{"vzpkg_opts", required_argument, NULL, PARAM_VZPKG_OPTS},
+	{"ostemplate", required_argument, NULL, PARAM_OSTEMPLATE},
 	{ NULL, 0, NULL, 0}
 };
 
@@ -848,6 +849,9 @@ int ParseReinstallOptions(struct CParam *param, int argc, char **argv)
 				} while ((token = strtok(NULL, ",\t ")));
 				break;
 			}
+			case PARAM_OSTEMPLATE:
+				param->ostmpl = strdup(optarg);
+				break;
 			case PARAM_RESETPWDB	:
 				param->resetpwdb = YES;
 				break;
@@ -2163,8 +2167,8 @@ skip_eid:
 						param->resetpwdb,
 						param->skipscripts,
 						reinstall_scripts,
-						reinstall_opts);
-
+						reinstall_opts,
+						param->ostmpl);
 				free(reinstall_scripts);
 				free(reinstall_opts);
 			}
