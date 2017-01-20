@@ -22,7 +22,6 @@
 #include <langinfo.h>
 #include <locale.h>
 #include <limits.h>
-#include <linux/vzlist.h>
 #include <sys/sysmacros.h>
 
 #include "vzctl.h"
