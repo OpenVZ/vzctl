@@ -718,31 +718,9 @@ Unregister the specified Container.
 .PP
 Action scripts can be used to perform actions on containers at various stages of container operation. The following commands can trigger action scripts: \fBstart\fR, \fBstop\fR, \fBrestart\fR, \fBmount\fR, and \fBumount\fR.
 .PP
-Two types of scripts are supported: global, triggered for each container on host, and per-container, triggered for specific containers. Some of the scripts (default) are shipped with Virtuozzo. Other are not present by default but can be created manually and must be assigned specific file names to be triggered.
+Two types of scripts are supported: global, triggered for each container on host, and per-container, triggered for specific containers. Custom action scripts can be created manually and must be assigned specific file names to be triggered.
 .PP
-If you need to extend the functionality of default action scripts, it is recommended to create additional custom scripts and call them from the default scripts.
-.PP
-\fBDefault action scripts\fR
-.PP
-Default action scripts are located in the '/usr/libexec/libvzctl/scripts/' directory.
-.IP "\fBvz-create_prvt\fR" 4
-Creates a container private area from a private area template.
-.IP "\fBvz-net_add\fR" 4
-Sets up the necessary routing entries for container IP addresses and adds public ARP records on all interfaces.
-.IP "\fBvz-net_del\fR" 4
-Deletes routing entries and ARP records for container IP addresses from all interfaces.
-.IP "\fBvz-pci_configure\fR" 4
-Executed after a PCI device is added to or removed from a container.
-.IP "\fBvz-setrate\fR" 4
-Configures the network traffic shaping for a container.
-.IP "\fBvz-start\fR" 4
-Called just before a container is started; used for additional container configuration (such as network setup).
-.IP "\fBvz-stop\fR" 4
-Called just after a container is shut down; used for additional container cleanup (such as network cleanup).
-.PP
-\fBManually created action scripts\fR
-.PP
-Action scripts recognized by Virtuozzo but not shipped by default can be of two types:
+Custom action scripts can be of two types:
 .sp -1
 .HP 2
 \(bu Global, executed for all containers on host. Such scripts must have the prefix 'vps' (e.g., 'vps.mount') and need to be placed in '/etc/vz/conf/'.
