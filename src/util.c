@@ -300,12 +300,12 @@ static int convert_str(const char *to, const char *from, const char *src,
 	size_t insize, avail, nconv;
 	int ret = 0;
 
-	if (to == NULL || from == NULL)
+	if (to == NULL || from == NULL || dst_size < 1)
 		return 1;
 
 	inptr = (char *)src;
 	insize = strlen(src);
-	avail = dst_size;
+	avail = dst_size - 1;
 	ic = iconv_open(to, from);
 	if (ic == (iconv_t) -1) {
 		logger(3, errno, "Error in iconv_open()");
