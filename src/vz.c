@@ -387,6 +387,7 @@ void Usage(void)
 "vzctl snapshot-umount <ctid|name> --id <uuid>\n"
 "vzctl snapshot-list <ctid|name> [-H] [-o field[,field...]] [--id <uuid>]\n"
 "vzctl exec | exec2 <ctid|name> <command> [arg ...]\n"
+"vzctl pause <ctid|name>\n"
 "vzctl runscript <ctid|name> <script>\n"
 "vzctl register <path> <ctid> [--force]\n"
 "vzctl unregister <ctid|name>\n"

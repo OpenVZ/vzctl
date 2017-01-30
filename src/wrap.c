@@ -418,6 +418,16 @@ int vzctl_env_start(ctid_t ctid, int skip_action_script, int wait,
 	return vzctl2_env_start(h, flags);
 }
 
+int vzctl_env_pause(ctid_t ctid)
+{
+	int ret;
+	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
+	if (h == NULL)
+		return ret;
+
+	return vzctl2_env_pause(h, 0);
+}
+
 int vzctl_env_restart(ctid_t ctid, int wait, int skip_ve_setup)
 {
 	int ret;

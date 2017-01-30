@@ -163,6 +163,7 @@
 #define ACTION_STOP_FORCE	47
 #define ACTION_TSNAPSHOT	48
 #define ACTION_TSNAPSHOT_DELETE	49
+#define ACTION_PAUSE		50
 
 #define PARAM_DUMMY		0
 #define PARAM_KMEMSIZE		'k'
@@ -583,6 +584,7 @@ int vzctl_env_snapshot_list(int argc, char **argv, struct vzctl_env_handle *h);
 int vzctl_env_enter(ctid_t ctid);
 int vzctl_env_start(ctid_t ctid, int skip_action_script, int wait,
 		int skip_ve_setup, int skip_fsck);
+int vzctl_env_pause(ctid_t ctid);
 int vzctl_env_restart(ctid_t ctid, int wait, int skip_ve_setup);
 int vzctl_env_stop(ctid_t ctid, int stop_mode, int flags);
 int vzctl_env_set_userpasswd(ctid_t ctid, const char *user, const char *passwd, int is_crypted);

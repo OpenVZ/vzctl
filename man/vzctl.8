@@ -8,6 +8,8 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBcreate\fR \fIctid\fR | \fB--ostemplat
 .PP
 vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBreinstall\fR \fIctid\fR [\fB--skipbackup\fR] [\fB--resetpwdb\fR] [\fB--skipscripts\fR]
 .PP
+vzctl \fBpause\fR \fIctid\fR
+.PP
 vzctl \fBrunscript\fR \fIctid\fR \fIscript\fR
 .TP
 vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
@@ -695,6 +697,8 @@ To customize the reinstall process, two scripts should be created. The first one
 of 128, it indicates that standard reinstall procedure will be done. The second
 script, \fIvps.configure\fR, is run inside CT there the old CT is mounted under '/old'
 directory.
+.IP "\fBpause\fR <\fIctid\fR>" 4
+Pause the specified Container.
 .IP "\fBreinstall\fR \fIctid\fR [\fB--listscripts\fR] [\fB--desc\fR]"
 List reinstall scripts if \fB--desc\fR option specified output description.
 .IP "\fBrunscript\fR \fIctid\fR" 4

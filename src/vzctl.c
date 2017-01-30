@@ -1358,7 +1358,9 @@ int Show(ctid_t ctid)
 	printf("VEID %s %s %s %s", ctid,
 		status.mask & ENV_STATUS_EXISTS ? "exist" : "deleted",
 		status.mask & ENV_STATUS_MOUNTED ? "mounted" : "unmounted",
-		status.mask & ENV_STATUS_RUNNING ? "running" : "down");
+		status.mask & ENV_STATUS_RUNNING ?
+				(status.mask & ENV_STATUS_CPT_SUSPENDED ?
+					"paused" : "running") : "down");
 
 	if (status.mask & ENV_STATUS_SUSPENDED)
 		printf(" suspended");
@@ -1509,6 +1511,10 @@ int main(int argc, char **argv, char *envp[])
 	{
 		action = ACTION_START;
 		status = ST_START;
+	}
+	else if (!strcmp(argv[1], "pause"))
+	{
+		action = ACTION_PAUSE;
 	}
 	else if (!strcmp(argv[1], "stop"))
 	{
@@ -1766,6 +1772,8 @@ skip_eid:
 		if ((ret = ParseStartOptions(param, argc, argv)))
 			 goto END;
 		break;
+	case ACTION_PAUSE	:
+		break;
 	case ACTION_SUSPEND	:
 	case ACTION_CHKPNT	:
 		if ((ret = ParseMigrationOptions(param, chkpnt_options,
@@ -1945,7 +1953,8 @@ skip_eid:
 		action == ACTION_SNAPSHOT || action == ACTION_SNAPSHOT_SWITCH ||
 		action == ACTION_SNAPSHOT_DELETE || action == ACTION_SNAPSHOT_MOUNT ||
 		action == ACTION_SNAPSHOT_UMOUNT || action == ACTION_REGISTER ||
-		action == ACTION_TSNAPSHOT || action == ACTION_TSNAPSHOT_DELETE)
+		action == ACTION_TSNAPSHOT || action == ACTION_TSNAPSHOT_DELETE ||
+		action == ACTION_PAUSE)
 	{
 		lckfd = 0;
 		if (skiplock != YES)
@@ -2032,6 +2041,9 @@ skip_eid:
 			ret = vzctl_env_restart(ctid, gparam->wait, gparam->skip_ve_setup);
 			break;
 		}
+		case ACTION_PAUSE	:
+			ret = vzctl_env_pause(ctid);
+			break;
 		case ACTION_CREATE	:
 		{
 			ret = vzctl_env_create(ctid,
