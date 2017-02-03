@@ -9,6 +9,7 @@
 #define ERR_PARAM       1
 #define ERR_AUTH        3
 #define ERR_READ_PASSWD 5
+#define ERR_PSASHADOW   7
 #define ERR_GID_CHECK   9
 
 
@@ -116,6 +117,9 @@ int main(int argc, char **argv)
 		switch (ret) {
 		case VZCTL_E_AUTH_GUID:
 			ret = ERR_GID_CHECK;
+			break;
+		case VZCTL_E_AUTH_PSASHADOW:
+			ret = ERR_PSASHADOW;
 			break;
 		default:	
 			ret = ERR_AUTH;
