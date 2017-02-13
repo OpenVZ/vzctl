@@ -1737,7 +1737,7 @@ static char *get_real_ips(ctid_t ctid)
 		if (s != NULL)
 			*s = '\0';
 
-		if (strcmp(ip, "127.0.0.1") == 0 ||
+		if (strncmp(ip, "127.", 4) == 0 ||
 				strcmp(ip, "::1") == 0 ||
 				strcmp(ip, "::2") == 0 ||
 				strncmp(ip, "fe80:", 5) == 0)
