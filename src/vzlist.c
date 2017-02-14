@@ -30,7 +30,7 @@
 static const char *ve_status(int status)
 {
 	if (status & ENV_STATUS_RUNNING)
-		return "running";
+		return status & ENV_STATUS_CPT_SUSPENDED ? "paused" : "running";
 	else if (status & ENV_STATUS_MOUNTED)
 		return "mounted";
 	else if (status & ENV_STATUS_SUSPENDED)
@@ -1703,7 +1703,10 @@ static int _get_run_ve(int update)
 		} else if (res == 3)
 			ve.ip = strdup("");
 		SET_CTID(ve.ctid, ctid);
-		ve.status = ENV_STATUS_RUNNING;
+
+		vzctl_env_status_t status = {};
+		vzctl2_get_env_status(ctid, &status, ENV_STATUS_RUNNING);
+		ve.status = status.mask;
 		if (update)
 			update_ve(ctid, ve.ip, ve.status);
 		else
