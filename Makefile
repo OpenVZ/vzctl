@@ -1,6 +1,8 @@
 # Makefile for vzctl - Virtual Environments control utility
 # Copyright (C) SWsoft, 1999-2007. All rights reserved.
 
+include Makefile.incl
+
         INSTALL = install
          PREFIX = /usr
           VZDIR = /etc/vz
@@ -61,6 +63,10 @@ BASHCOMPLSCRIPT = vzctl.sh
 ##################################################
 default: all
 
+define do_rebrand
+	sed -e "s,@PRODUCT_NAME_SHORT@,$(PRODUCT_NAME_SHORT),g" -i $(1) || exit 1;
+endef
+
 .force:;
 
 .stamp-debug:
@@ -104,10 +110,12 @@ installveconfig:
 
 install-systemd:
 	for file in $(SYSTEMDUNITS); do \
-		$(INSTALL) -m 644 etc/systemd.d/$$file $(DESTDIR)$(SYSTEMDDIR)/$$file; \
+		$(INSTALL) -m 0644 etc/systemd.d/$$file $(DESTDIR)$(SYSTEMDDIR)/$$file; \
+		$(call do_rebrand,$(DESTDIR)$(SYSTEMDDIR)/$$file) \
 	done
 	for file in $(SYSTEMDSCRIPTS); do \
-		$(INSTALL) -m 755 etc/systemd.d/$$file $(DESTDIR)$(SYSTEMDSCRIPTDIR)/$$file; \
+		$(INSTALL) -m 0755 etc/systemd.d/$$file $(DESTDIR)$(SYSTEMDSCRIPTDIR)//$$file; \
+		$(call do_rebrand,$(DESTDIR)$(SYSTEMDSCRIPTDIR)/$$file) \
 	done
 
 install-modulesd:
@@ -131,10 +139,12 @@ installconfig:
 	done
 installmans:
 	for file in $(MAN8); do \
-		$(INSTALL) -m 644 man/$$file $(DESTDIR)$(MANDIR)/man8/$$file; \
+		$(INSTALL) -m 0644 man/$$file $(DESTDIR)$(MANDIR)/man8/$$file; \
+		$(call do_rebrand,$(DESTDIR)$(MANDIR)/man8/$$file) \
 	done
 	for file in $(MAN5); do \
-		$(INSTALL) -m 644 man/$$file $(DESTDIR)$(MANDIR)/man5/$$file; \
+		$(INSTALL) -m 0644 man/$$file $(DESTDIR)$(MANDIR)/man5/$$file; \
+		$(call do_rebrand,$(DESTDIR)$(MANDIR)/man5/$$file) \
 	done
 
 installvzevent:

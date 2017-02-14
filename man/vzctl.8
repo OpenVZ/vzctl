@@ -1,5 +1,5 @@
 .\" $Id$
-.TH vzctl 8 "May 2011" "OpenVZ"
+.TH vzctl 8 "May 2011" "@PRODUCT_NAME_SHORT@"
 .SH NAME
 vzctl \- utility to control a Container.
 .SH SYNOPSIS
@@ -141,7 +141,7 @@ manipulations with Container (CT).
 .PP
 Containers can be referred to by numeric \fIctid\fR
 (or \fIname\fR which can be assigned with \fB--name\fR option). Note
-that CT ID <= 100 are reserved for OpenVZ internal purposes.
+that CT ID <= 100 are reserved for @PRODUCT_NAME_SHORT@ internal purposes.
 .SH OPTIONS
 .SS Flags
 These flags can be used with any \fBvzctl\fR command.
@@ -366,7 +366,7 @@ the limit to different values does not make practical sense.
 Maximum number of file locks. Safety gap should be between barrier and limit.
 .TP
 \fB-t\fR, \fB--numpty\fR \fIitems\fR[:\fIitems\fR]
-Number of pseudo-terminals (PTY). Note that in OpenVZ each CT
+Number of pseudo-terminals (PTY). Note that in @PRODUCT_NAME_SHORT@ each CT
 can have no more than 255 PTYs. Setting the barrier and
 the limit to different values does not make practical sense.
 .TP
@@ -710,7 +710,7 @@ Display in real-time actions or events for \fIctid\fR.
 In case ctid is 0, display actions and events for all CTs. Valid only on 2.6
 kernel.
 .IP "\fBconvert\fR \fIctid\fR" 4
-In OpenVZ, Containers use the new layout. The \fBconvert\fR command converts a Container from the old layout to a new one.
+In @PRODUCT_NAME_SHORT@, Containers use the new layout. The \fBconvert\fR command converts a Container from the old layout to a new one.
 .IP "\fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR" 4
 Register the Container using the configuration file \fIpath\fR/ve.conf and having ID \fIctid\fR.
 If the \fB--force\fR option is specified, all validation checks will be skipped.
@@ -745,7 +745,7 @@ Executed before a container unmounted. Can be global or container-specific.
 .PP
 The environment passed to the \fBmount\fR and \fBumount\fR scripts is the standard environment of the parent (e.g., vzctl) with two additional variables: \fB$VEID\fR and \fB$VE_CONFFILE\fR. The first has the container UUID and the second has the full path to container's configuration file. Other container configuration parameters required for the script (such as \fB$VE_ROOT\fR) can be obtained from the global and per-container configuration files.
 .SS Suspend/Restore
-Checkpointing is an extension of OpenVZ kernel 2.6 which
+Checkpointing is an extension of @PRODUCT_NAME_SHORT@ kernel 2.6 which
 allows to save full state of running CT and to restore it later.
 .TP
 \fBsuspend\fR \fIctid\fR

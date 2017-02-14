@@ -195,7 +195,7 @@ mount_vz()
 		if grep -wq "${m}" /proc/mounts; then
 			continue
 		fi
-		echo -n $"Checking Virtuozzo partition $m file system..."
+		echo -n $"Checking " @PRODUCT_NAME_SHORT@ " partition $m file system..."
 		fsck -V -T -a ${m} 2>&1
 		ret=$?
 		# The exit code returned by fsck is the sum of:
@@ -205,7 +205,7 @@ mount_vz()
 			return 1
 		fi
 
-		echo "Mount Virtuozzo partition: $m"
+		echo "Mount " @PRODUCT_NAME_SHORT@ " partition: $m"
 		mount ${m}
 		if [ $? -ne 0 ]; then
 			return 1
