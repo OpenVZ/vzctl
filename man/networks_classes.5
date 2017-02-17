@@ -1,10 +1,10 @@
-.TH networks_classes 5 "October 2009" "OpenVZ"
+.TH networks_classes 5 "October 2009" "@PRODUCT_NAME_SHORT@"
 .SH NAME
-networks_classes \- OpenVZ network classes configuration
+networks_classes \- @PRODUCT_NAME_SHORT@ network classes configuration
 .SH SYNOPSIS
 /etc/vz/conf/networks_classes
 .SH DESCRIPTION
-This file describes pools of IP addresses used for OpenVZ traffic
+This file describes pools of IP addresses used for @PRODUCT_NAME_SHORT@ traffic
 shaping and accounting. File consist of records; each record resides
 on a separate line and contains a pair of values \fBClass\fR \fBNetwork\fR,
 separated by space. Here \fBClass\fR is number in the range 0 -
@@ -16,7 +16,7 @@ If nested networks exists with different class numbers, "wider" networks
 must be mentioned first.
 .PP
 Class number \fI0\fR is reserved for network addresses used by CT themselves.
-OpenVZ traffic accounting won't work unless you specify at least this
+@PRODUCT_NAME_SHORT@ traffic accounting won't work unless you specify at least this
 class.
 .SH EXAMPLES
 \f(CW
