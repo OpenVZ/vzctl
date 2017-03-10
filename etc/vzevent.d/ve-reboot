@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (c) 2015-2017, Parallels International GmbH. All rights reserved.
 
 reboot_disabled()
 {

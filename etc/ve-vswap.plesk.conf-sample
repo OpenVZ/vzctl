@@ -1,7 +1,7 @@
 # This is an example configuration file for Container with 1024MB
 #<agent> Configuration file for Container with installed Plesk application
 #
-# Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
+# Copyright (c) 1999-2017, Parallels International GmbH. All rights reserved.
 
 VERSION="2"
 
