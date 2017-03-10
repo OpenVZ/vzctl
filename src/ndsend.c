@@ -1,10 +1,13 @@
 /*
- * Copyright (C) SWsoft, 1999-2007. All rights reserved.
+ * Copyright (c) 1999-2017, Parallels International GmbH
  *
  * This code is public domain.
  *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * Our contact details: Parallels International GmbH, Vordergasse 59, 8200
+ * Schaffhausen, Switzerland.
  */
 
 #include <stdio.h>

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) Parallels IP Holdings GmbH, 1999-2014. All rights reserved.
+# Copyright (c) 1999-2017, Parallels International GmbH. All rights reserved.
 #
 # This script clean CT resources on stop event
 #

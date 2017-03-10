@@ -2,7 +2,7 @@
 # unlimited CT capable of running IBM DB2 EE for Linux.
 #<agent>: Configuration file for running DB2 EE server
 #
-# Copyright (c) 1999-2015 Parallels IP Holdings GmbH. All rights reserved.
+# Copyright (c) 1999-2017, Parallels International GmbH. All rights reserved.
 
 VERSION="2"
 
