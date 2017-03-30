@@ -65,7 +65,7 @@ struct sigaction sigusr1;
 void usage(void)
 {
 	fprintf(stderr,
-FULL_NAME ".  Copyright (C) SWsoft, 1999-2007. All rights reserved.\n\n"
+FULL_NAME ".  Copyright (c) 1999-2017, Parallels International GmbH.\n\n"
 "Usage: " PROGRAM_NAME " [options]\n"
 "Available options are:\n"
 "  -i - periodical log interval, in seconds (default is %d)\n"

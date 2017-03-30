@@ -1,5 +1,5 @@
 # Makefile for vzctl - Virtual Environments control utility
-# Copyright (C) SWsoft, 1999-2007. All rights reserved.
+# Copyright (c) 1999-2017, Parallels International GmbH
 
 include Makefile.incl
 
