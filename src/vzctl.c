@@ -1467,7 +1467,7 @@ int main(int argc, char **argv, char *envp[])
 		if (!STRNCOMP(argv[1], "--verbose"))
 			verbose = 5;
 		else if (!STRNCOMP(argv[1], "--quiet"))
-			quiet = 0;
+			quiet = 1;
 		else if (!STRNCOMP(argv[1], "--help"))
 		{
 			Usage();
