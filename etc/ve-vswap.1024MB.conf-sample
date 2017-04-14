@@ -9,9 +9,6 @@ ONBOOT="yes"
 
 PHYSPAGES="262144:262144"
 SWAPPAGES="262144"
-# Virtual memory overcommitment
-# privvmpages = ram + swap * VM_OVERCOMMIT (unlimited if not specified)
-#VM_OVERCOMMIT="1.5"
 
 NETFILTER="full"
 
