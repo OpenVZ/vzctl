@@ -34,7 +34,6 @@ MODULESLOADDDIR = /etc/modules-load.d
      MODLOAD = vz.conf
 SYSTEMDUNITS = vzevent.service vz.service
 SYSTEMDSCRIPTS = vz
-VZCTLSCRIPTS = iptables-config.py
   DRACUTMODS = 99vzctl
 
    VE0CONFIG = 0.conf networks_classes
@@ -152,11 +151,6 @@ installvzevent:
 		$(INSTALL) etc/vzevent.d/$$file $(DESTDIR)$(VZEVENTDIR)/$$file; \
 	done
 
-installvzctlscripts:
-	for file in $(VZCTLSCRIPTS); do \
-		$(INSTALL) -m 755 $$file $(DESTDIR)$(VZCTLSCRIPTDIR)/$$file; \
-	done
-
 installdracutmod:
 	for dir in $(DRACUTMODS); do \
 		$(INSTALL) -d $(DESTDIR)$(DRACUT_MOD_DIR)/$$dir || : ; \
@@ -193,7 +187,7 @@ install: installdirs installsbinscripts installmans \
 	installveconfig install-sysctld \
 	install-modules-load \
 	installbashcompl installvzevent \
-	installvzctlscripts installdracutmod
+	installdracutmod
 	(cd src && ${MAKE} $@)
 
 
