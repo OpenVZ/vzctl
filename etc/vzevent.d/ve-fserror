@@ -1,0 +1,10 @@
+#!/bin/bash
+# Copyright (c) 2017, Parallels International GmbH. All rights reserved.
+#
+
+ctid=`/usr/sbin/vzlist -Ho veid,device 2>/dev/null | awk '/'"$ID"'/{print $1}'`
+[ -z "$ctid" ] && exit 0
+
+echo "`date --iso-8601=seconds` fserror : Container $ctid : fserror on $ID" >> /var/log/vzctl.log
+
+/usr/sbin/vzctl stop $ctid --fast >/dev/null 2>&1

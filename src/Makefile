@@ -75,7 +75,7 @@ real-all: $(PROGS)
 	$(CC) -c $(CFLAGS) $(INC) $< -o $@
 
 vzeventd: $(OBJ_vzeventd)
-	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) -lvzctl2 $^ -o $@
+	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) -lvzctl2 -ludev $^ -o $@
 
 ndsend: $(OBJ_nd)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ -o $@
