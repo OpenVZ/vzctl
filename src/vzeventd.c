@@ -34,6 +34,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libudev.h>
+#include <poll.h>
 
 #include <vzctl/libvzctl.h>
 
@@ -46,6 +48,7 @@
 #endif
 
 static int _s_sock;
+static struct udev_monitor *_s_udev_mon;
 volatile sig_atomic_t _s_stopped;
 static struct sockaddr_nl _s_nladd = {
 	.nl_family = AF_NETLINK,
@@ -57,15 +60,29 @@ static void term_handler(int signo)
 	_s_stopped = 1;
 }
 
-static int init(int demonize, int verbose)
+static int init_uevent(void)
 {
-	vzctl2_init_log("vzeventd");
-	vzctl2_set_log_file(LOG_FILE);
-	vzctl2_set_log_enable(1);
-	vzctl2_set_log_level(verbose);
-	vzctl2_set_log_verbose(verbose);
-	vzctl2_set_log_quiet(!demonize);
+	struct udev *udev;
 
+	udev = udev_new();
+	if (udev == NULL) {
+		vzctl2_log(-1, ENOENT, "udev_new()");
+		return 1;
+	}
+
+	_s_udev_mon = udev_monitor_new_from_netlink(udev, "kernel");
+	if (_s_udev_mon == NULL) {
+		vzctl2_log(-1, ENOENT, "udev_monitor_new_from_netlink");
+		return 1;
+	}
+
+	udev_monitor_enable_receiving(_s_udev_mon);
+
+	return 0;
+}
+
+static int init_vzevent(void)
+{
 	_s_sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_VZEVENT);
 	if (_s_sock < 0)
 		return 1;
@@ -82,6 +99,28 @@ static int init(int demonize, int verbose)
 	return 0;
 }
 
+static int init(int demonize, int verbose)
+{
+	int rc;
+
+	vzctl2_init_log("vzeventd");
+	vzctl2_set_log_file(LOG_FILE);
+	vzctl2_set_log_enable(1);
+	vzctl2_set_log_level(verbose);
+	vzctl2_set_log_verbose(verbose);
+	vzctl2_set_log_quiet(!demonize);
+
+	rc = init_vzevent();
+	if (rc)
+		return rc;
+
+	rc = init_uevent();
+	if (rc)
+		return rc;
+
+	return 0;
+}
+
 static void run_event_script(const char *event, const char *id)
 {
 	int pid;
@@ -92,6 +131,7 @@ static void run_event_script(const char *event, const char *id)
 	char *env[] = {"HOME=/", "TERM=linux",
 		"PATH=/bin:/sbin:/usr/bin:/usr/sbin:", idstr, NULL};
 
+	vzctl2_log(2, 0, "EVENT: %s %s", event, id);
 	snprintf(idstr, sizeof(idstr), "ID=%s", id);
 
 	snprintf(fname, sizeof(fname), VZEVENT_DIR"%s", event);
@@ -117,7 +157,7 @@ static void run_event_script(const char *event, const char *id)
 	}
 }
 
-static int mainloop(void)
+static int process_vzevent(void)
 {
 	int len;
 	char buf[512];
@@ -128,51 +168,105 @@ static int mainloop(void)
 		.iov_len = sizeof(buf)-1,
 	};
 	struct msghdr msg;
-	int ret = 0;
+
+	bzero(&msg, sizeof(msg));
+	msg.msg_name = (void *)&_s_nladd;
+	msg.msg_namelen = sizeof(_s_nladd);
+	msg.msg_iov = &iov;
+	msg.msg_iovlen = 1;
+
+	len = recvmsg(_s_sock, &msg, 0);
+	if (len < 0) {
+		vzctl2_log(-1, errno, "Failed to receive the event message");
+		/* ignore ENOBUFS error */
+		if (errno == ENOBUFS)
+			return 0;
+		return 1;
+	} else if (len == 0)
+		return 0;
+
+	buf[len] = '\0';
+	/* event@id */
+	if (sscanf(buf, "%31[^@]@%36s", event, id) != 2) {
+		vzctl2_log(-1, 0, "Unknown event format: %s", buf);
+		return 1;
+	}
+
+	run_event_script(event, id);
+
+	return 0;
+}
+
+static void process_uevent(void)
+{
+	struct udev_device *udev;
+	struct udev_list_entry *e;
+	int fserror = 0;
+	const char *n;
+	const char *v;
+	const char *dev = NULL;
+
+	udev = udev_monitor_receive_device(_s_udev_mon);
+	if (udev == NULL)
+		return;
+
+	udev_list_entry_foreach(e, udev_device_get_properties_list_entry(udev)) {
+		n = udev_list_entry_get_name(e);
+		v = udev_list_entry_get_value(e);
+		if (!strcmp(n, "FS_ACTION") && !strcmp(v, "ERROR"))
+			fserror = 1;
+
+		if (!strcmp(n, "FS_NAME"))
+			dev = v;
+	}
+	if (fserror && dev != NULL)
+		run_event_script("ve-fserror", dev);
+
+	udev_device_unref(udev);
+}
+
+#define UEVENT_FD	0
+#define VZEVENT_FD	1
+
+static int mainloop(void)
+{
 	struct sigaction act;
+	struct pollfd fds[2] = {};
+	int n;
 
 	sigemptyset(&act.sa_mask);
 	act.sa_handler = term_handler;
 	act.sa_flags = 0;
 	sigaction(SIGTERM, &act, NULL);
-
 	act.sa_handler = SIG_IGN;
 	sigaction(SIGCHLD, &act, NULL);
 
 	vzctl2_log(0, 0, "Starting vzeventd");
 
+	fds[UEVENT_FD].fd = udev_monitor_get_fd(_s_udev_mon);
+	fds[UEVENT_FD].events = POLLIN;
+	fds[VZEVENT_FD].fd = _s_sock;
+	fds[VZEVENT_FD].events = POLLIN;
+
 	while (!_s_stopped) {
-		bzero(&msg, sizeof(msg));
-		msg.msg_name = (void *)&_s_nladd;
-		msg.msg_namelen = sizeof(_s_nladd);
-		msg.msg_iov = &iov;
-		msg.msg_iovlen = 1;
-
-		len = recvmsg(_s_sock, &msg, 0);
-		if (len < 0) {
-			if (errno == EINTR)
-				continue;
-			vzctl2_log(-1, errno, "Failed to receive the event message");
-			/* ignore ENOBUFS error */
-			if (errno == ENOBUFS)
-				continue;
-			ret = 1;
+		n = poll(fds, 2, 50000);
+		if (n == -1) {
+			vzctl2_log(-1, errno, "poll()");
 			break;
-		} else if (len == 0)
-			break;
-
-		buf[len] = '\0';
-		vzctl2_log(2, 0, "EVENT: %s", buf);
-		/* event@id */
-		if (sscanf(buf, "%31[^@]@%36s", event, id) != 2) {
-			vzctl2_log(-1, 0, "Unknown event format: %s", buf);
+		} else if (n == 0)
 			continue;
+
+		if (fds[UEVENT_FD].revents & POLLIN) {
+			process_uevent();
 		}
 
-		run_event_script(event, id);
+		if (fds[VZEVENT_FD].revents & POLLIN) {
+			process_vzevent();
+		}
 	}
+
 	vzctl2_log(0, 0, "Exited");
-	return ret;
+	return 0;
 }
 
 static int lock(void)
