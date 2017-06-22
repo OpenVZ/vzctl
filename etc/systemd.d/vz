@@ -225,7 +225,8 @@ stop()
 	local cmd pid pids iter velist veid
 	local action=suspend
 
-	eval $(. ${VZCONF} && echo VE_STOP_MODE="${VE_STOP_MODE}")
+	eval $(. ${VZCONF} && echo VE_STOP_MODE="${VE_STOP_MODE}" \
+		VE_PARALLEL="${VE_PARALLEL}")
 
 	[ "$VE_STOP_MODE" = "stop" ] && action=stop
 	mkdir -p ${SUSPEND_CONF_DIR}
