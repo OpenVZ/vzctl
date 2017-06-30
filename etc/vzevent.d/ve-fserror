@@ -10,14 +10,7 @@ echo "`date --iso-8601=seconds` fserror : Container $ctid : fserror on $ID" >> /
 eval $(. /etc/vz/vz.conf && echo ON_VE_FSERROR="${ON_VE_FSERROR}")
 
 case "$ON_VE_FSERROR" in
-suspend)
-	/usr/sbin/vzctl suspend $ctid >/dev/null 2>&1
-	;;
-recover)
-	/usr/sbin/vzctl suspend $ctid >/dev/null 2>&1 &&
-		/usr/sbin/vzctl resume $ctid >/dev/null 2>&1
-	;;
 *)
 	/usr/sbin/vzctl stop $ctid --fast >/dev/null 2>&1
 	;;
-esac	
+esac
