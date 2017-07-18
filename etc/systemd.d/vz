@@ -67,6 +67,7 @@ kernel rx
 kernel/fscaps r
 kernel/profiling r
 kernel/uevent_seqnum r
+module/ rx
 devices/virtual/mem rx
 devices/virtual/mem/full rx
 devices/virtual/mem/full/dev r
