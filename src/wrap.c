@@ -42,7 +42,7 @@ static ctid_t _g_eid;
 struct vzctl_env_param *get_env_param(ctid_t ctid)
 {
 	if (_g_env_param == NULL)
-		_g_env_param = vzctl2_alloc_env_param(ctid);
+		_g_env_param = vzctl2_alloc_env_param();
 
 	return _g_env_param;
 }
@@ -619,7 +619,7 @@ int vzctl_set_cpu_param(ctid_t ctid,
 			limit == NULL && cpumask == NULL && nodemask == NULL)
 		return 0;
 
-	param = vzctl2_alloc_env_param(ctid);
+	param = vzctl2_alloc_env_param();
 	if (param == NULL)
 		return VZCTL_E_NOMEM;
 
@@ -670,7 +670,7 @@ int vzctl_set_node_cpu_param(unsigned long units)
 	struct vzctl_env_handle *h;
 	vzctl_env_param_ptr param;
 
-	param = vzctl2_alloc_env_param(VE0ID);
+	param = vzctl2_alloc_env_param();
 	if (param == NULL)
 		return VZCTL_E_NOMEM;
 
