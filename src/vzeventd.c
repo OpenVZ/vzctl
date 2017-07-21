@@ -251,6 +251,8 @@ static int mainloop(void)
 	while (!_s_stopped) {
 		n = poll(fds, 2, 50000);
 		if (n == -1) {
+			if (errno == EINTR)
+				continue;
 			vzctl2_log(-1, errno, "poll()");
 			break;
 		} else if (n == 0)
