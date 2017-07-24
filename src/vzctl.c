@@ -2131,8 +2131,10 @@ skip_eid:
 				ret = Set(ctid, p);
 			if (p->save)
 			{
-				if (vzctl_env_save(ctid))
+				if (vzctl_env_save(ctid) == 0) {
+					vzctl2_send_state_evt(ctid, VZCTL_ENV_CONFIG_CHANGED);
 					logger(0, 0, "Saved parameters for Container %s", ctid);
+				}
 			}
 			else
 			{
