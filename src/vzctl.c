@@ -1937,7 +1937,7 @@ skip_eid:
 			ret = VZ_NOVE_CONFIG;
 			goto END;
 		}
-		flags = VZCTL_CONF_SKIP_NON_EXISTS;
+		flags = VZCTL_CONF_SKIP_NON_EXISTS | VZCTL_CONF_SKIP_PARSE;
 	}
 
 	h = vzctl_env_open(ctid, buf, flags, &ret);

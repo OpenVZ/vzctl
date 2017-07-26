@@ -228,7 +228,7 @@ int stat_file(const char *file)
 	struct stat st;
 
 	if (stat(file, &st)) {
-		if (errno != ENOENT) {
+		if (errno != ENOENT && errno != ENOTCONN) {
 			logger(-1, errno, "Unable to find %s", file);
 			return -1;
 		}
