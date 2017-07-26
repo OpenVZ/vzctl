@@ -214,7 +214,7 @@ static void process_uevent(void)
 		n = udev_list_entry_get_name(e);
 		v = udev_list_entry_get_value(e);
 		if (!strcmp(n, "FS_ACTION") && 
-				(!strcmp(v, "ABORT") || !strcmp(v, "ERROR"))
+				(!strcmp(v, "ABORT") || !strcmp(v, "ERROR")))
 			fserror = 1;
 
 		if (!strcmp(n, "FS_NAME"))
