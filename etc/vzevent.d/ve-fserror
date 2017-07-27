@@ -2,15 +2,21 @@
 # Copyright (c) 2017, Parallels International GmbH. All rights reserved.
 #
 
-ctid=`/usr/sbin/vzlist -Ho veid,device 2>/dev/null | awk '/'"$ID"'/{print $1}'`
+ctid=
+SYSFSDEV=/sys/fs/cgroup/devices/machine.slice
+
+read -r DEV < /sys/class/block/$ID/dev
+[ -z "$DEV" ] && exit 0
+
+for d in `ls -1 $SYSFSDEV`; do
+	[ -d "$SYSFSDEV/$d" ] || continue
+	if grep "b $DEV r" $SYSFSDEV/$d/devices.list; then
+		ctid=$d
+		break;
+	fi
+done
+
+echo "`date --iso-8601=seconds` fserror : Container $ctid : fserror on $ID/$DEV" >> /var/log/vzctl.log
 [ -z "$ctid" ] && exit 0
 
-echo "`date --iso-8601=seconds` fserror : Container $ctid : fserror on $ID" >> /var/log/vzctl.log
-
-eval $(. /etc/vz/vz.conf && echo ON_VE_FSERROR="${ON_VE_FSERROR}")
-
-case "$ON_VE_FSERROR" in
-*)
-	/usr/sbin/vzctl stop $ctid --fast >/dev/null 2>&1
-	;;
-esac
+/usr/sbin/vzctl stop $ctid --fast >/dev/null 2>&1
