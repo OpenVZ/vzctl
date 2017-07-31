@@ -4,6 +4,10 @@
 ctid=
 SYSFSDEV=/sys/fs/cgroup/devices/machine.slice
 
+eval $(. /etc/vz/vz.conf && echo ON_VE_FSERROR="${ON_VE_FSERROR}")
+
+[ "$ON_VE_FSERROR" = "stop" ] || exit
+
 read -r DEV < /sys/class/block/$ID/dev
 [ -z "$DEV" ] && exit 0
 
