@@ -1921,8 +1921,11 @@ skip_eid:
 	}
 
 	if (!stat_file(buf)) {
-		if (action == ACTION_STOP && gparam->fastkill && lstat(buf, &st) == 0)
+		if (action == ACTION_STOP && gparam->fastkill &&
+				lstat(buf, &st) == 0) {
 			action = ACTION_STOP_FORCE;
+			flags |= VZCTL_CONF_SKIP_PARSE;
+		}
 
 		if (action != ACTION_CREATE &&
 			action != ACTION_STOP &&
@@ -1937,7 +1940,7 @@ skip_eid:
 			ret = VZ_NOVE_CONFIG;
 			goto END;
 		}
-		flags = VZCTL_CONF_SKIP_NON_EXISTS | VZCTL_CONF_SKIP_PARSE;
+		flags |= VZCTL_CONF_SKIP_NON_EXISTS;
 	}
 
 	h = vzctl_env_open(ctid, buf, flags, &ret);
