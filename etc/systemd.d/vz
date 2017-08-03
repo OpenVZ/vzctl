@@ -214,6 +214,11 @@ cleanup_stale_reg()
 
 start()
 {
+	if ! grep -q "SERVER_UUID=" $VZCONF; then
+		uuid=$(/usr/bin/uuidgen)
+		[ -n "$uuid" ] && echo -e "\nSERVER_UUID=$uuid" >> $VZCONF
+	fi
+
 	setup_ve_sysfs
 	setup_net
 	setup_tc
