@@ -2093,7 +2093,7 @@ skip_eid:
 			}
 			if (!param->save) {
 				ret = VZ_INVALID_PARAMETER_SYNTAX;
-				if (param->setmode == SET_RESTART) {
+				if (param->setmode == VZCTL_SET_RESTART) {
 					logger(-1, 0, "It is not allowed to use"
 							" restart mode without --save");
 					break;
