@@ -88,7 +88,7 @@ struct Cconfig Config[] = {
 struct CList* GetAliases(char *name);
 
 static struct CSetMode SetMode[] =
-	{ {"ignore", SET_IGNORE}, {"restart", SET_RESTART}};
+	{ {"ignore", VZCTL_SET_IGNORE}, {"restart", VZCTL_SET_RESTART}};
 
 static int ParseSetMode(const char *str)
 {
