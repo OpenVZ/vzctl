@@ -81,9 +81,6 @@ struct CSkipVeParam {
 	char *name;
 };
 
-#define SET_NONE	0
-#define SET_IGNORE	1
-#define SET_RESTART	2
 struct CSetMode {
 	char *name;
 	int mode;
