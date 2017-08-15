@@ -109,10 +109,8 @@ static void print_ve_private(struct Cveinfo *p, int index);
 static void print_ve_root(struct Cveinfo *p, int index);
 static void print_ostemplate(struct Cveinfo *p, int index);
 
-static void SET_P_OUTBUFFER(int r, int len, int short_len)
+static void SET_P_OUTBUFFER(int r, int len)
 {
-	if (!last_field && short_len != 0)
-		r = short_len;
 	if (r > len)
 		r = len;
 	p_outbuffer += r;
@@ -158,7 +156,7 @@ static void print_uuid(struct Cveinfo *p, int index)
 
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%36s",
 			p->uuid ? : "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 36);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_status(struct Cveinfo *p, int index)
@@ -235,7 +233,7 @@ static void print_autostop(struct Cveinfo *p, int index)
 		s = "-";
 
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-8s", s);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 8);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_bootorder(struct Cveinfo *p, int index)
@@ -324,7 +322,7 @@ static void print_layout(struct Cveinfo *p, int index)
 
 	r = snprintf(p_outbuffer, e_buf-p_outbuffer, "%6d",
 			layout);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 0);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 
 }
 
@@ -340,7 +338,7 @@ static void print_device(struct Cveinfo *p, int index)
 		ploop_get_partition_by_mnt(p->ve_root, dev, sizeof(dev));
 
 	r = snprintf(p_outbuffer, e_buf-p_outbuffer, "%-16s", dev);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 0);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_ha_enable(struct Cveinfo *p, int index)
@@ -364,7 +362,7 @@ static void print_netfilter(struct Cveinfo *p, int index)
 
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-9s",
 			p->netfilter ?: "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 9);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_devnodes(struct Cveinfo *p, int index)
@@ -375,7 +373,7 @@ static void print_devnodes(struct Cveinfo *p, int index)
 
 	if (p->devnodes == NULL) {
 		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
-		SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 16);
+		SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 		return;
 	}
 
@@ -384,11 +382,11 @@ static void print_devnodes(struct Cveinfo *p, int index)
 		do {
 			r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%s ",
 					token);
-			SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 0);
+			SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 		} while ((token = strtok_r(NULL, " \t", &sptr)));
 	} else {
 		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
-		SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 16);
+		SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 	}
 	free(tmp);
 }
@@ -706,7 +704,7 @@ static void print_hostname(struct Cveinfo *p, int index)
 	if (p->hostname != NULL)
 		str = p->hostname;
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s", str);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 0);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_name(struct Cveinfo *p, int index)
@@ -727,7 +725,7 @@ static void print_name(struct Cveinfo *p, int index)
 	}
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
 		dst != NULL ? dst : str);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 32);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 	free(dst);
 }
 
@@ -753,7 +751,7 @@ static void print_smart_name(struct Cveinfo *p, int index)
 		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-36s",
 				p->ctid);
 	}
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 32);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_description(struct Cveinfo *p, int index)
@@ -774,7 +772,7 @@ static void print_description(struct Cveinfo *p, int index)
 	}
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
 		dst != NULL ? dst : str);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 32);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 	free(dst);
 }
 
@@ -784,7 +782,7 @@ static void print_ve_private(struct Cveinfo *p, int index)
 
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
 		p->ve_private != NULL ? p->ve_private : "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 32);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_ve_root(struct Cveinfo *p, int index)
@@ -793,7 +791,7 @@ static void print_ve_root(struct Cveinfo *p, int index)
 
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
 		p->ve_root != NULL ? p->ve_root : "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 32);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static void print_ostemplate(struct Cveinfo *p, int index)
@@ -804,7 +802,7 @@ static void print_ostemplate(struct Cveinfo *p, int index)
 	if (p->ostmpl != NULL)
 		str = p->ostmpl;
 	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-24s", str);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer, 24);
+	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
 static int match_ip(char *ip_list, char *ip)
