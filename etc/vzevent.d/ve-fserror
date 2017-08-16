@@ -25,6 +25,7 @@ echo "`date --iso-8601=seconds` fserror : Container $ctid : fserror on $ID/$DEV"
 DEV="${ID%%p1}"
 read -r DELTA < /sys/class/block/$DEV/pdelta/0/image
 /usr/sbin/vzctl stop $ctid --fast >/dev/null 2>&1
-read -r DELTA_NEW < /sys/class/block/$DEV/pdelta/0/image
-
-[ "$DELTA" = "$DELTA_NEW" ] && ploop umount -d /dev/$DEV
+if [ $? -ne 0 -a $? -ne 9 ]; then
+	read -r DELTA_NEW < /sys/class/block/$DEV/pdelta/0/image
+	[ "$DELTA" = "$DELTA_NEW" ] && ploop umount -d /dev/$DEV
+fi
