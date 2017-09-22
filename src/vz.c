@@ -337,7 +337,8 @@ int Set(ctid_t ctid, struct CParam *param)
 	}
 	if (param->disk_param != NULL) {
 		ret = vzctl_configure_disk(ctid, gparam->disk_op,
-				param->disk_param, gparam->enc_flags);
+				param->disk_param, gparam->recreate,
+				gparam->enc_flags);
 		if (ret) {
 			free(param->quota_block);
 			param->quota_block = NULL;
