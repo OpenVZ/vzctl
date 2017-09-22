@@ -786,7 +786,7 @@ static const char *gen_uuid(char *buf)
 	return buf;
 }
 
-int vzctl_add_disk(ctid_t ctid, struct vzctl_disk_param *param)
+static int vzctl_add_disk(ctid_t ctid, struct vzctl_disk_param *param, int flags)
 {
 	int ret;
 	char path[PATH_MAX];
@@ -803,7 +803,7 @@ int vzctl_add_disk(ctid_t ctid, struct vzctl_disk_param *param)
 		param->path = path;
 	}
 
-	return vzctl2_env_add_disk(h, param, 0);
+	return vzctl2_env_add_disk(h, param, flags);
 }
 
 int vzctl_set_disk(ctid_t ctid, struct vzctl_disk_param *param)
@@ -837,10 +837,10 @@ int vzctl_del_disk(ctid_t ctid, const char *guid, int detach)
 }
 
 int vzctl_configure_disk(ctid_t ctid, int op, struct vzctl_disk_param *param,
-		int flags)
+		int recreate, int flags)
 {
 	if (op == DEVICE_ACTION_ADD)
-		return vzctl_add_disk(ctid, param);
+		return vzctl_add_disk(ctid, param, recreate ?: VZCTL_DISK_RECREATE);
 	else if (op == DEVICE_ACTION_DEL)
 		return vzctl_del_disk(ctid, param->uuid, 0);
 	else if (op == DEVICE_ACTION_DETACH)

@@ -97,6 +97,7 @@ static struct option set_options[] =
 	  {"encryption-keyid",required_argument, NULL, PARAM_ENC_KEYID},
 	  {"reencrypt",no_argument, NULL, PARAM_ENC_REENCRYPT},
 	  {"wipe",no_argument, NULL, PARAM_ENC_WIPE},
+	  {"recreate",no_argument, NULL, PARAM_RECREATE},
 	{"enable", no_argument, NULL, PARAM_ENABLE},
 	{"disable", no_argument, NULL, PARAM_DISABLE},
 	{"device-del", required_argument, NULL, PARAM_DEVICE_DEL},
@@ -1133,6 +1134,9 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			continue;
 		case PARAM_ENC_WIPE:
 			gparam->enc_flags |= VZCTL_ENC_WIPE;
+			continue;
+		case PARAM_RECREATE:
+			gparam->recreate = 1;
 			continue;
 		case PARAM_IP_ADD:
 			c = veth ? VZCTL_PARAM_NETIF_IPADD :

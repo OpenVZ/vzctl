@@ -350,6 +350,7 @@
 #define PARAM_ENC_KEYID		435
 #define PARAM_ENC_REENCRYPT	436
 #define PARAM_ENC_WIPE		437
+#define PARAM_RECREATE		438
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"
@@ -573,6 +574,7 @@ struct CParam
 	int skip_fsck;
 	char *enc_keyid;
 	int enc_flags;
+	int recreate;
 };
 
 extern struct CParam *gparam;
@@ -580,7 +582,7 @@ extern struct CParam *gparam;
 int monitoring(ctid_t ctid);
 int parse_ip(char *str, char **ipstr, unsigned int *mask);
 int vzctl_configure_disk(ctid_t ctid, int op, struct vzctl_disk_param *param,
-		int flags);
+		int recreate, int flags);
 int VZExecScript(ctid_t ctid, char *name, struct CList *env, int log, int timeout);
 int env_is_running(ctid_t ctid);
 int Exec(ctid_t ctid, char **arg, int argc, int mode);
