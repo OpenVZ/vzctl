@@ -840,7 +840,8 @@ int vzctl_configure_disk(ctid_t ctid, int op, struct vzctl_disk_param *param,
 		int recreate, int flags)
 {
 	if (op == DEVICE_ACTION_ADD)
-		return vzctl_add_disk(ctid, param, recreate ?: VZCTL_DISK_RECREATE);
+		return vzctl_add_disk(ctid, param,
+				recreate ? VZCTL_DISK_RECREATE : 0);
 	else if (op == DEVICE_ACTION_DEL)
 		return vzctl_del_disk(ctid, param->uuid, 0);
 	else if (op == DEVICE_ACTION_DETACH)
