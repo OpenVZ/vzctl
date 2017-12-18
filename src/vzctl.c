@@ -1162,6 +1162,14 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			fprintf(stderr, "Warning: The --capability option"
 					" is deprecated\n");
 			continue;
+		case PARAM_APPCONF:
+			ret = vzctl_add_env_param_by_id(ctid,
+				VZCTL_PARAM_ORIGIN_SAMPLE, optarg);
+			if (ret)
+				return vzctl_err(ret, 0, "Bad parameter for"
+					" --%s: %s",
+					set_options[option_index].name, optarg);
+			break;
 		}
 
 		if (isalpha(c))
