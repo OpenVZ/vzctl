@@ -72,6 +72,7 @@ char *list2str(const char *prefix, list_head_t *head);
 int is_vswap_mode(void);
 void features_mask2str(unsigned long long mask, unsigned long long known, char *delim,
 		char *buf, int len);
+void print_json_features(unsigned long long mask, unsigned long long known);
 FILE *vzctl_popen(char *argv[], char *env[], int quiet);
 int vzctl_pclose(FILE *fp);
 char *arg2str(char **arg);
