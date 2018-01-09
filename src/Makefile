@@ -33,9 +33,7 @@ endif
        OBJ_nd = ndsend.o
  OBJS_ubclogd = ubclogd.o timeutils.o
    OBJS_split = vzsplit.o
-    OBJS_calc = vzcalc.o validate.o $(OBJS)
  OBJS_convert = vzcfgconvert.o config.o list.o
-OBJS_memcheck = vzmemcheck.o validate.o $(OBJS)
 OBJS_cfgscale = vzcfgscale.o mm.o $(OBJS)
 OBJS_vzauth   = vzauth.o
 OBJS_proxyctl = vzproxyctl.o
@@ -89,13 +87,7 @@ ubclogd: $(OBJS_ubclogd)
 vzsplit: $(OBJS_split)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
 
-vzcalc: $(OBJS_calc)
-	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
-
 vzcfgconvert: $(OBJS_convert)
-	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
-
-vzmemcheck: $(OBJS_memcheck)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
 
 vzcfgscale: $(OBJS_cfgscale)
