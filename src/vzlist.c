@@ -193,6 +193,15 @@ static void print_cpumask(struct Cveinfo *p, int index)
 		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%16s", "-");
 }
 
+static void print_cpus(struct Cveinfo *p, int index)
+{
+	if (p->cpus <= 0)
+		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%5s", "-");
+	else
+		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%5lu",
+			p->cpus);
+}
+
 static void print_nodemask(struct Cveinfo *p, int index)
 {
 	if (p->nodemask != NULL)
@@ -661,6 +670,7 @@ UBC_FIELD(swappages, SWAPP),
 {"cpulimit%", "CPUL_%", "%7s", 0, RES_CPU, print_cpulimit, cpulimit_sort_fn},
 {"cpulimitM", "CPUL_M", "%7s", 1, RES_CPU, print_cpulimit, cpulimitM_sort_fn},
 {"cpuunits", "CPUUNI", "%7s", 2, RES_CPU, print_cpulimit, cpuunits_sort_fn},
+{"cpus", "CPUS", "%5s", 0, RES_NONE, print_cpus, none_sort_fn},
 {"cpumask", "CPUMASK", "%16s", 1, RES_CPU, print_cpumask, none_sort_fn},
 {"nodemask", "NODEMASK", "%16s", 1, RES_CPU, print_nodemask, none_sort_fn},
 /* SLM depricated */
@@ -1508,6 +1518,9 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 
 	if (vzctl2_env_get_cpuunits(vzctl2_get_env_param(h), &ul) == 0)
 		 ve->cpu->limit[2] = ul;
+
+	if (vzctl2_env_get_cpu_count(vzctl2_get_env_param(h), &ul) == 0)
+		 ve->cpus = ul;
 
 	if (vzctl2_env_get_hostname(vzctl2_get_env_param(h), &p) == 0)
 		ve->hostname = strdup(p);

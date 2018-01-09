@@ -112,6 +112,7 @@ struct Cveinfo {
 	char *devnodes;
 	int autostop;
 	int disabled;
+    unsigned long cpus;
 };
 
 #define RES_NONE	0
