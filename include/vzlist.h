@@ -113,6 +113,8 @@ struct Cveinfo {
 	int autostop;
 	int disabled;
     unsigned long cpus;
+    char *nameserver;
+    char *searchdomain;
 };
 
 #define RES_NONE	0

@@ -90,6 +90,7 @@ static int only_stopped_ve = 0;
 static int with_names = 0;
 static int g_compat_mode = 0;
 static int g_skip_owner = 0;
+static int is_last_field = 1;
 
 struct CParam *gparam;
 
@@ -103,6 +104,8 @@ static void print_description(struct Cveinfo *p, int index);
 static int match_ip(char *ip_list, char *ip);
 static char *print_real_ip(struct Cveinfo *p, char *str, int dash);
 static void print_ip(struct Cveinfo *p, int index);
+static void print_nameserver(struct Cveinfo *p, int index);
+static void print_searchdomain(struct Cveinfo *p, int index);
 static void print_dev_name(struct Cveinfo *p, int index);
 static void print_netif_params(struct Cveinfo *p, int index);
 static void print_ve_private(struct Cveinfo *p, int index);
@@ -551,6 +554,8 @@ SORT_STR_FN(hostnm_sort_fn, hostname)
 SORT_STR_FN(name_sort_fn, name)
 SORT_STR_FN(description_sort_fn, description)
 SORT_STR_FN(ip_sort_fn, ip)
+SORT_STR_FN(nameserver_sort_fn, nameserver)
+SORT_STR_FN(searchdomain_sort_fn, searchdomain)
 
 #define SORT_UL_RES(fn, type, res, name, index)				\
 static int fn(const void *val1, const void *val2)				\
@@ -630,6 +635,8 @@ static struct Cfield field_names[] =
 {"tm", "TM", "%-2s", 0, RES_TM, print_tm, tm_sort_fn},
 {"ostemplate", "OSTEMPLATE", "%-24s", 0, RES_OSTEMPLATE, print_ostemplate, ostemplate_sort_fn},
 {"ip", "IP_ADDR", "%-15s", 0, RES_IP, print_ip, ip_sort_fn},
+{"nameserver", "NAMESERVER", "%-15s", 0 , RES_NONE, print_nameserver, nameserver_sort_fn},
+{"searchdomain", "SEARCHDOMAIN", "%-15s", 0 , RES_NONE, print_searchdomain, searchdomain_sort_fn},
 {"configured_ip", "IP_ADDR", "%-15s", 0, RES_CONFIGURED_IP, print_ip, ip_sort_fn},
 {"status", "STATUS", "%-9s", 0, RES_STATUS, print_status, status_sort_fn},
 /*	UBC	*/
@@ -821,6 +828,30 @@ static void print_ostemplate(struct Cveinfo *p, int index)
 	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
 }
 
+static void print_strlist(char *list)
+{
+    int r;
+    char *str = "-"; 
+    char *ch; 
+
+    if (list != NULL)
+        str = list;
+	
+	if (list[0]=='\0')
+		str = "-";
+    if (!is_last_field)
+    {    
+        /* Fixme: dont destroy original string */
+        if ((ch = strchr(str, ' ')) != NULL)
+            *ch = 0; 
+    }    
+    r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-15s", str);
+    if (!is_last_field)
+        r = 15;
+    p_outbuffer += r;
+}
+
+
 static int match_ip(char *ip_list, char *ip)
 {
 	char *tmp_list = strdup(ip_list);
@@ -897,6 +928,16 @@ static void print_ip(struct Cveinfo *p, int index)
 	*(--p_outbuffer) = 0;
 
 	free(bgn);
+}
+
+static void print_nameserver(struct Cveinfo *p, int index)
+{
+	    print_strlist(p->nameserver);
+}
+
+static void print_searchdomain(struct Cveinfo *p, int index)
+{
+	    print_strlist(p->searchdomain);
 }
 
 static void print_dev_name(struct Cveinfo *p, int index)
@@ -1608,6 +1649,28 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 	if (vzctl2_env_get_disabled(vzctl2_get_env_param(h), &enable) == 0)
 		ve->disabled = enable;
 
+	if (ve->nameserver == NULL) {
+		LIST_HEAD(nameserver);
+
+		vzctl_str_iterator it = NULL;
+		while ((it = vzctl2_env_get_nameserver(vzctl2_get_env_param(h), it)) != NULL)
+			add_str_param(&nameserver, it->str);
+
+		ve->nameserver = list2str(NULL, &nameserver);
+		free_str(&nameserver);
+	}
+
+	if (ve->searchdomain == NULL) {
+		LIST_HEAD(searchdomain);
+
+		vzctl_str_iterator it = NULL;
+		while ((it = vzctl2_env_get_searchdomain(vzctl2_get_env_param(h), it)) != NULL)
+			add_str_param(&searchdomain, it->str);
+		
+		ve->searchdomain = list2str(NULL, &searchdomain);
+		free_str(&searchdomain);
+	}
+
 }
 
 static void parse_conf(ctid_t ctid, struct Cveinfo *ve)
@@ -2043,6 +2106,8 @@ static void free_veinfo(void)
 		free(veinfo[i].features);
 		free(veinfo[i].ha_prio);
 		free(veinfo[i].uuid);
+		free(veinfo[i].nameserver);
+		free(veinfo[i].searchdomain);
 	}
 }
 
