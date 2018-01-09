@@ -220,6 +220,11 @@ static void print_onboot(struct Cveinfo *p, int index)
 	print_yesno("%-6s", p->onboot);
 }
 
+static void print_disabled(struct Cveinfo *p, int index)
+{
+	print_yesno("%-6s", p->disabled);
+}
+
 static void print_autostop(struct Cveinfo *p, int index)
 {
 	int r;
@@ -677,6 +682,7 @@ UBC_FIELD(swappages, SWAPP),
 {"ifname", "IFNAME", "%-8s", 6, RES_IFNAME, print_netif_params, none_sort_fn},
 {"netif", "NET_INTERFACES", "%-32s", 0, RES_NETIF, print_dev_name, none_sort_fn},
 {"onboot", "ONBOOT", "%-6s", 0, RES_ONBOOT, print_onboot, none_sort_fn},
+{"disabled", "DISABL", "%-6s", 0, RES_NONE, print_disabled, none_sort_fn},
 {"autostop", "AUTOSTOP", "%-8s", 0, RES_ONBOOT, print_autostop, none_sort_fn},
 {"bootorder", "BOOTORDER", "%10s", 0, RES_BOOTORDER,
 	print_bootorder, bootorder_sort_fn},
@@ -1584,6 +1590,11 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 
 	if (vzctl2_env_get_param(h, "DEVNODES",  &p) == 0 && p != NULL)
 		ve->devnodes = strdup(p);
+
+	enable = 0;
+	if (vzctl2_env_get_disabled(vzctl2_get_env_param(h), &enable) == 0)
+		ve->disabled = enable;
+
 }
 
 static void parse_conf(ctid_t ctid, struct Cveinfo *ve)
