@@ -111,6 +111,10 @@ struct Cveinfo {
 	char *uuid;
 	char *devnodes;
 	int autostop;
+	int disabled;
+    unsigned long cpus;
+    char *nameserver;
+    char *searchdomain;
 };
 
 #define RES_NONE	0
