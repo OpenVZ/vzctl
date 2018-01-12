@@ -49,7 +49,7 @@ VECONFIG_VSWAP = ve-vswap.256MB.conf-sample ve-vswap.512MB.conf-sample \
     VZCONFIG = vz.conf
         MAN8 = vzctl.8 vzpurge.8 vzgetpa.8 ubclogd.8 vznetstat.8 \
 	       vzsplit.8 vzcpucheck.8 vzpid.8 vzcfgscale.8 vzcfgvalidate.8 \
-               vzcalc.8 vzmemcheck.8 vzdiskcheck.8 \
+               vzdiskcheck.8 \
 	       vzauth.8 vztactl.8 vzlist.8 \
 	       vzeventd.8
         MAN5 = vz.5 ve.conf.5 vz-start.5 vz-stop.5 ve-alias_add.5 \
