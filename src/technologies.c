@@ -74,3 +74,23 @@ void features_mask2str(unsigned long long mask, unsigned long long known, char *
 		i++;
 	}
 }
+
+void print_json_features(unsigned long long mask, unsigned long long known)
+{
+	struct env_feature *feat;
+	int i, j = 0;
+
+	for (i = 0, feat = env_features; feat->name != NULL; feat++) {
+		if (!(known & feat->mask))
+			continue;
+		printf("%s      \"%s\": %s",
+			j++ == 0 ? "{\n" : ",\n",
+			feat->name,
+			mask & feat->mask ? "true" : "false");
+		i++;
+	}
+	if (j)
+		printf("\n    }");
+	else
+		printf("null");
+}
