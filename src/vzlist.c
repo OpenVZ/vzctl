@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <limits.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -384,7 +385,7 @@ static void print_iolimit(struct Cveinfo *p, int index)
 		if (p->io.limit == NULL)
 			printf("0");
 		else
-			printf("%d", *p->io.limit);
+			printf("%u", *p->io.limit);
 		return;
 	}
 
@@ -393,7 +394,7 @@ static void print_iolimit(struct Cveinfo *p, int index)
 				"%10s", "-");
 	else
 		p_outbuffer += snprintf(p_outbuffer, e_buf-p_outbuffer,
-				"%10d", *p->io.limit);
+				"%10u", *p->io.limit);
 }
 
 static void print_iopslimit(struct Cveinfo *p, int index)
@@ -402,7 +403,7 @@ static void print_iopslimit(struct Cveinfo *p, int index)
 		if (p->io.iopslimit == NULL)
 			printf("0");
 		else
-			printf("%d", *p->io.iopslimit);
+			printf("%u", *p->io.iopslimit);
 		return;
 	}
 
@@ -411,7 +412,7 @@ static void print_iopslimit(struct Cveinfo *p, int index)
 				"%10s", "-");
 	else
 		p_outbuffer += snprintf(p_outbuffer, e_buf-p_outbuffer,
-				"%10d", *p->io.iopslimit);
+				"%10u", *p->io.iopslimit);
 }
 
 static void print_ioprio(struct Cveinfo *p, int index)
@@ -1853,11 +1854,15 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 
 	if (vzctl2_env_get_iolimit(vzctl2_get_env_param(h), &u) == 0) {
 		ve->io.limit = x_malloc(sizeof(unsigned));
+		if (u == UINT_MAX)
+			u = 0;
 		*ve->io.limit = u;
 	}
 
 	if (vzctl2_env_get_iopslimit(vzctl2_get_env_param(h), &u) == 0) {
 		ve->io.iopslimit = x_malloc(sizeof(unsigned));
+		if (u == UINT_MAX)
+			u = 0;
 		*ve->io.iopslimit = u;
 	}
 
