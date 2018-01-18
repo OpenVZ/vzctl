@@ -268,9 +268,15 @@ static void print_nodemask(struct Cveinfo *p, int index)
 static void print_tm(struct Cveinfo *p, int index)
 {
 	if (p->tm == TM_EZ)
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%-2s", "EZ");
+		if (fmt_json)
+			print_json_str("EZ");
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%-2s", "EZ");
 	else
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%-2s", "-");
+		if (fmt_json)
+			printf("null");
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%-2s", "-");
 }
 
 static void print_bool_json(int val) 
