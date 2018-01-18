@@ -529,21 +529,45 @@ static void print_devnodes(struct Cveinfo *p, int index)
 	char *sptr;
 
 	if (p->devnodes == NULL) {
-		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
-		SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+		if (fmt_json)
+			printf("null");
+		else {
+			r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
+			SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+		}
 		return;
 	}
 
 	tmp = strdup(p->devnodes);
 	if ((token = strtok_r(tmp, " \t", &sptr)) != NULL) {
-		do {
-			r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%s ",
-					token);
-			SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
-		} while ((token = strtok_r(NULL, " \t", &sptr)));
+		if (fmt_json) {
+			int i, j = 0;
+			char *key;
+			do {
+				if ( (key = strsep(&token,":")) != NULL ) {
+					printf("%s      \"%s\": \"%s\"",
+						j++ == 0 ? "{\n" : ",\n",
+						key, token);
+				}
+				i++;
+			} while ((token = strtok_r(NULL, " \t", &sptr)));
+			if (j)
+				printf("\n    }");
+		}
+		else {
+			do {
+				r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%s ",
+						token);
+				SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+			} while ((token = strtok_r(NULL, " \t", &sptr)));
+		}
 	} else {
-		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
-		SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+		if (fmt_json)
+			printf("null");
+		else {
+			r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-16s", "-");
+			SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+		}
 	}
 	free(tmp);
 }
