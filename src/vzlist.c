@@ -227,6 +227,11 @@ static void print_cpulimit(struct Cveinfo *p, int index)
 
 static void print_cpumask(struct Cveinfo *p, int index)
 {
+	if (fmt_json) {
+		print_json_str(p->cpumask);
+		return;
+	}
+
 	if (p->cpumask != NULL)
 		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%16s", p->cpumask);
 	else
@@ -249,6 +254,11 @@ static void print_cpus(struct Cveinfo *p, int index)
 
 static void print_nodemask(struct Cveinfo *p, int index)
 {
+	if (fmt_json) {
+		print_json_str(p->nodemask);
+		return;
+	}
+
 	if (p->nodemask != NULL)
 		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%16s", p->nodemask);
 	else
@@ -304,8 +314,16 @@ static void print_autostop(struct Cveinfo *p, int index)
 	else
 		s = "-";
 
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-8s", s);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	if (fmt_json) {
+		if ( strcmp(s,"-") == 0 ) 
+			printf("null");
+		else
+			print_json_str(s);
+	}
+	else {
+		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-8s", s);
+		SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	}
 }
 
 static void print_bootorder(struct Cveinfo *p, int index)
@@ -459,8 +477,12 @@ static void print_device(struct Cveinfo *p, int index)
 	if (layout == VZCTL_LAYOUT_5 && p->ve_root != NULL)
 		ploop_get_partition_by_mnt(p->ve_root, dev, sizeof(dev));
 
-	r = snprintf(p_outbuffer, e_buf-p_outbuffer, "%-16s", dev);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	if (fmt_json)
+		print_json_str(dev);
+	else {
+		r = snprintf(p_outbuffer, e_buf-p_outbuffer, "%-16s", dev);
+		SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	}
 }
 
 static void print_ha_enable(struct Cveinfo *p, int index)
@@ -470,6 +492,14 @@ static void print_ha_enable(struct Cveinfo *p, int index)
 
 static void print_ha_prio(struct Cveinfo *p, int index)
 {
+	if (fmt_json) {
+		if (p->ha_prio == NULL)
+			printf("null");
+		else
+			printf("%lu", p->ha_prio[index]);
+		return;
+	}
+
 	if (p->ha_prio == NULL)
 		p_outbuffer += snprintf(p_outbuffer, e_buf-p_outbuffer,
 				"%10s", "-");
