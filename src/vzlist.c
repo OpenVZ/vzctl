@@ -1162,17 +1162,25 @@ static void print_dev_name(struct Cveinfo *p, int index)
 	veth_dev *dev;
 
 	if (p->veth == NULL || list_empty(&p->veth->dev)) {
-		p_outbuffer +=  snprintf(p_outbuffer, e_buf - p_outbuffer,
-			"%-32s", "-");
+		if (fmt_json)
+			printf("null");
+		else
+			p_outbuffer +=  snprintf(p_outbuffer, e_buf - p_outbuffer,
+				"%-32s", "-");
 	} else {
 		list_for_each(dev, &p->veth->dev, list) {
 			if (netif_pattern != NULL && !dev->active)
 				continue;
-			p_outbuffer += snprintf(p_outbuffer,
-				e_buf - p_outbuffer,
-				"%s ", dev->dev_name);
-			if (p_outbuffer >= e_buf)
+			if (fmt_json) {
+				print_json_str(dev->dev_name);
 				break;
+			} else {
+				p_outbuffer += snprintf(p_outbuffer,
+					e_buf - p_outbuffer,
+					"%s ", dev->dev_name);
+				if (p_outbuffer >= e_buf)
+					break;
+			}
 		}
 	}
 }
@@ -1196,8 +1204,11 @@ static int print_netif_param(veth_dev *dev, int index, int blank)
 			goto blank;
 		if (dev->dev_name == NULL)
 			return 0;
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
-			"%-16s", dev->dev_name);
+		if (fmt_json)
+			print_json_str(dev->dev_name);
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
+				"%-16s", dev->dev_name);
 		break;
 	case 6:
 		blank_fmt = "%-8s";
@@ -1205,8 +1216,11 @@ static int print_netif_param(veth_dev *dev, int index, int blank)
 			goto blank;
 		if (dev->dev_name_ve == NULL)
 			return 0;
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
-			"%-8s", dev->dev_name_ve);
+		if (fmt_json)
+			print_json_str(dev->dev_name_ve);
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
+				"%-8s", dev->dev_name_ve);
 		break;
 	case 2:
 		blank_fmt = "%-17s";
@@ -1214,8 +1228,11 @@ static int print_netif_param(veth_dev *dev, int index, int blank)
 			goto blank;
 		if (dev->addrlen_ve == 0)
 			return 0;
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
-			"%02X:%02X:%02X:%02X:%02X:%02X", STR2MAC(dev->mac_ve));
+		if (fmt_json)
+			printf("\"%02x:%02x:%02x:%02x:%02x:%02x\"",STR2MAC(dev->mac_ve));
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
+				"%02X:%02X:%02X:%02X:%02X:%02X", STR2MAC(dev->mac_ve));
 		break;
 	case 3:
 		blank_fmt = "%-17s";
@@ -1223,8 +1240,11 @@ static int print_netif_param(veth_dev *dev, int index, int blank)
 			goto blank;
 		if (dev->addrlen == 0)
 			return 0;
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
-			"%02X:%02X:%02X:%02X:%02X:%02X", STR2MAC(dev->mac));
+		if (fmt_json)
+			printf("\"%02x:%02x:%02x:%02x:%02x:%02x\"",STR2MAC(dev->mac));
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
+				"%02X:%02X:%02X:%02X:%02X:%02X", STR2MAC(dev->mac));
 		break;
 	case 4:
 		blank_fmt = "%-15s";
@@ -1232,8 +1252,11 @@ static int print_netif_param(veth_dev *dev, int index, int blank)
 			goto blank;
 		if (dev->gw == 0)
 			return 0;
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
-			"%-15s", dev->gw);
+		if (fmt_json)
+			print_json_str(dev->gw);
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
+				"%-15s", dev->gw);
 		break;
 	case 5:
 		blank_fmt = "%-32s";
@@ -1241,14 +1264,20 @@ static int print_netif_param(veth_dev *dev, int index, int blank)
 			goto blank;
 		if (dev->network == NULL)
 			return 0;
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
-			"%-s", dev->network);
+		if (fmt_json)
+			print_json_str(dev->network);
+		else
+			p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
+				"%-s", dev->network);
 		break;
 	}
 	return 1;
 blank:
-	p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
-		blank_fmt, "-");
+	if (fmt_json)
+		printf("null");
+	else
+		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer,
+			blank_fmt, "-");
 	return 1;
 }
 
