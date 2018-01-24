@@ -1773,7 +1773,7 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 			if (vzctl2_env_get_ipstr(it, buf, sizeof(buf)) == 0) {
 				struct vzctl_ip_param ip;
 
-				if (parse_ip(buf, &ip.ip, &ip.mask))
+				if (!parse_ip(buf, &ip.ip, &ip.mask))
 					add_veth_ip(&dev.ip, &ip, ADD);
 			}
 		}
