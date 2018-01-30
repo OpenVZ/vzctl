@@ -394,6 +394,7 @@ void Usage(void)
 "vzctl suspend <ctid|name>\n"
 "vzctl resume <ctid|name>\n"
 "vzctl snapshot <ctid|name> [--id <uuid>] [--name <name>] [--description <desc>]\n"
+"	[--skip-suspend]\n"
 "vzctl snapshot-switch <ctid|name> --id <uuid>\n"
 "vzctl snapshot-delete <ctid|name> --id <uuid>\n"
 "vzctl snapshot-mount <ctid|name> --id <uuid> --target <path>\n"
