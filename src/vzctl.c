@@ -346,6 +346,7 @@ static struct option snapshot_options[] =
 	{"skip_dump", no_argument, NULL, PARAM_SNAPSHOT_SKIP_DUMP},
 		{"skip-dump", no_argument, NULL, PARAM_SNAPSHOT_SKIP_DUMP},
 		{"skip_suspend", no_argument, NULL, PARAM_SNAPSHOT_SKIP_DUMP},
+		{"skip-suspend", no_argument, NULL, PARAM_SNAPSHOT_SKIP_DUMP},
 	{"component-name", required_argument, NULL, PARAM_SNAPSHOT_COMPONENT_NAME},
 	{"env", no_argument, NULL, PARAM_ENV_ARGS},
 	{ NULL, 0, NULL, 0 }

@@ -117,6 +117,7 @@ vzctl \fBsnapshot\fR \fIctid\fR|\fIname\fR
 [\fB--id\fR \fIuuid\fR]
 [\fB--name\fR \fIname\fR]
 [\fB--description\fR \fIdesc\fR]
+[\fB--skip-suspend\fR]
 .PP
 vzctl \fBsnapshot-switch\fR | \fBsnapshot-delete\fR \fIctid\fR|\fIname\fR \fB--id\fR \fIuuid\fR
 .PP
@@ -764,10 +765,10 @@ the container is running, it's in-memory state (as in checkpointing).
 Note that snapshot functionality is only working
 for containers on ploop device.
 .TP
-\fBsnapshot\fR \fICTID\fR [\fB--id\fR \fIuuid\fR]
+\fBsnapshot\fR \fICTID\fR [\fB--id\fR \fIuuid\fR] [\fB--skip-suspend\fR] 
 Creates a container snapshot. If \fIuuid\fR is not specified, it is
-auto-generated. If a container is running, it's checkpointed and then
-restored. If a container is not running, only file system state is saved.
+auto-generated. If a container is running, and \fB--skip-suspend\fR option is not specified,
+it's checkpointed and then restored. If a container is not running, only file system state is saved.
 .TP
 \fBsnapshot-switch\fR \fICTID\fR \fB--id\fR \fIuuid\fR
 Switches the container to a snapshot identified by \fIuuid\fR.
