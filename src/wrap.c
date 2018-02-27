@@ -874,11 +874,6 @@ int vzctl_env_is_run(ctid_t ctid)
 	return 0;
 }
 
-int vzctl_set_vzlimits(const char *name)
-{
-	return vzctl2_set_vzlimits(name);
-}
-
 int vzctl_add_env_param_by_name(ctid_t ctid, const char *name, const char *str)
 {
 	struct vzctl_env_param *param = get_env_param(ctid);
