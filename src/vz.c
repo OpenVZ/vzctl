@@ -429,7 +429,7 @@ fprintf(stdout,
 "   [--netfilter <disabled|stateless|stateful|full>]\n"
 "   [--iolimit <bytes/sec>] [--iopslimit <op/sec>] [--features name:on|off]\n"
 "   [--mount_opts <opt[,opt]>] [--ha_enable <yes|no>] [--ha_prio <N>]\n"
-"   [UBC parameters]\n"
+"   [UBC parameters] [--ostemplate <name>]\n"
 "UBC parameters (N - items, P - pages, B - bytes):\n"
 "Two numbers divided by colon denote barrier:limit.\n"
 "In case the limit is not given it is set to the same value as the barrier.\n"
