@@ -1127,9 +1127,6 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 		case PARAM_ENC_KEYID:
 		case PARAM_DISK_OFFLINE:
 		case PARAM_DISK_STORAGE_URL:
-		case PARAM_OSTEMPLATE:
-			param->ostmpl = strdup(optarg);
-			break;
 		case PARAM_DISK_DETACH:
 			ret = add_disk_param(&tmpparam, &disk, c, optarg);
 			if (ret)
