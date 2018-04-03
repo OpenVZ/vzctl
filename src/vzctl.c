@@ -253,6 +253,7 @@ static struct option set_options[] =
 static struct option create_options[] =
 {
 	{"ve_layout", required_argument, NULL, PARAM_VE_LAYOUT},
+		{"layout", required_argument, NULL, PARAM_VE_LAYOUT},
 	{"ostemplate", required_argument, NULL, PARAM_OSTEMPLATE},
 	{"vetype", required_argument, NULL, PARAM_VETYPE},
 	{"config", required_argument, NULL, PARAM_CONFIG},
