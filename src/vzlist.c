@@ -155,36 +155,32 @@ static void print_na(struct Cveinfo *p, int index)
 	p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%10s", "-");
 }
 
+static void print_str(const char *str, const char *fmt)
+{
+	int r;
+
+	if (fmt_json) {
+		print_json_str(str);
+	} else {
+		r = snprintf(p_outbuffer, e_buf - p_outbuffer, fmt,
+				str != NULL ? str : "-");
+		SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	}
+}
+
 static void print_eid(struct Cveinfo *p, int index)
 {
-	if (fmt_json)
-		print_json_str(p->ctid);
-	else
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%36s",
-			p->ctid);
+	print_str(p->ctid, "%36s");
 }
 
 static void print_uuid(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->uuid);
-		return;
-	} 
-
-	int r;
-
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%36s",
-			p->uuid ? : "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	print_str(p->uuid, "%36s");
 }
 
 static void print_status(struct Cveinfo *p, int index)
 {
-	if (fmt_json)
-		print_json_str(ve_status(p->status));
-	else
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%-9s",
-			ve_status(p->status));
+	print_str(ve_status(p->status), "%-9s");
 }
 
 static void print_laverage(struct Cveinfo *p, int index)
@@ -228,15 +224,7 @@ static void print_cpulimit(struct Cveinfo *p, int index)
 
 static void print_cpumask(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->cpumask);
-		return;
-	}
-
-	if (p->cpumask != NULL)
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%16s", p->cpumask);
-	else
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%16s", "-");
+	print_str(p->cpumask, "%16s");
 }
 
 static void print_cpus(struct Cveinfo *p, int index)
@@ -255,15 +243,7 @@ static void print_cpus(struct Cveinfo *p, int index)
 
 static void print_nodemask(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->nodemask);
-		return;
-	}
-
-	if (p->nodemask != NULL)
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%16s", p->nodemask);
-	else
-		p_outbuffer += snprintf(p_outbuffer, e_buf - p_outbuffer, "%16s", "-");
+	print_str(p->nodemask, "%16s");
 }
 
 static void print_tm(struct Cveinfo *p, int index)
@@ -517,16 +497,7 @@ static void print_ha_prio(struct Cveinfo *p, int index)
 
 static void print_netfilter(struct Cveinfo *p, int index)
 {
-	int r;
-
-	if (fmt_json) {
-		print_json_str(p->netfilter);
-		return;
-	}
-
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-9s",
-			p->netfilter ?: "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	print_str(p->netfilter, "%-9s");
 }
 
 static void print_devnodes(struct Cveinfo *p, int index)
@@ -657,6 +628,11 @@ static void fn(struct Cveinfo *p, int index)				\
 
 PRINT_DQ_RES(print_dq_blocks, quota, quota_block)
 PRINT_DQ_RES(print_dq_inodes, quota, quota_inode)
+
+static void print_config(struct Cveinfo *p, int index)
+{
+	print_str(p->config, "%-32s");
+}
 
 /* Sort functions */
 
@@ -940,32 +916,16 @@ UBC_FIELD(swappages, SWAPP),
 
 {"netfilter", "NETFILTER", "%9s", 0, RES_NONE, print_netfilter, none_sort_fn},
 {"devnodes", "DEVNODES", "%-16s", 0, RES_NONE, print_devnodes, none_sort_fn},
+{"origin_sample", "ORIGIN_SAMPLE", "%-32s", 0, RES_NONE, print_config, none_sort_fn},
 };
 
 static void print_hostname(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->hostname);
-		return;
-	} 
-
-	int r;
-	char *str = "-";
-
-	if (p->hostname != NULL)
-		str = p->hostname;
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s", str);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	print_str(p->hostname, "%-32s");
 }
 
 static void print_name(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->name);
-		return;
-	} 
-
-	int r;
 	char *str = "-";
 	int len;
 	char *dst = NULL;
@@ -979,21 +939,14 @@ static void print_name(struct Cveinfo *p, int index)
 			dst = NULL;
 		}
 	}
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
-		dst != NULL ? dst : str);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+
+	print_str(dst != NULL ? dst : str, "%-32s");
 	free(dst);
 }
 
 static void print_smart_name(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->name);
-		return;
-	} 
-
-	int r;
-	char *str = "-";
+	char *str = NULL;
 	int len;
 	char *dst = NULL;
 
@@ -1005,14 +958,12 @@ static void print_smart_name(struct Cveinfo *p, int index)
 			free(dst);
 			dst = NULL;
 		}
-		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
-				dst != NULL ? dst : str);
-		free(dst);
 	} else {
-		r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-36s",
-				p->ctid);
+		str = p->ctid;
 	}
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+
+	print_str(dst != NULL ? dst : str, "%-32s");
+	free(dst);
 }
 
 static void print_description(struct Cveinfo *p, int index)
@@ -1044,46 +995,17 @@ static void print_description(struct Cveinfo *p, int index)
 
 static void print_ve_private(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->ve_private);
-		return;
-	} 
-
-	int r;
-
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
-		p->ve_private != NULL ? p->ve_private : "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	print_str(p->ve_private, "%-32s");
 }
 
 static void print_ve_root(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->ve_root);
-		return;
-	} 
-
-	int r;
-
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-32s",
-		p->ve_root != NULL ? p->ve_root : "-");
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	print_str(p->ve_root, "%-32s");
 }
 
 static void print_ostemplate(struct Cveinfo *p, int index)
 {
-	if (fmt_json) {
-		print_json_str(p->ostmpl);
-		return;
-	} 
-
-	int r;
-	char *str = "-";
-
-	if (p->ostmpl != NULL)
-		str = p->ostmpl;
-	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-24s", str);
-	SET_P_OUTBUFFER(r, e_buf - p_outbuffer);
+	print_str(p->ostmpl, "%-24s");
 }
 
 static void print_json_list(const char *list)
@@ -1960,6 +1882,8 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		free_str(&searchdomain);
 	}
 
+	if (vzctl2_env_get_param(h, "ORIGIN_SAMPLE",  &p) == 0 && p != NULL)
+		ve->config = strdup(p);
 }
 
 static void parse_conf(ctid_t ctid, struct Cveinfo *ve)
