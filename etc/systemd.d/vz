@@ -214,7 +214,7 @@ cleanup_stale_reg()
 
 start()
 {
-	if ! grep -q "SERVER_UUID=" $VZCONF; then
+	if ! grep -q '^[[:space:]]*SERVER_UUID=' $VZCONF; then
 		[ -f /etc/vz/dispatcher.xml ] && uuid=`xmllint --xpath '/ParallelsPreferences/ServerIdentification/ServerUuid/text()' /etc/vz/dispatcher.xml | tr -d {}`
 		[ -z "$uuid" ] && uuid=$(/usr/bin/uuidgen)
 		[ -n "$uuid" ] && echo -e "\nSERVER_UUID=$uuid" >> $VZCONF
