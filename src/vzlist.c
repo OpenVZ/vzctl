@@ -2041,38 +2041,22 @@ static int _get_run_ve(int update)
 
 static char *get_real_ips(ctid_t ctid)
 {
-	LIST_HEAD(ips);
-	FILE *fp;
+	struct vzctl_env_handle *h;
+	struct vzctl_net_info *info = NULL;
 	char *s;
-	char ip[STR_SIZE];
-	char buf[STR_SIZE];
-	char *arg[] = {"/usr/sbin/ip", "netns", "exec", ctid, "ip", "a", "l", NULL};
+	int err;
 
-	fp = vzctl_popen(arg, NULL, 0);
-	if (fp == NULL)
+	h = vzctl2_env_open(ctid, VZCTL_CONF_SKIP_PARSE, &err);
+	if (h == NULL)
 		return NULL;
 
-	while (fgets(buf, sizeof(buf), fp)) {
-		if (sscanf(buf, "%*[\t ]inet%*[6 ] %s", ip) != 1)
-			continue;
-
-		s = strrchr(ip, '/');
-		if (s != NULL)
-			*s = '\0';
-
-		if (strncmp(ip, "127.", 4) == 0 ||
-				strcmp(ip, "::1") == 0 ||
-				strcmp(ip, "::2") == 0 ||
-				strncmp(ip, "fe80:", 5) == 0)
-			continue;
-
-		add_str_param(&ips, ip);
+	if (vzctl2_get_net_info(h, NULL, &info) == 0) {
+		s = info->if_ips;
+		info->if_ips = NULL;
 	}
 
-	s = list2str(NULL, &ips);
-
-	free_str(&ips);
-	vzctl_pclose(fp);
+	vzctl2_release_net_info(info);
+	vzctl2_env_close(h);
 
 	return s;
 }
