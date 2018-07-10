@@ -1010,58 +1010,58 @@ static void print_ostemplate(struct Cveinfo *p, int index)
 
 static void print_json_list(const char *list)
 {
-    static const char spc[] = " \t";
-    int first_item = 1;
-    const char *item;
-    const char *endp;
+	static const char spc[] = " \t";
+	int first_item = 1;
+	const char *item;
+	const char *endp;
 
-    if (!list) {
-        printf("[]");
-        return;
-    }
+	if (!list) {
+		printf("[]");
+		return;
+	}
 
-    printf("[");
-    item = list;
-    endp = list + strlen(list);
-    while (item < endp) {
-        int toklen;
+	printf("[");
+	item = list;
+	endp = list + strlen(list);
+	while (item < endp) {
+		int toklen;
 
-        item += strspn(item, spc);
-        if (item >= endp)
-            break;
+		item += strspn(item, spc);
+		if (item >= endp)
+			break;
 
-        toklen = strcspn(item, spc);
-        printf("%s\"%.*s\"", first_item ? "" : ", ", toklen, item);
-        first_item = 0;
-        item += toklen;
-    }
-    printf("]");
+		toklen = strcspn(item, spc);
+		printf("%s\"%.*s\"", first_item ? "" : ", ", toklen, item);
+		first_item = 0;
+		item += toklen;
+	}
+	printf("]");
 }
 
 static void print_strlist(char *list)
 {
-    int r;
-    char *str = "-"; 
-    char *ch; 
+	int r;
+	char *str = "-"; 
+	char *ch; 
 
 	if (fmt_json)
 		return print_json_list(list);
 
-    if (list != NULL)
-        str = list;
-	
+	if (list != NULL)
+		str = list;
+
 	if (list[0]=='\0')
 		str = "-";
-    if (!last_field)
-    {    
-        /* Fixme: dont destroy original string */
-        if ((ch = strchr(str, ' ')) != NULL)
-            *ch = 0; 
-    }    
-    r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-15s", str);
-    if (!last_field)
-        r = 15;
-    p_outbuffer += r;
+	if (!last_field)
+	{    
+		/* Fixme: dont destroy original string */
+		if ((ch = strchr(str, ' ')) != NULL)
+			*ch = 0; 
+	}    
+	r = snprintf(p_outbuffer, e_buf - p_outbuffer, "%-15s", str);
+	if (!last_field)
+		r = 15;
+	p_outbuffer += r;
 }
 
 static void print_ip(struct Cveinfo *p, int index)
