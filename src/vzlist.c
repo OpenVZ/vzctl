@@ -1047,11 +1047,12 @@ static void print_strlist(char *list)
 	if (fmt_json)
 		return print_json_list(list);
 
-	if (list != NULL)
+	if (list != NULL) {
 		str = list;
 
-	if (list[0]=='\0')
-		str = "-";
+		if (list[0]=='\0')
+			str = "-";
+	}
 	if (!last_field)
 	{    
 		/* Fixme: dont destroy original string */
