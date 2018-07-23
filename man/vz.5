@@ -109,10 +109,8 @@ IP address. Default is the first device in the network device list.
 Traffic shaping allows limiting bandwidth consumed by Containers.
 If it is set to \fByes\fR then limitations will be turned on. Default is
 \fBno\fR.
-.IP \fBBANDWIDTH\fR="\fIdev\fB:\fIKbit\fR\ [\fIdev\fB:\fIKbit\fR\ ...]"
-Bandwidth of network interfaces. Values for these options must be in the form
-\fInetwork interface name\fR:\fIbandwidth\fR. It is possible to have several
-such pairs, space separated.
+.IP \fBBANDWIDTH\fR="\fIdev\fB\ [\fIdev\fB\ ...]"
+List of network devices for traffic shaping. If no value is given, the device will be automatically determined by the default route.
 .IP \fBTOTALRATE\fR="\fIdev\fR:\fIclass\fR:\fIKbits\fR\fI\fR"
 Specifies bound rate for network devices.
 .IP \fBRATE\fR="\fIdev\fR:\fIclass\fR:\fIKbits\fR\fI\fR"
