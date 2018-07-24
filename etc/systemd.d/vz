@@ -212,6 +212,49 @@ cleanup_stale_reg()
 	[ -x /usr/sbin/shaman ] && $VZCTL cleanup-stail-registration || :
 }
 
+wait_pids()
+{
+	for pid in $@; do
+		wait $pid
+	done
+}
+
+start_env()
+{
+	local pid pids iter
+
+	target=`readlink /etc/systemd/system/default.target`
+	if [ -n "$target" ]; then
+		target=`basename $target`
+	else
+		target=multi-user.target
+	fi
+	if /usr/bin/systemctl -q --no-legend list-jobs | grep -qw "$target"; then 
+		return
+	fi
+
+	get_parallel
+
+	iter=0
+	for id in `prlctl list -Ha -o id --vmtype ct`; do
+		if ! prlctl list -i $id | grep "^Autostart: on"; then
+			continue
+		fi
+		prlctl start $id >/dev/null 2>&1 &
+		pid=$!
+		eval VE_${pid}=${id}
+		pids="$pids $pid"
+		let iter++
+		if [ $iter -ge $VE_PARALLEL ]; then
+			wait_pids $pids
+			pids=
+			iter=0
+		fi
+	done
+
+	wait_pids $pids
+}
+
 start()
 {
 	if ! grep -q '^[[:space:]]*SERVER_UUID=' $VZCONF; then
@@ -225,6 +268,7 @@ start()
 	setup_tc
 	mount_vz
 	cleanup_stale_reg
+	start_env
 }
 
 stop()
@@ -253,17 +297,13 @@ stop()
 		pids="$pids $pid"
 		let iter++
 		if [ $iter -ge $VE_PARALLEL ]; then
-			for pid in $pids; do
-				wait $pid
-			done
+			wait_pids $pids
 			pids=
 			iter=0
 		fi
 	done
 
-	for pid in $pids; do
-		wait $pid
-	done
+	wait_pids $pids
 
 	# forcible stop the rest
 	velist=`$VZLIST -o ctid`
