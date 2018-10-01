@@ -253,6 +253,7 @@ start_env()
 	done
 
 	wait_pids $pids
+	return 0
 }
 
 start()
