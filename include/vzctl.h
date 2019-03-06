@@ -575,6 +575,7 @@ struct CParam
 	char *enc_keyid;
 	int enc_flags;
 	int recreate;
+	int ignore_ha_cluster;
 };
 
 extern struct CParam *gparam;
@@ -600,8 +601,7 @@ int vzctl_env_mount_snapshot(ctid_t ctid, const char *mnt, const char *guid);
 int vzctl_env_umount_snapshot(ctid_t ctid, const char *guid);
 int vzctl_env_snapshot_list(int argc, char **argv, struct vzctl_env_handle *h);
 int vzctl_env_enter(ctid_t ctid);
-int vzctl_env_start(ctid_t ctid, int skip_action_script, int wait,
-		int skip_ve_setup, int skip_fsck);
+int vzctl_env_start(ctid_t ctid, int flags);
 int vzctl_env_pause(ctid_t ctid);
 int vzctl_env_restart(ctid_t ctid, int wait, int skip_ve_setup);
 int vzctl_env_stop(ctid_t ctid, int stop_mode, int flags);
@@ -653,8 +653,7 @@ int vzctl_env_restore(ctid_t ctid, int cmd,
 		unsigned ctx,
 		unsigned int cpu_flags,
 		int cpt_flags,
-		int skip_arpdetect,
-		int skip_fsck);
+		int flags);
 int vzctl_lib_init(void);
 int vzctl_apply_param(ctid_t ctid, int setmode);
 int vzctl_del_param_by_id(ctid_t ctid, int id);

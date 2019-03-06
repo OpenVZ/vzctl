@@ -1434,6 +1434,15 @@ static void cleanup_stail_registration(void)
 	closedir(dir);
 }
 
+static int get_flags(struct CParam *param)
+{
+	return (gparam->wait ? VZCTL_WAIT : 0) |
+		(gparam->skip_ve_setup ? VZCTL_SKIP_SETUP : 0) |
+		(gparam->skip_fsck ? VZCTL_SKIP_FSCK : 0) |
+		(gparam->skip_arpdetect ? VZCTL_SKIP_ARPDETECT : 0) |
+		(gparam->ignore_ha_cluster == YES ? VZCTL_SKIP_HA_REG : 0);
+}
+
 void Version(void);
 void Usage(void);
 int main(int argc, char **argv, char *envp[])
@@ -1450,7 +1459,6 @@ int main(int argc, char **argv, char *envp[])
 	struct sigaction act;
 	int console_tty = 2;
 	int start_console = 0;
-	int ignore_ha_cluster = NO;
 	char **argv_orig = argv;
 	struct stat st;
 	const char *ve_private = NULL;
@@ -1492,7 +1500,7 @@ int main(int argc, char **argv, char *envp[])
 		else if (!strcmp(argv[1], "--skipowner"))
 			skipowner = YES;
 		else if (!strcmp(argv[1], "--ignore-ha-cluster"))
-			ignore_ha_cluster = YES;
+			gparam->ignore_ha_cluster = YES;
 		else if (!strcmp(argv[1], "--configure-timeout")) {
 			int val;
 
@@ -1766,7 +1774,7 @@ skip_eid:
 		if ((ret = ParseRegisterOptions(argc, argv, &reg_flags, param)))
 			goto END;
 		reg_flags |= (skipowner == YES ? VZ_REG_FORCE : 0);
-		if (ignore_ha_cluster == YES)
+		if (gparam->ignore_ha_cluster == YES)
 			reg_flags |= VZ_REG_SKIP_HA_CLUSTER;
 		if (!(reg_flags & VZ_REG_START))
 			skiplock = YES;
@@ -2028,7 +2036,9 @@ skip_eid:
 			/* ignore start error */
 			if (reg_flags & VZ_REG_START) {
 				vzctl_env_close();
-				vzctl_env_start(ctid, 0, gparam->wait, 0, 0);
+				gparam->skip_ve_setup = 0;
+				gparam->skip_fsck = 0;
+				vzctl_env_start(ctid, get_flags(gparam));
 			}
 			break;
 		}
@@ -2046,13 +2056,11 @@ skip_eid:
 						gparam->cptcontext,
 						gparam->cpu_flags,
 						gparam->cpt_flags,
-						gparam->skip_arpdetect,
-						gparam->skip_fsck);
+						get_flags(gparam));
 				if (ret == 0)
 					break;
 			}
-			ret = vzctl_env_start(ctid, 0, gparam->wait,
-					gparam->skip_ve_setup, gparam->skip_fsck);
+			ret = vzctl_env_start(ctid, get_flags(gparam));
 			break;
 		}
 		case ACTION_STOP_FORCE	:
@@ -2270,8 +2278,7 @@ skip_eid:
 				       gparam->cptcontext,
 				       gparam->cpu_flags,
 				       gparam->cpt_flags,
-				       gparam->skip_arpdetect,
-				       gparam->skip_fsck);
+					get_flags(gparam));
 		       break;
 		case ACTION_EXEC	:
 		case ACTION_EXEC2	:
@@ -2320,7 +2327,7 @@ skip_eid:
 		case ACTION_UNREGISTER	:
 		{
 			int flags = (skipowner == YES ? VZ_REG_FORCE : 0);
-			if (ignore_ha_cluster == YES)
+			if (gparam->ignore_ha_cluster == YES)
 				flags |= VZ_REG_SKIP_HA_CLUSTER;
 
 			ret = vzctl2_env_unregister(NULL, ctid, flags);
