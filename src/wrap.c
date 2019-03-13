@@ -425,14 +425,9 @@ void vzctl_set(unsigned int flags)
 	vzctl_set_flags(flags);
 }
 
-int vzctl_env_start(ctid_t ctid, int skip_action_script, int wait,
-			int skip_ve_setup, int skip_fsck)
+int vzctl_env_start(ctid_t ctid, int flags)
 {
 	int ret;
-	int flags = (skip_action_script ? VZCTL_SKIP_ACTION_SCRIPT : 0) |
-			(wait ? VZCTL_WAIT : 0) |
-			(skip_ve_setup ? VZCTL_SKIP_SETUP : 0) |
-			(skip_fsck ? VZCTL_SKIP_FSCK : 0);
 	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
 	if (h == NULL)
 		return ret;
@@ -506,8 +501,7 @@ int vzctl_env_restore(ctid_t ctid, int cmd,
 		unsigned ctx,
 		unsigned int cpu_flags,
 		int cpt_flags,
-		int skip_arpdetect,
-		int skip_fsck)
+		int flags)
 {
 	int ret;
 	struct vzctl_cpt_param cpt = {
@@ -517,8 +511,6 @@ int vzctl_env_restore(ctid_t ctid, int cmd,
 		.cmd = cmd,
 		.flags = cpt_flags,
 	};
-	int flags = (skip_arpdetect ? VZCTL_SKIP_ARPDETECT : 0) |
-			(skip_fsck ? VZCTL_SKIP_FSCK : 0);
 
 	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
 	if (h == NULL)
