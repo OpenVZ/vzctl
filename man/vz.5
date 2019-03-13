@@ -2,7 +2,7 @@
 .SH NAME
 vz \- global @PRODUCT_NAME_SHORT@ configuration file
 .SH SYNOPSIS
-/etc/sysconfig/vz
+/etc/vz/vz
 .SH DESCRIPTION
 This is the global configuration file for @PRODUCT_NAME_SHORT@.
 It consists of lines in the form
@@ -89,7 +89,7 @@ written to a log file. Default value is \fB0\fR. Some useful values are:
 .br
  \(bu \fB0\fR - actions/errors of vzctl on start, stop, mount, umount, create, destroy,
 .br
- \(bu \fB1\fR - logging helper comands vzctl running in /etc/sysconfig/vz-scripts,
+ \(bu \fB1\fR - logging helper comands vzctl running in /usr/libexec/libvzctl/scripts,
 .br
  \(bu \fB2\fR - logging create action events, pool, version used on create action,
 .br

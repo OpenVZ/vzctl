@@ -5,7 +5,7 @@ vznetstat \- display network traffic statistics per CT.
 .SH SYNOPSIS
 vznetstat \fI[-4|-6]\fR \fI[-v ctid]\fR \fI[-c class]\fR \fI[-a]\fR \fI[-r]\fR \fI[-h]\fR
 .SH DESCRIPTION
-The utility displays incoming and outcoming traffic for Containers for each defined network class. The output is grouped by CT ID. The network classes are described in the /etc/sysconfig/vz-scripts/networks_classes file. If no options are specified the network statistics for all running Containers is printed.
+The utility displays incoming and outcoming traffic for Containers for each defined network class. The output is grouped by CT ID. The network classes are described in the /etc/vz/conf/networks_classes file. If no options are specified the network statistics for all running Containers is printed.
 .PP
 Note that for the CT ID of 0, the traffic of the HS (the host server
 itself) is shown. The figures for HS does not include CT traffic.
