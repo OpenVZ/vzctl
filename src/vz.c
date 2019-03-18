@@ -439,7 +439,7 @@ fprintf(stdout,
 "   --numpty N[:N]	--numsiginfo N[:N]\n"
 "   --numiptent N[:N]	--physpages P[:P]	--avnumproc N[:N]\n"
 "   --swappages P[:P] --ram N --swap N --memguarantee <auto|N>\n"
-"   --pagecache-isolation=<yes|no>\n");
+"   --numnetif N --pagecache-isolation=<yes|no>\n");
 if (is_vswap_mode())
 	fprintf(stdout,
 "   --vm_overcommit N\n");
