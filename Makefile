@@ -52,8 +52,8 @@ VECONFIG_VSWAP = ve-vswap.256MB.conf-sample ve-vswap.512MB.conf-sample \
                vzdiskcheck.8 \
 	       vzauth.8 vztactl.8 vzlist.8 \
 	       vzeventd.8
-        MAN5 = vz.5 ve.conf.5 vz-start.5 vz-stop.5 ve-alias_add.5 \
-               ve-alias_del.5 vz-create_prvt.5 ve-veconfig.5 \
+        MAN5 = vz.5 ve.conf.5 vz-start.5 vz-stop.5 \
+               vz-create_prvt.5 \
                vz-postinst.5 vz-net_add.5 vz-net_del.5 networks_classes.5
 BASHCOMPLSCRIPT = vzctl.sh
 
