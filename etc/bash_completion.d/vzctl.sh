@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright ©2016-2019 Virtuozzo International GmbH
+# Copyright (c) 2016-2019 Virtuozzo International GmbH.
 # All rights reserved.
 
 _get_ves()
