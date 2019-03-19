@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 1999-2017, Parallels International GmbH.
+# Copyright ©2016-2019 Virtuozzo International GmbH
 # All rights reserved.
 
 _get_ves()
@@ -9,11 +9,8 @@ _get_ves()
 	[ "$EUID" -ne 0 ] && exit 1
 	case $cmd in
 		create)
-			# create a new VEID, by increasing the last one
-			local veids
-			veids=`/usr/sbin/vzlist -H -a -octid | tail -1`
-			[ -n "$veids" ] || veids=100
-			echo $((veids+1))
+			# create a new VEID
+			echo "`uuidgen`"
 			;;
 		start|mount|umount|destroy|delete)
 			# stopped VEs
