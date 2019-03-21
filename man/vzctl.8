@@ -28,6 +28,7 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB--physpages\fR \fIpages\fR[:\fIpages\fR]]
 [\fB--ram\fR \fIbytes\fR]
 [\fB--swap\fR \fIbytes\fR]
+[\fB--numnetif\fR \fInum\fR]
 [\fB--memguarantee\fR \fIauto|value\fR]
 
 [\fB--vm_overcommit \fR \fIN\fR]
@@ -420,6 +421,9 @@ The guaranteed memory is a percentage of total RAM that is set for the
 Container with the '--memsize' option. By default, memory guarantee is
 set to 'auto' (0% - no gurantee).
 .TP
+.TP
+\fB-e\fR, \fB--numnetif\fR \fInum\fR
+Maximum number of network interfaces.
 \fB--pagecache-isolation\fR \fIyes|no\fR
 By default page cache evicted from a memory cgroup (Container) on local
 pressure is stored in Nodes memory unmodified in case there is free RAM on
