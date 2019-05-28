@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1999-2017, Parallels International GmbH
+ * Copyright (c) 2017-2019 Virtuozzo International GmbH. All rights reserved.
  *
  * This file is part of OpenVZ. OpenVZ is free software; you can redistribute
  * it and/or modify it under the terms of the GNU General Public License as
@@ -16,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  *
- * Our contact details: Parallels International GmbH, Vordergasse 59, 8200
+ * Our contact details: Virtuozzo International GmbH, Vordergasse 59, 8200
  * Schaffhausen, Switzerland.
  *
  * A small daemon to periodically log some selected UBC parameters.
@@ -66,6 +67,7 @@ void usage(void)
 {
 	fprintf(stderr,
 FULL_NAME ".  Copyright (c) 1999-2017, Parallels International GmbH.\n\n"
+Copyright (c) 2017-2019 Virtuozzo International GmbH. All rights reserved.
 "Usage: " PROGRAM_NAME " [options]\n"
 "Available options are:\n"
 "  -i - periodical log interval, in seconds (default is %d)\n"
