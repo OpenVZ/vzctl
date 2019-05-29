@@ -2,6 +2,7 @@
 #<agent>: Configuration file for CT with installed Plesk application
 #
 # Copyright (c) 1999-2017, Parallels International GmbH. All rights reserved.
+# Copyright (c) 2017-2019 Virtuozzo International GmbH. All rights reserved.
 
 VERSION="2"
 

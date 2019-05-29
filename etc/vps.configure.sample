@@ -1,5 +1,6 @@
 #!/bin/bash
 # Copyright (c) 1999-2017, Parallels International GmbH. All rights reserved.
+# Copyright (c) 2017-2019 Virtuozzo International GmbH. All rights reserved.
 #
 # Sample of custom configuration script.
 # This script running on reinstall action inside running VE.
