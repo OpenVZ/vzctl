@@ -1997,8 +1997,13 @@ skip_eid:
 		action == ACTION_PAUSE)
 	{
 		lckfd = 0;
-		if (skiplock != YES)
-			lckfd = vzctl2_env_lock(h, status);
+		if (skiplock != YES) {
+			if (action == ACTION_DESTROY)
+				/* Skip VE_PRIVATE locking */
+				lckfd = vzctl2_env_lock_prvt(ctid, NULL, status);
+			else
+				lckfd = vzctl2_env_lock(h, status);
+		}
 		if (lckfd == -2)
 		{
 			logger(-1, 0, "Cannot lock the Container");
