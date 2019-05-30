@@ -66,8 +66,6 @@ struct sigaction sigusr1;
 void usage(void)
 {
 	fprintf(stderr,
-FULL_NAME ".  Copyright (c) 1999-2017, Parallels International GmbH.\n\n"
-Copyright (c) 2017-2019 Virtuozzo International GmbH. All rights reserved.
 "Usage: " PROGRAM_NAME " [options]\n"
 "Available options are:\n"
 "  -i - periodical log interval, in seconds (default is %d)\n"
