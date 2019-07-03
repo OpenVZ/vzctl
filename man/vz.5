@@ -14,10 +14,6 @@ Quotes surrounding \fIvalue\fR are required if value contains spaces, and
 are optional otherwise. Extra spaces are not allowed. All unrecognized lines
 will be ignored.
 .SS Global parameters
-.IP \fBVIRTUOZZO\fR=\fByes\fR|\fBno\fR
-This parameter is used by \f(CW/etc/init.d/vz\fR script.
-In case it is \fBnot\fR set to \fByes\fR, nothing will be done
-to boot up @PRODUCT_NAME_SHORT@ on this node.
 .IP "\fBACTIONLOGDIR\fR=\fIdirectory\fR"
 Set the directory to write action log files to. Action log files are needed
 for \fBvzctl\fR/\fBvzcoll\fR interaction, so \fBvzcoll\fR will know
@@ -66,17 +62,6 @@ This parameter is used by the \f(CW/etc/init.d/vz\fR script.
  \(bu \fBsuspend\fR - Suspend Containers on shutdown (default),
 .br
  \(bu \fBstop\fR - Stop Containers.
-.SS Validation parameters
-.IP \fBVE_VALIDATE_ACTION\fR=\fBnone\fR|\fBwarning\fR|\fBerror\fR|\fBfix\fR
-Validation of CT parameters on start. Possible values are:
-.br
- \(bu \fBnone\fR - do not validate,
-.br
- \(bu \fBwarning\fR - display warning and continue,
-.br
- \(bu \fBerror\fR - exit with error,
-.br
- \(bu \fBfix\fR - fix invalid parameters and continue.
 .SS Logging parameters
 .IP "\fBLOGGING\fR=\fByes\fR|\fBno\fR"
 Enables or disables logging. This parameter can be set to \fByes\fR or
