@@ -62,6 +62,12 @@ This parameter is used by the \f(CW/etc/init.d/vz\fR script.
  \(bu \fBsuspend\fR - Suspend Containers on shutdown (default),
 .br
  \(bu \fBstop\fR - Stop Containers.
+.IP "\fBREPAIR_MODE\fR=\fBforce\fR|\fBauto\fR"
+Specifies the mode for the fsck file system checking utility.
+.br
+\(bu \fBauto\fR - fsck will automatically fix any file system issues that can be safely fixed without human intervention (default).
+.br
+\(bu \fBforce\fR - fsck will always attempt to fix all file system corruption issues automatically (not recommended).
 .SS Logging parameters
 .IP "\fBLOGGING\fR=\fByes\fR|\fBno\fR"
 Enables or disables logging. This parameter can be set to \fByes\fR or
