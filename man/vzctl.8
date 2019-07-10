@@ -11,6 +11,8 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBreinstall\fR \fIctid\fR [\fB--skipbac
 vzctl \fBpause\fR \fIctid\fR
 .PP
 vzctl \fBrunscript\fR \fIctid\fR \fIscript\fR
+.PP
+vzctl \fBexecaction\fR \fIctid\fR \fIaction\fR
 .TP
 vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 .\" UBC parameters
@@ -128,7 +130,7 @@ vzctl \fBsnapshot-umount\fR \fICTID\fR \fB--id\fR \fIuuid\fR
 .PP
 vzctl \fBsnapshot-list \fICTID\fR [\fB-H\fR] [\fB-o\fR \fIfield\fR[,\fIfield\fR...] [\fB--id\fR \fIuuid\fR]
 .PP
-vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBexec\fR | \fBexec2\fR \fIctid\fR|\fIname\fR \fIcommand\fR [\fIarg\fR ...]
+vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBexec\fR | \fBexec2\fR | \fBexec3\fR \fIctid\fR|\fIname\fR \fIcommand\fR [\fIarg\fR ...]
 .PP
 vzctl \fBconvert\fR \fIctid\fR|\fIname\fR
 .PP
@@ -679,6 +681,8 @@ Signal handlers may differ from default settings. If \fIcommand\fR is \fI-\fR,
 commands are read from stdin.
 .IP "\fBexec2\fR \fIctid\fR \fIcommand\fR" 4
 The same as \fBexec\fR, but return code is that of \fIcommand\fR.
+.IP "\fBexec3\fR \fIctid\fR \fIcommand\fR" 4
+The same as \fBexec2\fR, but not quotes command args.
 .IP "\fBenter\fR \fIctid\fR" 4
 Enters into CT. This option is a back-door for host root only.
 .IP "\fBconsole\fR \fIctid\fR [\fB-s\fR|\fB--start\fR] [\fIN\fR]\fR" 4
@@ -710,6 +714,8 @@ List reinstall scripts if \fB--desc\fR option specified output description.
 Run the specified shell script in the Container. For a running Container, the command jumps into the Container and runs the script.
 For a stopped Container, it enters the Container, mounts the root (/) filesystem, and executes the script. In this case,
 only a process for the vzctl session, the script, and processes launched by the script are running in the Container.
+.IP "\fBexecaction\fR \fIctid\fR" 4
+Run the distribution action for the Container by name, like SET_DNS or SET_HOSTNAME.
 .IP "\fBmonitor\fR \fIctid\fR | \fB0\fR" 4
 Display in real-time actions or events for \fIctid\fR.
 In case ctid is 0, display actions and events for all CTs. Valid only on 2.6
