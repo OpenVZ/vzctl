@@ -293,7 +293,7 @@ stop()
 			a=`$VZLIST -H -o autostop $veid`
 			[ "$a" = "stop" -o "$a" = "suspend" ] && cmd=$a
 		fi
-		$VZCTL --skiplock $cmd $veid
+		$VZCTL --skiplock $cmd $veid &
 		pid=$!
 		pids="$pids $pid"
 		let iter++
