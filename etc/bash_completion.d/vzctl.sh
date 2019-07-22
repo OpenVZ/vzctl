@@ -17,7 +17,7 @@ _get_ves()
 			/usr/sbin/vzlist -H -S -octid
 			/usr/sbin/vzlist -H -S -oname | $rm_empty
 			;;
-		stop|enter|exec*)
+		stop|enter|exec*|execaction|suspend)
 			# running VEs
 			/usr/sbin/vzlist -H -octid
 			/usr/sbin/vzlist -H -oname | $rm_emtpy
@@ -42,8 +42,9 @@ _vzctl()
 	local prev=${COMP_WORDS[COMP_CWORD-1]}
 
 	local vzctl_common_opts="--quiet --verbose --help --version"
-	local vzctl_cmds="create destroy delete mount umount chkpnt restore \
-		set start stop restart status enter exec exec2 runscript \
+	local vzctl_cmds="create destroy delete mount umount chkpnt suspend restore \
+		set unset start stop restart status enter exec exec2 exec3 runscript \
+        setrate pause resume monitor register unregister execaction \
 		console convert snapshot snapshot-switch snapshot-delete \
 		snapshot-mount snapshot-umount snapshot-list"
 	local vzctl_create_opts="--ostemplate --config --private --root \
