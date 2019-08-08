@@ -26,6 +26,7 @@ setup_ve_sysfs()
 
 PERM="/ rx
 block -
+bus rx
 class rx
 class/block rx
 class/net rx
