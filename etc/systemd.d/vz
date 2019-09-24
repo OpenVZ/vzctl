@@ -69,6 +69,10 @@ kernel/fscaps r
 kernel/profiling r
 kernel/uevent_seqnum r
 module/ rx
+module/nf_conntrack rx
+module/nf_conntrack/initstate r
+module/nf_conntrack/parameters/ rx
+module/nf_conntrack/parameters/hashsize r
 devices/virtual/mem rx
 devices/virtual/mem/full rx
 devices/virtual/mem/full/dev r
