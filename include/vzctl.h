@@ -587,7 +587,7 @@ int vzctl_configure_disk(ctid_t ctid, int op, struct vzctl_disk_param *param,
 		int recreate, int flags);
 int VZExecScript(ctid_t ctid, char *name, struct CList *env, int log, int timeout);
 int env_is_running(ctid_t ctid);
-int Exec(ctid_t ctid, char **arg, int argc, int mode);
+int Exec(ctid_t ctid, char **arg, int argc, int mode,int flags);
 int Set(ctid_t ctid, struct CParam *param);
 int Unset(ctid_t ctid, struct CParam *param);
 int Set_ve0(struct CParam *param);

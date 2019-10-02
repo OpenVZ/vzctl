@@ -2290,7 +2290,8 @@ skip_eid:
 		case ACTION_EXEC	:
 		case ACTION_EXEC2	:
 		case ACTION_EXEC3	:
-			ret = Exec(ctid, argv + 1, argc - 1, action);
+			ret = Exec(ctid, argv + 1, argc - 1, action,
+					skiplock ? VZCTL_SKIP_LOCK : 0);
 			goto END;
 		case ACTION_EXECACTION	:
 		{

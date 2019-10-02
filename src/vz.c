@@ -217,7 +217,7 @@ static char **get_env(void)
 	return env;
 }
 
-int Exec(ctid_t ctid, char **arg, int argc, int mode)
+int Exec(ctid_t ctid, char **arg, int argc, int mode, int flags)
 {
 	int i, ret, narg;
 	char **argv = NULL, **env = NULL;
@@ -260,7 +260,7 @@ int Exec(ctid_t ctid, char **arg, int argc, int mode)
 	env = get_env();
 	ret = vzctl_env_exec(ctid,
 			mode == ACTION_EXEC3 ? MODE_EXEC : MODE_BASH,
-			argv, env, NULL, 0, 0);
+			argv, env, NULL, 0, flags);
 
 	freearg(env);
 	free(buf);
