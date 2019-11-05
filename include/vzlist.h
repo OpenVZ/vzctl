@@ -26,8 +26,6 @@
 
 #include <vzctl/libvzctl.h>
 
-#include <linux/vzlist.h>
-
 #define PROCVEINFO	"/proc/vz/veinfo"
 #define PROCUBC		"/proc/user_beancounters"
 #define PROC_BC_RES	"/proc/bc/resources"

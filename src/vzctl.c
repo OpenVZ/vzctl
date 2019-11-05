@@ -1318,7 +1318,7 @@ static int print_script(char *root, struct CList *list, int desc)
 
 int get_reinstall_scripts(char *root, struct CList **list)
 {
-	char buf[STR_SIZE];
+	char buf[STR_SIZE*2+1];
 	char dir[STR_SIZE];
 	struct stat st;
 	struct dirent *ep;

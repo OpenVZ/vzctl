@@ -44,7 +44,7 @@ OBJS_vzlist   = vzlist.o $(OBJS)
 ### Target names
 	PROGS = vzctl ubclogd vzsplit \
 		vzauth \
-		vztactl vznetstat vzlist ndsend vzeventd
+		vzlist ndsend vzeventd
 
 	 LIB = $(LGCOV) -lpthread -lutil -luuid -lploop -ldl -lvzctl2
       LIBDIR = /usr/lib64
@@ -99,19 +99,19 @@ vzauth: $(OBJS_vzauth)
 
 vzproxyctl: $(OBJS_proxyctl)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ -o $@
-vztactl: $(OBJS_vztactl)
-	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
-vznetstat: $(OBJS_vznetstat)
-	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -luuid -o $@
+#vztactl: $(OBJS_vztactl)
+#	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
+#vznetstat: $(OBJS_vznetstat)
+#	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -luuid -o $@
 vzlist: $(OBJS_vzlist)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -lm -o $@
 
 clean:
-	$(RM) $(PROGS) $(OBJS) $(OBJS_memcheck)\
+	$(RM) $(PROGS) $(OBJS) $(OBJS_memcheck) ${OBJS_vzctl} ${OBJ_vzeventd} \
 	$(OBJS_ubclogd) $(OBJS_split) $(OBJS_calc) $(OBJS_convert) \
 	$(OBJS_cfgscale) $(OBJS_vzauth) \
-	$(OBJS_proxyctl) $(OBJS_vztactl) $(OBJS_vznetstat) \
-	$(OBJS_vzlist) $(OBJ_nd).stamp* .depend *[~\#]
+	$(OBJS_proxyctl) $(OBJS_vznetstat) \
+	$(OBJS_vzlist) $(OBJ_nd) .depend *[~\#]
 
 installsbin: $(PROGS)
 	for file in $(PROGS); do \
