@@ -43,7 +43,7 @@ OBJS_vznetstat= vznetstat.o tc.o
 OBJS_vzlist   = vzlist.o $(OBJS)
 ### Target names
 	PROGS = vzctl ubclogd vzsplit \
-		vzauth \
+		vzauth vztactl vznetstat \
 		vzlist ndsend vzeventd
 
 	 LIB = $(LGCOV) -lpthread -lutil -luuid -lploop -ldl -lvzctl2
@@ -99,10 +99,10 @@ vzauth: $(OBJS_vzauth)
 
 vzproxyctl: $(OBJS_proxyctl)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ -o $@
-#vztactl: $(OBJS_vztactl)
-#	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
-#vznetstat: $(OBJS_vznetstat)
-#	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -luuid -o $@
+vztactl: $(OBJS_vztactl)
+	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -o $@
+vznetstat: $(OBJS_vznetstat)
+	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -luuid -o $@
 vzlist: $(OBJS_vzlist)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -lm -o $@
 
