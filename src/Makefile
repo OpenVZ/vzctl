@@ -42,10 +42,11 @@ OBJS_vztactl  = vztactl.o tc.o list.o util.o wrap.o
 OBJS_vznetstat= vznetstat.o tc.o
 OBJS_vzlist   = vzlist.o $(OBJS)
 ### Target names
-	PROGS = vzctl ubclogd vzsplit \
-		vzauth vztactl vznetstat \
-		vzlist ndsend vzeventd
+	PROGS = vzctl ubclogd vzsplit vzauth vzlist ndsend vzeventd
 
+ifneq (,$(wildcard /usr/include/linux/vzctl_netstat.h)) 
+       PROGS += vztactl vznetstat
+endif
 	 LIB = $(LGCOV) -lpthread -lutil -luuid -lploop -ldl -lvzctl2
       LIBDIR = /usr/lib64
 
