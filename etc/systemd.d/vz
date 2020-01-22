@@ -177,7 +177,7 @@ setup_net()
 
 setup_tc()
 {
-	$VZTACTL class_load -s $NETCLASSES 2>&1
+	[ -x $VZTACTL ] && $VZTACTL class_load -s $NETCLASSES 2>&1
 }
 
 mount_vz()
