@@ -37,7 +37,10 @@ devices rx
 devices/system rx
 devices/system/cpu rx
 devices/system/cpu/kernel_max r
+devices/system/cpu/offline r
+devices/system/cpu/online r
 devices/system/cpu/possible r
+devices/system/cpu/present r
 devices/virtual rx
 devices/virtual/misc rx
 devices/virtual/misc/tun rx
