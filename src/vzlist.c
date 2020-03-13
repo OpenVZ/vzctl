@@ -78,7 +78,7 @@ static char *netif_pattern = NULL;
 static struct Cfield_order *g_field_order = NULL;
 static int last_field;
 static char *default_field_order = "veid,numproc,status,configured_ip,hostname";
-static char *default_json_field_order = "ctid,private,root,hostname,name,smart_name,description,ostemplate,ip,nameserver,searchdomain,status,numproc,kmemsize,lockedpages,privvmpages,shmpages,numproc,physpages,vmguarpages,oomguarpages,numtcpsock,numflock,numpty,numsiginfo,tcpsndbuf,tcprcvbuf,othersockbuf,dgramrcvbuf,numothersock,dcachesize,numfile,numiptent,swappages,diskspace,diskinodes,laverage,uptime,cpulimit,cpuunits,cpus,ioprio,iolimit,iopslimit,onboot,bootorder,layout,features,disabled,netfilter";
+static char *default_json_field_order = "ctid,private,root,hostname,name,smart_name,description,ostemplate,ip,configured_ip,nameserver,searchdomain,status,numproc,kmemsize,lockedpages,privvmpages,shmpages,numproc,physpages,vmguarpages,oomguarpages,numtcpsock,numflock,numpty,numsiginfo,tcpsndbuf,tcprcvbuf,othersockbuf,dgramrcvbuf,numothersock,dcachesize,numfile,numiptent,swappages,diskspace,diskinodes,laverage,uptime,cpulimit,cpuunits,cpus,ioprio,iolimit,iopslimit,onboot,bootorder,layout,features,disabled,netfilter";
 static char *default_compat_field_order = "status,configured_ip,smart_name";
 static char *default_nm_field_order = "ctid,numproc,status,configured_ip,name";
 static char *default_netif_field_order = "ctid,status,host_ifname,configured_ip,hostname";
@@ -104,6 +104,7 @@ static void print_name(struct Cveinfo *p, int index);
 static void print_smart_name(struct Cveinfo *p, int index);
 static void print_description(struct Cveinfo *p, int index);
 static void print_ip(struct Cveinfo *p, int index);
+static void print_configured_ip(struct Cveinfo *p, int index);
 static void print_nameserver(struct Cveinfo *p, int index);
 static void print_searchdomain(struct Cveinfo *p, int index);
 static void print_dev_name(struct Cveinfo *p, int index);
@@ -754,6 +755,7 @@ SORT_STR_FN(hostnm_sort_fn, hostname)
 SORT_STR_FN(name_sort_fn, name)
 SORT_STR_FN(description_sort_fn, description)
 SORT_STR_FN(ip_sort_fn, ip)
+SORT_STR_FN(configured_ip_sort_fn, configured_ip)
 SORT_STR_FN(nameserver_sort_fn, nameserver)
 SORT_STR_FN(searchdomain_sort_fn, searchdomain)
 
@@ -837,7 +839,7 @@ static struct Cfield field_names[] =
 {"ip", "IP_ADDR", "%-15s", 0, RES_IP, print_ip, ip_sort_fn},
 {"nameserver", "NAMESERVER", "%-15s", 0 , RES_NONE, print_nameserver, nameserver_sort_fn},
 {"searchdomain", "SEARCHDOMAIN", "%-15s", 0 , RES_NONE, print_searchdomain, searchdomain_sort_fn},
-{"configured_ip", "IP_ADDR", "%-15s", 0, RES_CONFIGURED_IP, print_ip, ip_sort_fn},
+{"configured_ip", "CFG_IP_ADDR", "%-15s", 0, RES_CONFIGURED_IP, print_configured_ip, configured_ip_sort_fn},
 {"status", "STATUS", "%-9s", 0, RES_STATUS, print_status, status_sort_fn},
 /*	UBC	*/
 UBC_FIELD(kmemsize, KMEMSIZE),
@@ -1069,6 +1071,11 @@ static void print_strlist(char *list)
 static void print_ip(struct Cveinfo *p, int index)
 {
 	print_strlist(p->ip);
+}
+
+static void print_configured_ip(struct Cveinfo *p, int index)
+{
+	print_strlist(p->configured_ip);
 }
 
 static void print_nameserver(struct Cveinfo *p, int index)
@@ -1727,7 +1734,7 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		add_veth_param(ve->veth, &dev);
 	}
 
-	if (ve->ip == NULL) {
+	if (ve->configured_ip == NULL) {
 		LIST_HEAD(ip);
 
                 vzctl_ip_iterator it = NULL;
@@ -1744,6 +1751,7 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		}
 
 		ve->ip = list2str(NULL, &ip);
+		ve->configured_ip = list2str(NULL, &ip);
 		free_str(&ip);
 	}
 

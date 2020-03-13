@@ -86,6 +86,7 @@ struct Cveinfo {
 	char *description;
 	char *ip;
 	char *ext_ip;
+	char *configured_ip;
 	char *ve_private;
 	char *ve_root;
 	char *ostmpl;
