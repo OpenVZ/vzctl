@@ -78,7 +78,7 @@ static char *netif_pattern = NULL;
 static struct Cfield_order *g_field_order = NULL;
 static int last_field;
 static char *default_field_order = "veid,numproc,status,configured_ip,hostname";
-static char *default_json_field_order = "ctid,private,root,hostname,name,smart_name,description,ostemplate,ip,configured_ip,nameserver,searchdomain,status,numproc,kmemsize,lockedpages,privvmpages,shmpages,numproc,physpages,vmguarpages,oomguarpages,numtcpsock,numflock,numpty,numsiginfo,tcpsndbuf,tcprcvbuf,othersockbuf,dgramrcvbuf,numothersock,dcachesize,numfile,numiptent,swappages,diskspace,diskinodes,laverage,uptime,cpulimit,cpuunits,cpus,ioprio,iolimit,iopslimit,onboot,bootorder,layout,features,disabled,netfilter";
+static char *default_json_field_order = "ctid,private,root,hostname,name,smart_name,description,ostemplate,distribution,ip,configured_ip,nameserver,searchdomain,status,numproc,kmemsize,lockedpages,privvmpages,shmpages,numproc,physpages,vmguarpages,oomguarpages,numtcpsock,numflock,numpty,numsiginfo,tcpsndbuf,tcprcvbuf,othersockbuf,dgramrcvbuf,numothersock,dcachesize,numfile,numiptent,swappages,diskspace,diskinodes,laverage,uptime,cpulimit,cpuunits,cpus,ioprio,iolimit,iopslimit,onboot,bootorder,layout,features,disabled,netfilter";
 static char *default_compat_field_order = "status,configured_ip,smart_name";
 static char *default_nm_field_order = "ctid,numproc,status,configured_ip,name";
 static char *default_netif_field_order = "ctid,status,host_ifname,configured_ip,hostname";
@@ -112,6 +112,7 @@ static void print_netif_params(struct Cveinfo *p, int index);
 static void print_ve_private(struct Cveinfo *p, int index);
 static void print_ve_root(struct Cveinfo *p, int index);
 static void print_ostemplate(struct Cveinfo *p, int index);
+static void print_distribution(struct Cveinfo *p, int index);
 
 static void SET_P_OUTBUFFER(int r, int len)
 {
@@ -660,6 +661,12 @@ static int ostemplate_sort_fn(const void *val1, const void *val2)
 		((struct Cveinfo*) val2)->ostmpl);
 }
 
+static int distribution_sort_fn(const void *val1, const void *val2)
+{
+	return strcmp(((struct Cveinfo*) val1)->distribution,
+		((struct Cveinfo*) val2)->distribution);
+}
+
 static int laverage_sort_fn(const void *val1, const void *val2)
 {
 	struct vzctl_cpustat *v1 = ((struct Cveinfo *)val1)->cpustat;
@@ -836,6 +843,7 @@ static struct Cfield field_names[] =
 {"description", "DESCRIPTION", "%-32s", 0, RES_DESCRIPTION, print_description, description_sort_fn},
 {"tm", "TM", "%-2s", 0, RES_TM, print_tm, tm_sort_fn},
 {"ostemplate", "OSTEMPLATE", "%-24s", 0, RES_OSTEMPLATE, print_ostemplate, ostemplate_sort_fn},
+{"distribution", "DISTRIBUTION", "%-15s", 0, RES_DISTRIBUTION, print_distribution, distribution_sort_fn},
 {"ip", "IP_ADDR", "%-15s", 0, RES_IP, print_ip, ip_sort_fn},
 {"nameserver", "NAMESERVER", "%-15s", 0 , RES_NONE, print_nameserver, nameserver_sort_fn},
 {"searchdomain", "SEARCHDOMAIN", "%-15s", 0 , RES_NONE, print_searchdomain, searchdomain_sort_fn},
@@ -1009,6 +1017,11 @@ static void print_ve_root(struct Cveinfo *p, int index)
 static void print_ostemplate(struct Cveinfo *p, int index)
 {
 	print_str(p->ostmpl, "%-24s");
+}
+
+static void print_distribution(struct Cveinfo *p, int index)
+{
+	print_str(p->distribution, "%-15s");
 }
 
 static void print_json_list(const char *list)
@@ -1802,6 +1815,9 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		ve->tm = TM_UNKNOWN;
 		ve->ostmpl = strdup("-");
 	}
+
+	if (vzctl2_env_get_param(h, "DISTRIBUTION", &p) == 0 && p != NULL)
+		ve->distribution = strdup(p);
 
 	enable = 0;
 	if (vzctl2_env_get_autostart(vzctl2_get_env_param(h), &enable) == 0)

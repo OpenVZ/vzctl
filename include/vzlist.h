@@ -90,6 +90,7 @@ struct Cveinfo {
 	char *ve_private;
 	char *ve_root;
 	char *ostmpl;
+	char *distribution;
 	struct Cubc *ubc;
 	struct Cquota *quota;
 	struct Ccpu *cpu;
@@ -139,6 +140,7 @@ struct Cveinfo {
 #define RES_HA_ENABLE	22
 #define RES_HA_PRIO	23
 #define RES_STATUS	24
+#define RES_DISTRIBUTION	25
 
 struct Cfield {
 	char *name;
