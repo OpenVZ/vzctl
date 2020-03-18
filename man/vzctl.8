@@ -96,6 +96,7 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB--name\fR \fIname\fR] [\fB--ioprio\fR \fIprio\fR]
 [\fB--iolimit\fR \fIlimit\fR] [\fB--iopslimit\fR \fIlimit\fR]
 [\fB--features\fR \fIname\fR:\fBon\fR|\fBoff\fR[\fB,\fR...]]
+[\fB--distribution\fR \fIdist\fR]
 .br
 .\" high availability cluster
 [\fB--ha_enable\fR \fByes\fR|\fBno\fR]
@@ -214,6 +215,9 @@ The valid symbols for \fIname\fR are [0-9][aA-Zz][\ -_.] and all international s
 .TP
 \fB--description\fR \fIdesc\fR
 Assign description for CT. It can be viewed by \fBvzlist\fR(8) utility.
+.TP
+\fB--distribution\fR \fIdist\fR
+Assign distribution for CT. It can be viewed by \fBvzlist\fR(8) utility.
 .TP
 \fBNetwork related parameters\fR
 .TP

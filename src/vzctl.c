@@ -86,6 +86,7 @@ static struct option set_options[] =
 		{"apply-iponly", required_argument, NULL, PARAM_APPLY_IPONLY},
 	{"setmode",	required_argument, NULL, PARAM_SETMODE},
 	{"ostemplate", required_argument, NULL, PARAM_OSTEMPLATE},
+	{"distribution", required_argument, NULL, PARAM_DISTRIBUTION},
 
 /* --device-add hdd --size <N> --type <expanded|raw> --image <path> */
 	{"device-add", required_argument, NULL, PARAM_DEVICE_ADD},
