@@ -1404,33 +1404,25 @@ static int is_match_netif_pattern(char *str)
 	return 0;
 }
 
-static void update_ip(struct Cveinfo *ve)
+static char *filter_by_netif_pattern(struct Cveinfo *ve, char *iplist)
 {
 	veth_dev *dev;
 	int total, len;
 	char *tmp;
 
-	/* Get IPs from Container */
-	if (ve->status == ENV_STATUS_RUNNING &&	check_param(RES_IP))
-	{
-		tmp = get_real_ips(ve->ctid);
-		if (tmp != NULL) {
-			free(ve->ip);
-			ve->ip = tmp;
-			return;
-		}
-	}
 	if (netif_pattern != NULL && is_match_netif_pattern("venet0"))
-		return;
+		return iplist;
 	if (ve->veth == NULL || list_empty(&ve->veth->dev))
-		return;
+		return iplist;
 	if (netif_pattern != NULL) {
-		free(ve->ip);
-		ve->ip = NULL;
+		free(iplist);
+		iplist = NULL;
 	}
+
 	total = 0;
-	if (ve->ip != NULL)
-		total = strlen(ve->ip);
+	if (iplist != NULL)
+		total = strlen(iplist);
+
 	list_for_each(dev, &ve->veth->dev, list) {
 		if (is_match_netif_pattern(dev->dev_name) ||
 				is_match_netif_pattern(dev->dev_name_ve))
@@ -1439,13 +1431,38 @@ static void update_ip(struct Cveinfo *ve)
 			if (tmp == NULL)
 				continue;
 			len = strlen(tmp);
-			ve->ip = x_realloc(ve->ip, total + len + 2);
-			strcpy(ve->ip + total, tmp);
+			iplist = x_realloc(iplist, total + len + 2);
+			strcpy(iplist + total, tmp);
 			total += len + 1;
-			ve->ip[total] = 0;
+			iplist[total] = 0;
 			free(tmp);
 		}
 	}
+	return iplist;
+}
+
+// Obtain IPs from config files
+static void update_configured_ip(struct Cveinfo *ve)
+{
+	ve->configured_ip = filter_by_netif_pattern(ve, ve->configured_ip);
+}
+
+// Obtain IPs from runtime
+static void update_ip(struct Cveinfo *ve)
+{
+	char *tmp;
+
+	/* Get IPs from Container */
+	if (ve->status == ENV_STATUS_RUNNING)
+	{
+		tmp = get_real_ips(ve->ctid);
+		if (tmp != NULL) {
+			free(ve->ip);
+			ve->ip = tmp;
+			return;
+		}
+	}
+	ve->ip = filter_by_netif_pattern(ve, ve->ip);
 }
 
 static void filter_by_netif(void)
@@ -1457,7 +1474,8 @@ static void filter_by_netif(void)
 		veinfo[i].hide = 1;
 		if (netif_pattern != NULL &&
 				is_match_netif_pattern("venet0") &&
-				veinfo[i].ip != NULL)
+				((check_param(RES_CONFIGURED_IP) && veinfo[i].configured_ip != NULL) ||
+				(check_param(RES_IP) && veinfo[i].ip != NULL)))
 		{
 			veinfo[i].hide = 0;
 			continue;
@@ -1750,7 +1768,7 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 	if (ve->configured_ip == NULL) {
 		LIST_HEAD(ip);
 
-                vzctl_ip_iterator it = NULL;
+		vzctl_ip_iterator it = NULL;
 		while ((it = vzctl2_env_get_ipaddress(vzctl2_get_env_param(h), it)) != NULL) {
 			char *p;
 
@@ -1766,6 +1784,8 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		ve->ip = list2str(NULL, &ip);
 		ve->configured_ip = list2str(NULL, &ip);
 		free_str(&ip);
+	} else {
+		ve->ip = strdup(ve->configured_ip);
 	}
 
 	struct vzctl_2UL_res res;
@@ -1922,7 +1942,11 @@ static void parse_conf(ctid_t ctid, struct Cveinfo *ve)
 		return;
 
 	merge_conf(ve, h);
-	update_ip(ve);
+	if (check_param(RES_IP))
+		update_ip(ve);
+
+	if (check_param(RES_CONFIGURED_IP))
+		update_configured_ip(ve);
 
 	vzctl2_env_close(h);
 }
@@ -2045,9 +2069,9 @@ static int _get_run_ve(int update)
 			continue;
 		memset(&ve, 0, sizeof(struct Cveinfo));
 		if (res == 4) {
-			ve.ip = invert_ip(ips);
+			ve.configured_ip = invert_ip(ips);
 		} else if (res == 3)
-			ve.ip = strdup("");
+			ve.configured_ip = strdup("");
 		SET_CTID(ve.ctid, ctid);
 
 		vzctl_env_status_t status = {};
@@ -2317,6 +2341,7 @@ static void free_veinfo(void)
 
 	for (i = 0; i < n_veinfo; i++) {
 		free(veinfo[i].ip);
+		free(veinfo[i].configured_ip);
 		free(veinfo[i].ext_ip);
 		free(veinfo[i].hostname);
 		free(veinfo[i].name);
