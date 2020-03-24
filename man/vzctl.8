@@ -139,6 +139,8 @@ vzctl \fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR]
 .PP
 vzctl \fBunregister\fR \fIctid\fR|\fIname\fR
 .PP
+vzctl \fBcompact\fR \fIctid\fR|\fIname\fR [\fB--defrag\fR]
+.PP
 vzctl \fB--help\fR | \fB--version\fR
 .SH DESCRIPTION
 Utility \fBvzctl\fR runs on host server (HS) and performs direct
@@ -731,6 +733,8 @@ Register the Container using the configuration file \fIpath\fR/ve.conf and havin
 If the \fB--force\fR option is specified, all validation checks will be skipped.
 .IP "\fBunregister\fR \fIctid\fR|\fIname\fR" 4
 Unregister the specified Container.
+.IP "\fBcompact\fR <\fIctid\fR> [\fB--defrag\fR" 4
+Compact container image.
 .TP
 \fBContainer action scripts\fR
 .RS

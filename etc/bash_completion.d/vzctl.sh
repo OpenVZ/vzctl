@@ -45,7 +45,7 @@ _vzctl()
 	local vzctl_cmds="create destroy delete mount umount chkpnt suspend restore \
 		set unset start stop restart status enter exec exec2 exec3 runscript \
         setrate pause resume monitor register unregister execaction \
-		console convert snapshot snapshot-switch snapshot-delete \
+		compact console convert snapshot snapshot-switch snapshot-delete \
 		snapshot-mount snapshot-umount snapshot-list"
 	local vzctl_create_opts="--ostemplate --config --private --root \
 		--ipadd --hostname --name --description --skip_app_templates \
@@ -287,6 +287,9 @@ _vzctl()
 						;;
 					console)
 						COMPREPLY=( $( compgen -W "$vzctl_console_opts" -- $cur ) )
+						;;
+					compact)
+						COMPREPLY=( $( compgen -W "--defrag" -- $cur ) )
 						;;
 
 					*)
