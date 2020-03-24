@@ -408,6 +408,7 @@ void Usage(void)
 "vzctl register <path> <ctid> [--force]\n"
 "vzctl unregister <ctid|name>\n"
 "vzctl monitor <ctid | 0>\n"
+"vzctl pause <ctid|name> [--defrag]\n"
 "vzctl set <ctid|name> [--save] [--ipadd <addr[/mask]> [--ipdel <addr>|all]\n"
 "   [--hostname <name>] ]\n"
 "   [--nameserver <addr>] [--searchdomain <name>] [--onboot yes|no]\n"

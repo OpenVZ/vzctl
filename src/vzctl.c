@@ -447,6 +447,13 @@ struct option_alternative option_alternatives[] =
 	{"numiptent",   'e'}
 };
 
+static struct option compact_options[] =
+{
+	{"defrag",	no_argument, NULL, PARAM_DEFRAG},
+	{ NULL, 0, NULL, 0 }
+};
+
+
 static int check_argv_tail(int argc, char **argv)
 {
 	if (optind < argc) {
@@ -961,6 +968,32 @@ int ParseRegisterOptions(int argc, char **argv, int *flags, struct CParam *param
 	ret = check_argv_tail(argc, argv);
 	return ret;
 }
+
+int ParseCompactOptions(struct CParam *param, int argc, char **argv)
+{
+	int c, ret = 0;
+
+	while (1)
+	{
+		c = getopt_long (argc, argv, "", compact_options, NULL);
+		if (c == -1)
+			break;
+		if (c == '?')
+			return VZ_INVALID_PARAMETER_VALUE;
+		switch (c)
+		{
+			case PARAM_DEFRAG	:
+				gparam->defrag = 1;
+				break;
+			default	:
+				ret = VZ_INVALID_PARAMETER_SYNTAX;
+				break;
+		}
+	}
+	ret = check_argv_tail(argc, argv);
+	return ret;
+}
+
 
 static int add_disk_param(struct CParam *param, struct vzctl_disk_param **disk,
 		int id, const char *val)
@@ -1699,6 +1732,10 @@ int main(int argc, char **argv, char *envp[])
 	{
 		action = ACTION_CONSOLE;
 	}
+	else if (!strcmp(argv[1], "compact"))
+	{
+		action = ACTION_COMPACT;
+	}
 	else if (!strcmp(argv[1], "cleanup-stail-registration"))
 	{
 		cleanup_stail_registration();
@@ -1919,6 +1956,10 @@ skip_eid:
 		break;
 	case ACTION_SNAPSHOT_LIST:
 		break;
+	case ACTION_COMPACT:
+		if ((ret = ParseCompactOptions(param, argc, argv)))
+			 goto END;
+		break;
 	default :
 	{
 		if ((argc - 1) > 0)
@@ -1995,7 +2036,7 @@ skip_eid:
 		action == ACTION_SNAPSHOT_DELETE || action == ACTION_SNAPSHOT_MOUNT ||
 		action == ACTION_SNAPSHOT_UMOUNT || action == ACTION_REGISTER ||
 		action == ACTION_TSNAPSHOT || action == ACTION_TSNAPSHOT_DELETE ||
-		action == ACTION_PAUSE)
+		action == ACTION_PAUSE || action == ACTION_COMPACT)
 	{
 		lckfd = 0;
 		if (skiplock != YES) {
@@ -2350,6 +2391,13 @@ skip_eid:
 					break;
 			}
 			ret = vzcon_attach(h, console_tty);
+			break;
+		}
+		case ACTION_COMPACT:
+		{
+			struct vzctl_compact_param compact_param;
+			compact_param.defrag = gparam->defrag;
+			ret = vzctl2_env_compact(h, &compact_param, sizeof(compact_param));
 			break;
 		}
 		default :

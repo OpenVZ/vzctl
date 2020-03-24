@@ -181,6 +181,7 @@
 #define ACTION_TSNAPSHOT	48
 #define ACTION_TSNAPSHOT_DELETE	49
 #define ACTION_PAUSE		50
+#define ACTION_COMPACT		51
 
 #define PARAM_DUMMY		0
 #define PARAM_KMEMSIZE		'k'
@@ -353,6 +354,7 @@
 #define PARAM_ENC_REENCRYPT	436
 #define PARAM_ENC_WIPE		437
 #define PARAM_RECREATE		438
+#define PARAM_DEFRAG		439
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"
@@ -495,6 +497,7 @@ struct CParam
 	int skip_ve_setup;
 	int wait;
 	int resetub;
+	int defrag;
 
 /* Host parameters */
 	unsigned long *class_id;
