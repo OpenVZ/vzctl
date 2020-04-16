@@ -128,6 +128,9 @@ static struct option set_options[] =
 	{"dhcp6",	required_argument, NULL, VZCTL_PARAM_NETIF_DHCP6},
 	{"mac_filter",	required_argument, NULL, VZCTL_PARAM_NETIF_MAC_FILTER},
 	{"configure",	required_argument, NULL, VZCTL_PARAM_NETIF_CONFIGURE_MODE},
+	{"nettype",     required_argument, NULL, VZCTL_PARAM_NETIF_NETTYPE},
+	{"vporttype",   required_argument, NULL, VZCTL_PARAM_NETIF_VPORT_TYPE},
+
 /*	bindmount	*/
 	{"bindmount_add",	required_argument, NULL, VZCTL_PARAM_BINDMOUNT},
 		{"bindmount-add",	required_argument, NULL, VZCTL_PARAM_BINDMOUNT},
