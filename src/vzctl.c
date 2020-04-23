@@ -308,6 +308,7 @@ static struct option start_options[] =
 	{"wait",no_argument, NULL, PARAM_WAIT},
 	{"osrelease",	required_argument, NULL, PARAM_OSRELEASE},
 	{"skip-fsck",	no_argument, NULL, PARAM_SKIP_FSCK},
+	{"cloud-init",	required_argument, NULL, PARAM_CLOUD_INIT},
 	{ NULL, 0, NULL, 0 }
 };
 
@@ -596,6 +597,9 @@ int ParseStartOptions(struct CParam *param, int argc, char **argv)
 				break;
 			case PARAM_OSRELEASE:
 				gparam->osrelease = strdup(optarg);
+				break;
+			case PARAM_CLOUD_INIT:
+				gparam->cidata_fname = optarg;
 				break;
 			case PARAM_SKIP_FSCK:
 				gparam->skip_fsck = 1;
@@ -2090,7 +2094,7 @@ skip_eid:
 				vzctl_env_close();
 				gparam->skip_ve_setup = 0;
 				gparam->skip_fsck = 0;
-				vzctl_env_start(ctid, get_flags(gparam));
+				vzctl_env_start(ctid, NULL, get_flags(gparam));
 			}
 			break;
 		}
@@ -2112,7 +2116,7 @@ skip_eid:
 				if (ret == 0)
 					break;
 			}
-			ret = vzctl_env_start(ctid, get_flags(gparam));
+			ret = vzctl_env_start(ctid, gparam->cidata_fname, get_flags(gparam));
 			break;
 		}
 		case ACTION_STOP_FORCE	:

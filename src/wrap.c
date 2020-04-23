@@ -426,12 +426,15 @@ void vzctl_set(unsigned int flags)
 	vzctl_set_flags(flags);
 }
 
-int vzctl_env_start(ctid_t ctid, int flags)
+int vzctl_env_start(ctid_t ctid, const char *cidata_fname, int flags)
 {
 	int ret;
 	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
 	if (h == NULL)
 		return ret;
+
+	if (cidata_fname)
+		vzctl2_env_set_cidata_fname(vzctl2_get_env_param(h), cidata_fname);
 
 	return vzctl2_env_start(h, flags);
 }

@@ -355,6 +355,7 @@
 #define PARAM_ENC_WIPE		437
 #define PARAM_RECREATE		438
 #define PARAM_DEFRAG		439
+#define PARAM_CLOUD_INIT	440
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"
@@ -564,6 +565,7 @@ struct CParam
 	int ve_layout_def;
 	int ploop_type;
 	char *osrelease;
+	char *cidata_fname;
 	int vetype;
 	char *snapshot_guid;
 	char *snapshot_name;
@@ -606,7 +608,7 @@ int vzctl_env_mount_snapshot(ctid_t ctid, const char *mnt, const char *guid);
 int vzctl_env_umount_snapshot(ctid_t ctid, const char *guid);
 int vzctl_env_snapshot_list(int argc, char **argv, struct vzctl_env_handle *h);
 int vzctl_env_enter(ctid_t ctid);
-int vzctl_env_start(ctid_t ctid, int flags);
+int vzctl_env_start(ctid_t ctid, const char *cidata_fname, int flags);
 int vzctl_env_pause(ctid_t ctid);
 int vzctl_env_restart(ctid_t ctid, int wait, int skip_ve_setup);
 int vzctl_env_stop(ctid_t ctid, int stop_mode, int flags);
