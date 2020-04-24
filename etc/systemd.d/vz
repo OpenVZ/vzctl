@@ -222,6 +222,14 @@ wait_pids()
 	done
 }
 
+clean_lock()
+{
+	rm -f /var/vz/*.lck >/dev/null 2>&1
+
+	eval $(. ${VZCONF} && echo LOCKDIR="${LOCKDIR}")
+	[ -n "$LOCKDIR" ] && rm -f $LOCKDIR/*.lck >/dev/null 2>&1
+}
+
 start_env()
 {
 	local pid pids iter
@@ -232,7 +240,9 @@ start_env()
 	else
 		target=multi-user.target
 	fi
-	if /usr/bin/systemctl -q --no-legend list-jobs | grep -qw "$target"; then 
+	if /usr/bin/systemctl -q --no-legend list-jobs | grep -qw "$target"; then
+		# system boot
+		clean_lock
 		return
 	fi
 
