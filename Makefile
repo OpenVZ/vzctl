@@ -33,7 +33,7 @@ MODULESLOADDDIR = /etc/modules-load.d
       SYSCTL = 99-vzctl.conf
     MODPROBE = vz.conf
      MODLOAD = vz.conf
-SYSTEMDUNITS = vzevent.service vz.service
+SYSTEMDUNITS = vzevent.service vz.service vz-k8s-inside-ct.service
 SYSTEMDSCRIPTS = vz
   DRACUTMODS = 99vzctl
 
