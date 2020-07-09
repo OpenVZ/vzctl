@@ -309,6 +309,7 @@ static struct option start_options[] =
 	{"osrelease",	required_argument, NULL, PARAM_OSRELEASE},
 	{"skip-fsck",	no_argument, NULL, PARAM_SKIP_FSCK},
 	{"cloud-init",	required_argument, NULL, PARAM_CLOUD_INIT},
+	{"repair",	no_argument, NULL, PARAM_REPAIR},
 	{ NULL, 0, NULL, 0 }
 };
 
@@ -603,6 +604,9 @@ int ParseStartOptions(struct CParam *param, int argc, char **argv)
 				break;
 			case PARAM_SKIP_FSCK:
 				gparam->skip_fsck = 1;
+				break;
+			case PARAM_REPAIR:
+				gparam->flags |= VZCTL_ENV_START_REPAIR;
 				break;
 			default	:
 				ret = VZ_INVALID_PARAMETER_SYNTAX;
@@ -1483,7 +1487,8 @@ static int get_flags(struct CParam *param)
 		(gparam->skip_ve_setup ? VZCTL_SKIP_SETUP : 0) |
 		(gparam->skip_fsck ? VZCTL_SKIP_FSCK : 0) |
 		(gparam->skip_arpdetect ? VZCTL_SKIP_ARPDETECT : 0) |
-		(gparam->ignore_ha_cluster == YES ? VZCTL_SKIP_HA_REG : 0);
+		(gparam->ignore_ha_cluster == YES ? VZCTL_SKIP_HA_REG : 0) |
+		(gparam->flags);
 }
 
 void Version(void);
