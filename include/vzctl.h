@@ -356,6 +356,7 @@
 #define PARAM_RECREATE		438
 #define PARAM_DEFRAG		439
 #define PARAM_CLOUD_INIT	440
+#define PARAM_REPAIR		441
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"
@@ -583,6 +584,7 @@ struct CParam
 	int enc_flags;
 	int recreate;
 	int ignore_ha_cluster;
+	int flags;
 };
 
 extern struct CParam *gparam;

@@ -384,7 +384,7 @@ void Usage(void)
 	Version();
 	fprintf(stdout, "\nUsage:\n"
 "vzctl destroy | mount | umount | start | stop | status | enter | console\n"
-"vzctl start <ctid|name> [--wait]\n"
+"vzctl start <ctid|name> [--wait] [--repair]\n"
 "vzctl create <ctid|name> [--ostemplate <name>]\n"
 "	[--config <name>] [--private <path>] [--root <path>]\n"
 "	[--ipadd <addr>] [--hostname <name>] [--skip_app_templates]\n"
