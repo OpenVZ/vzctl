@@ -43,7 +43,6 @@ QUOTATIME="0"
 
 # CPU fair sheduler parameter
 CPUUNITS="250"
-ARCH="x86"
 PLATFORM="linux"
 IP_ADDRESS="0.0.0.0"
 NUMMEMORYSUBGROUPS="512"

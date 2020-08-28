@@ -44,6 +44,5 @@ QUOTATIME="0"
 # CPU fair sheduler parameter
 CPUUNITS="1000"
 
-ARCH="ia64"
 PLATFORM="linux"
 IP_ADDRESS="0.0.0.0"

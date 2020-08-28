@@ -46,7 +46,6 @@ CPUUNITS="1000"
 
 OSTEMPLATE="redhat-9"
 TEMPLATES="mod_perl-rh9 mod_ssl-rh9 mysql-rh9 php-rh9 mod_frontpage-rh9 psa-rh9"
-ARCH="x86"
 PLATFORM="linux"
 IP_ADDRESS="0.0.0.0"
 NUMMEMORYSUBGROUPS="512"
