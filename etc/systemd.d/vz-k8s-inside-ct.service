@@ -1,6 +1,8 @@
 [Unit]
 Description=@PRODUCT_NAME_SHORT@ Container service
 Before=vz.service
+After=systemd-sysctl.service
+After=network.service
 
 [Service]
 ExecStart=/usr/libexec/vz k8s-init
