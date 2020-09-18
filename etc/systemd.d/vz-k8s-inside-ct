@@ -1,0 +1,30 @@
+#!/bin/bash
+
+start()
+{
+	modules="net openvswitch vport_vxlan ip_vs_rr ip_vs_wrr ip_vs_sh_conntrack_ipv4 nf_conntrack"
+	for m in $modules; do
+		modprobe $m
+	done
+
+	sysctl -w kernel.panic=10
+	sysctl -w net.bridge.bridge-nf-call-iptables=1
+	sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+	t=$(sysctl -n net.nf_conntrack_max)
+	if [ -z "$t" ]; then
+		h=150000
+	else
+		let h=$t/8*3
+	fi
+	echo "Set nf_conntrack hashsize $h"
+	echo "$h" > /sys/module/nf_conntrack/parameters/hashsize
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  *)
+        echo "Usage: $0 start|stop"
+        exit 1
+esac
