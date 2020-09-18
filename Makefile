@@ -34,7 +34,7 @@ MODULESLOADDDIR = /etc/modules-load.d
     MODPROBE = vz.conf
      MODLOAD = vz.conf
 SYSTEMDUNITS = vzevent.service vz.service vz-k8s-inside-ct.service
-SYSTEMDSCRIPTS = vz
+SYSTEMDSCRIPTS = vz vz-k8s-inside-ct
   DRACUTMODS = 99vzctl
 
    VE0CONFIG = 0.conf networks_classes

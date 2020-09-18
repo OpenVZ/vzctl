@@ -1,11 +1,11 @@
 [Unit]
-Description=@PRODUCT_NAME_SHORT@ Container service
+Description=@PRODUCT_NAME_SHORT@ K8S inside Container service
 Before=vz.service
 After=systemd-sysctl.service
 After=network.service
 
 [Service]
-ExecStart=/usr/libexec/vz k8s-init
+ExecStart=/usr/libexec/vz-k8s-inside-ct start
 Type=oneshot
 RemainAfterExit=yes
 TimeoutSec=1h
