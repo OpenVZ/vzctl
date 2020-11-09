@@ -2220,9 +2220,8 @@ skip_eid:
 				if (p->userpw == NULL && !p->resetub)
 				{
 					fprintf(stdout, "WARNING:"
-						" Settings were not saved"
-						". On next start"
-						" the original values will be applied."
+						" Changes are not saved and will be dropped on the next start."
+						" Suspend or migrate operations may fail."
 						" Use --save to save the settings in the configuration file.\n");
 				}
 			}
