@@ -1145,7 +1145,7 @@ static void convert_short_opt_to_val(int *c)
 
 int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 {
-	int i, c, err, ret = 0;
+	int i, c, err, ret = 0, bindmount = 0;
 	struct vzctl_disk_param *disk = NULL;
 	int veth = find_arg(argv, "--ifname") || find_arg(argv, "--netif_add");
 
@@ -1207,6 +1207,10 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 							" --%s: %s",
 							set_options[option_index].name, optarg);
 			}
+			break;
+		case VZCTL_PARAM_BINDMOUNT:
+		case VZCTL_PARAM_BINDMOUNT_DEL:
+			bindmount = 1;
 			break;
 		case PARAM_CAP:
 			fprintf(stderr, "Warning: The --capability option"
@@ -1277,6 +1281,11 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 
 	if (validate_disk_param(param, disk))
 		return VZ_INVALID_PARAMETER_SYNTAX;
+
+	if (!param->save && bindmount) {
+		fprintf(stderr, "The --bindmount-* options must be used together with the --save option.\n");
+		return VZ_INVALID_PARAMETER_SYNTAX;
+	}
 
 	ret = check_argv_tail(argc, argv);
 	return ret;
