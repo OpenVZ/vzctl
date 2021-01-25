@@ -57,7 +57,6 @@
 #include "clist.h"
 
 static char * argv_bash[] = {"bash", NULL};
-static char * argv_bashe[] = {"bash", "-c"};
 static char * envp_bash[] = {"HOME=/", "TERM=linux",
 	"PATH=/bin:/sbin:/usr/bin:/usr/sbin",
 	"SHELL=/bin/bash",
@@ -219,53 +218,14 @@ static char **get_env(void)
 
 int Exec(ctid_t ctid, char **arg, int argc, int mode, int flags)
 {
-	int i, ret, narg;
-	char **argv = NULL, **env = NULL;
-	int totallen = 0;
-	char *buf = NULL;
-
-	if (mode == ACTION_EXEC3)
-	{
-		argv = arg;
-	}
-	else if (argc && strcmp(arg[0], "-"))
-	{
-		narg = sizeof(argv_bashe) / sizeof(argv_bashe[0]);
-		argv = (char**)malloc((narg + 2) * sizeof(char *));
-
-		for (i = 0; i < narg; i++)
-			argv[i] = argv_bashe[i];
-		for (i = 0; i < argc; i++)
-		{
-			int len;
-
-			len = strlen(arg[i]);
-			if (len) {
-				buf = (char*)realloc(buf, totallen + len + 2);
-				sprintf(buf + totallen, "%s ", arg[i]);
-			} else {
-				/* set empty argument */
-				len = len + 2;
-				buf = (char*)realloc(buf, totallen + len + 2);
-				sprintf(buf + totallen, "\'%s\' ", arg[i]);
-			}
-			totallen = totallen + len + 1;
-			buf[totallen] = 0;
-		}
-		argv[narg] = buf;
-		argv[narg + 1] = 0;
-
-	}
-
-	env = get_env();
+	int ret;
+	char **env = get_env();
+	
 	ret = vzctl_env_exec(ctid,
 			mode == ACTION_EXEC3 ? MODE_EXEC : MODE_BASH,
-			argv, env, NULL, 0, flags);
-
+			arg, NULL, NULL, 0, flags);
 	freearg(env);
-	free(buf);
-	if (argv && mode != ACTION_EXEC3)
-		free(argv);
+
 	return (mode == ACTION_EXEC && ret) ? VZ_COMMAND_EXECUTION_ERROR : ret;
 }
 
