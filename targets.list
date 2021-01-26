@@ -1,2 +1,2 @@
-libvzctl dist-vz7-u16
-libvzctl dist-vz8-alpha
+vzctl dist-vz7-u16
+vzctl dist-vz8-alpha
