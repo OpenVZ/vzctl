@@ -94,7 +94,12 @@ devices/virtual/mem/zero/dev r
 devices/virtual/mem/zero/uevent rw
 devices/virtual/tty/ptmx rx
 devices/virtual/tty/ptmx/dev r
-devices/virtual/tty/ptmx/uevent rw"
+devices/virtual/tty/ptmx/uevent rw
+devices/virtual/misc/ rx
+devices/virtual/misc/fuse/ rx
+devices/virtual/misc/fuse/dev rx
+devices/virtual/misc/fuse/subsystem rx
+devices/virtual/misc/fuse/uevent rx"
 
 	local ifs=$IFS
 	IFS="
