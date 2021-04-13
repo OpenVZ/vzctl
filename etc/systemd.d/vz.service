@@ -1,6 +1,7 @@
 [Unit]
 Description=@PRODUCT_NAME_SHORT@ Container service
 After=vcmmd.service vstorage-fs.service
+After=remote-fs.target
 Wants=vcmmd.service
 
 [Service]
