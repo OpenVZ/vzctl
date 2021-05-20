@@ -3,6 +3,7 @@ Description=@PRODUCT_NAME_SHORT@ Container service
 After=vcmmd.service vstorage-fs.service
 After=remote-fs.target
 Wants=vcmmd.service
+Wants=proc-sys-fs-binfmt_misc.mount
 
 [Service]
 ExecStart=/usr/libexec/vz start
