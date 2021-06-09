@@ -692,5 +692,5 @@ int vzctl_err(int err, int eno, const char *format, ...)
        __attribute__ ((__format__ (__printf__, 3, 4)));
 
 int get_vzctlfd(void);
-int vzcon_attach(struct vzctl_env_handle *h, int ntty);
+int vzcon_attach(struct vzctl_env_handle *h, int ntty, int tty_fd, const char *pts_path);
 #endif

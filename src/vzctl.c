@@ -52,7 +52,12 @@ static int use_args_from_env;
 
 volatile sig_atomic_t child_exited;
 /* function prototypes */
-int vzcon_start(ctid_t ctid, int ntty);
+int vzcon_start_vz7(struct vzctl_env_handle *h, ctid_t ctid, int ntty,
+	char **tty_path);
+
+int vzcon_start(struct vzctl_env_handle *h, ctid_t ctid, int *tty_fd,
+	char **tty_path);
+
 int handle_set_cmd_on_ha_cluster(int veid, const char *ve_private,
 		struct ha_params *cmdline,
 		struct ha_params *config,
@@ -1506,6 +1511,7 @@ int main(int argc, char **argv, char *envp[])
 {
 	int action = 0;
 	char buf[PATH_MAX];
+	char *tty_path = NULL;
 	struct CParam *param;
 	int lckfd = -1;
 	int ret = 0;
@@ -1515,6 +1521,7 @@ int main(int argc, char **argv, char *envp[])
 	char *status = NULL;
 	struct sigaction act;
 	int console_tty = 2;
+	int tty_fd;
 	int start_console = 0;
 	char **argv_orig = argv;
 	struct stat st;
@@ -2403,12 +2410,18 @@ skip_eid:
 		}
 		case ACTION_CONSOLE:
 		{
-			if (start_console) {
-				ret = vzcon_start(ctid, console_tty);
-				if (ret)
-					break;
-			}
-			ret = vzcon_attach(h, console_tty);
+#ifdef VZ8
+			ret = vzcon_start(h, ctid, &tty_fd, &tty_path);
+#else
+			tty_fd = -1;
+			if (start_console)
+				ret = vzcon_start_vz7(h, ctid, console_tty, &tty_path);
+#endif
+			if (ret)
+				break;
+
+			ret = vzcon_attach(h, console_tty, tty_fd, tty_path);
+			free(tty_path);
 			break;
 		}
 		case ACTION_COMPACT:

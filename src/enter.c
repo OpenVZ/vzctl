@@ -19,11 +19,14 @@
 #include <signal.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <sched.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+#ifndef VZ8
 #include <linux/vzcalluser.h>
+#endif
 #include <wait.h>
 #include <termios.h>
 #include <pty.h>
@@ -90,20 +93,18 @@ static void winch(int sig)
 		warn("Unable to set window size");
 }
 
+#ifndef VZ8
 static void sak(void)
 {
 	ioctl(tty, TIOSAK);
 }
 
-int vzcon_attach(struct vzctl_env_handle *h, int ntty)
+static int get_tty_vz7(struct vzctl_env_handle *h, int ntty)
 {
-	struct vzctl_ve_configure c;
-	int dev, pid, status;
-	char buf;
-	const char esc = 27;
-	const char enter = 13;
-	int after_enter = 0;
+	int tty;
+	int dev;
 	int ret = VZ_SYSTEM_ERROR;
+	struct vzctl_ve_configure c;
 
 	dev = open(VZCTLDEV, O_RDONLY);
 	if (dev < 0) {
@@ -127,6 +128,30 @@ int vzcon_attach(struct vzctl_env_handle *h, int ntty)
 		return ret;
 	}
 	close(dev);
+	return tty;
+}
+#endif
+
+int vzcon_attach(struct vzctl_env_handle *h, int ntty, int tty_fd,
+	const char *tty_path)
+{
+	int ret;
+	int status;
+	int pid;
+	char buf;
+	const char esc = 27;
+	const char enter = 13;
+	int after_enter = 0;
+
+	fprintf(stderr, "Attached to CT %s %s(type ESC . to detach)\n",
+			vzctl2_env_get_ctid(h), tty_path);
+
+#ifdef VZ8
+	tty = tty_fd;
+#else
+	tty = get_tty_vz7(h, ntty);
+#endif
+
 
 	signal(SIGCHLD, child_handler);
 	signal(SIGWINCH, winch);
@@ -181,8 +206,10 @@ int vzcon_attach(struct vzctl_env_handle *h, int ntty)
 
 			switch (buf) {
 				case '.':
+#ifndef VZ8
 					if (ntty > 1)
 						sak();
+#endif
 					goto out;
 				case ',':
 					goto out;
@@ -207,13 +234,17 @@ err:
 	return ret;
 }
 
-int vzcon_start(ctid_t ctid, int ntty)
+int vzcon_start_vz7(struct vzctl_env_handle *h, ctid_t ctid, int ntty,
+	char **tty_path)
 {
 	int ret;
-	char tty[64] = "";
+	char tty[256] = "";
+	char minor[64] = "";
 	char term[64];
-	char *env[] = {tty, term, NULL};
+	char *env[] = {tty, term, minor, NULL};
+	char tty_path_buf[128];
 	char *p;
+
 
 	/* Skip setup on preconfigured tty1 & tty2 */
 	if (ntty < 3)
@@ -224,18 +255,146 @@ int vzcon_start(ctid_t ctid, int ntty)
 		return VZ_VE_NOT_RUNNING;
 	}
 
-	snprintf(tty, sizeof(tty), "START_CONSOLE_ON_TTY=%d", ntty);
+	snprintf(tty_path_buf, sizeof(tty_path_buf), "/dev/tty%d", ntty);
+
+	snprintf(tty, sizeof(tty), "START_CONSOLE_ON_DEV=%s",
+			tty_path_buf + strlen("/dev/"));
 	p = getenv("TERM");
 	if (p)
 		snprintf(term, sizeof(term), "TERM=%s", p);
 
-	struct vzctl_env_handle *h = vzctl_env_open(ctid, NULL, 0, &ret);
-	if (h == NULL)
-		return ret;
+	snprintf(minor, sizeof(minor), "START_CONSOLE_MINOR=%d", ntty);
 
 	ret = vzctl2_env_exec_action_script(h, "SET_CONSOLE", env, 0, 0);
 	if (ret)
-		fprintf(stderr, "Failed to start getty on tty%d", ntty);
+		fprintf(stderr, "Failed to start getty on %s", tty_path_buf);
+
+	if (!ret && tty_path)
+		*tty_path = strdup(tty_path_buf);
+
+	return ret;
+}
+
+int vzcon_start(struct vzctl_env_handle *h, ctid_t ctid, int *tty_fd, char **tty_path)
+{
+	int ret;
+	char tty[256] = "";
+	char term[64];
+
+	int master_fd, slave_fd;
+	int old_ns;
+	char *env[] = {tty, term, NULL};
+	char tty_path_buf[128];
+	char *p;
+
+	if (!env_is_running(ctid)) {
+		fprintf(stderr, "Container is not running.");
+		return VZ_VE_NOT_RUNNING;
+	}
+
+	/*
+	 * Explanation of why getgrnam is needed here:
+	 * this process enters container's mnt namespace and opens /dev/ptmx,
+	 * then it prepares a slave-end of pseudoterminal via grantpt/unlockpt.
+	 * grantpt triggers lazy load of /lib64/libnss_systemd.so.2, already
+	 * inside of a container's mnt namespace. libnss_systemd.so.2 will mmap
+	 * itself into the process and will thus hold one extra reference to it's
+	 * opened fd.
+	 * Because /lib64/libnss_systemd.so.2 is a inode on a container's fs,
+	 * it is not possible to unmount this fs until this process holds a
+	 * reference to it.
+	 * This code is exectute in vzctl console ..
+	 * If 'vzctl stop' get's called while 'vzctl console', this extra ref
+	 * will block ploop image unmount procedure until vzctl console gets
+	 * killed.
+	 *
+	 * By adding getgrnam we force libnss_systemd.so.2 to be called on a
+	 * host level filesystem.
+	 */
+	if (getgrnam("")) {
+		fprintf(stderr, "Call to getgrnam failed: %s\n",
+			strerror(errno));
+		return -1;
+	}
+
+	old_ns = open("/proc/self/ns/mnt", O_RDONLY);
+	if (old_ns == -1) {
+		fprintf(stderr, "Failed to open /proc/self/ns/mnt: %s\n",
+			strerror(errno));
+		return -1;
+	}
+
+	if (vzctl2_enter_mnt_ns(h)) {
+		fprintf(stderr, "Failed to enter containers mnt ns: %s\n",
+			strerror(errno));
+		return -1;
+	}
+
+	master_fd = open("/dev/ptmx", O_RDWR | O_NOCTTY);
+	if (master_fd == -1) {
+		fprintf(stderr, "Failed to open /dev/ptmx: %s\n",
+			strerror(errno));
+		return -1;
+	}
+
+	if (grantpt(master_fd)) {
+		fprintf(stderr, "grantpt on /dev/ptmx failed: %s\n",
+			strerror(errno));
+		return -1;
+	}
+	if (unlockpt(master_fd)) {
+		fprintf(stderr, "unlockpt on /dev/ptmx failed: %s\n",
+			strerror(errno));
+		return -1;
+	}
+
+	if (ptsname_r(master_fd, tty_path_buf, sizeof(tty_path_buf))) {
+		fprintf(stderr, "ptsname_r on /dev/ptmx failed: %s\n",
+			strerror(errno));
+		return -1;
+	}
+
+	/*
+	 * Although vzctl console side of pseudoterminal will perform io
+	 * on master-side fd, we also need to open slave_fd to hold one
+	 * last reference for it. If we don't do it, any other process
+	 * that opens the slave-side part via /devpts/N path and then
+	 * closes it, the pseudoterminal pipe gets' destroyed and further
+	 * read/writes will result in EIO. We want to keep the pipe alive.
+	 */
+	slave_fd = open(tty_path_buf, O_RDWR | O_NOCTTY);
+	if (slave_fd == -1) {
+		fprintf(stderr, "Failed to open %s: %s\n",
+			tty_path_buf, strerror(errno));
+		return -1;
+	}
+
+	/*
+	 * We need to exit back to host to exec SET_CONSOLE
+	 * scripts
+	 */
+	if (setns(old_ns, CLONE_NEWNS)) {
+		perror("setns");
+		return 1;
+	}
+	close(old_ns);
+
+	snprintf(tty, sizeof(tty), "START_CONSOLE_ON_DEV=%s",
+			tty_path_buf + strlen("/dev/"));
+	p = getenv("TERM");
+	if (p)
+		snprintf(term, sizeof(term), "TERM=%s", p);
+
+	ret = vzctl2_env_exec_action_script(h, "SET_CONSOLE", env, 0, 0);
+	if (ret)
+		fprintf(stderr, "Failed to start getty on %s", tty_path_buf);
+
+	if (!ret) {
+		if (tty_path)
+			*tty_path = strdup(tty_path_buf);
+		if (tty_fd)
+			*tty_fd = master_fd;
+	}
 
 	return ret;
 }
