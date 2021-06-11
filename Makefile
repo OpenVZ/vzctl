@@ -28,7 +28,7 @@ MODULESLOADDDIR = /etc/modules-load.d
  DRACUT_MOD_DIR = /usr/lib/dracut/modules.d
 
 ### Target names
- SBINSCRIPTS = vzpurge vzgetpa vzcpucheck vzdiskcheck vzpid
+ SBINSCRIPTS = vzpurge vzgetpa vzcpucheck vzdiskcheck vzpid user_beancounters.py
 
       SYSCTL = 99-vzctl.conf
     MODPROBE = vz.conf
