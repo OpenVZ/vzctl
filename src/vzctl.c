@@ -55,9 +55,6 @@ volatile sig_atomic_t child_exited;
 int vzcon_start_vz7(struct vzctl_env_handle *h, ctid_t ctid, int ntty,
 	char **tty_path);
 
-int vzcon_start(struct vzctl_env_handle *h, ctid_t ctid, int *tty_fd,
-	char **tty_path);
-
 int handle_set_cmd_on_ha_cluster(int veid, const char *ve_private,
 		struct ha_params *cmdline,
 		struct ha_params *config,
@@ -2411,15 +2408,20 @@ skip_eid:
 		case ACTION_CONSOLE:
 		{
 #ifdef VZ8
-			ret = vzcon_start(h, ctid, &tty_fd, &tty_path);
+			struct vzctl_console con;
+
+			ret = vzctl2_console_start(h, &con);
+			if (ret)
+				break;
+			tty_fd = con.master_fd;
+			tty_path = strdup(con.tty_path);
 #else
 			tty_fd = -1;
 			if (start_console)
 				ret = vzcon_start_vz7(h, ctid, console_tty, &tty_path);
-#endif
 			if (ret)
 				break;
-
+#endif
 			ret = vzcon_attach(h, console_tty, tty_fd, tty_path);
 			free(tty_path);
 			break;
