@@ -112,9 +112,6 @@ static int get_tty_vz7(struct vzctl_env_handle *h, int ntty)
 		return ret;
 	}
 
-	fprintf(stderr, "Attached to CT %s tty%d (type ESC . to detach)\n",
-			vzctl2_env_get_ctid(h), ntty);
-
 	child_term = 0;
 	c.veid = vzctl2_env_get_veid(h);
 	c.key = VE_CONFIGURE_OPEN_TTY;
