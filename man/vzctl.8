@@ -395,7 +395,9 @@ This parameter limits the physical memory (RAM) available to processes inside a 
 The barrier is ignored, and the limit sets the limit.
 .TP
 \fB--swappages\fR \fIpages\fR[:\fIpages\fR]
-This parameter limits the amount of swap space that can be allocated to processes running in a Container.
+This parameter limits the amount of swap space that can be allocated to processes running in a container.
+Container processes can use swap even if the host has available memory. Use of swap (as opposed to only reserving it)
+significantly slows down both the container and the node.
 .TP
 \fB--ram\fR \fIbytes\fR
 The amount of RAM that can be used by the processes of a Container, in bytes. You can use the following suffixes to set RAM in other measurement units:
@@ -409,7 +411,9 @@ The amount of RAM that can be used by the processes of a Container, in bytes. Yo
 \fBt\fR, \fBT\fR -- terabytes
 .TP
 \fB--swap\fR \fIbytes\fR
-The amount of swap space that can be used by the Container for swapping out memory once the RAM is exceeded, in bytes. You can use the following suffixes to set swap in other measurement units:
+The amount of swap space that can be used by the Container for swapping out memory once the RAM is exceeded, in bytes.
+Container processes can use swap even if the host has available memory. Use of swap (as opposed to only reserving it)
+significantly slows down both the container and the node. You can use the following suffixes to set swap in other measurement units:
 .br
 \fBk\fR, \fBK\fR -- kilobytes
 .br
