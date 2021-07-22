@@ -1224,6 +1224,9 @@ int ParseSetOptions(ctid_t ctid, struct CParam *param, int argc, char **argv)
 			convert_short_opt_to_val(&c);
 
 		if (c >= VZCTL_PARAM_KMEMSIZE) {
+			if(c == VZCTL_PARAM_SWAP || c == VZCTL_PARAM_SWAPPAGES)
+				fprintf(stderr, "WARNING: Use of swap significantly slows down both the container and the node.\n");
+
 			ret = vzctl_add_env_param_by_id(ctid, c, optarg);
 			if (ret) {
 				if (option_index < 0)
