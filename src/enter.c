@@ -92,13 +92,12 @@ static void winch(int sig)
 		warn("Unable to set window size");
 }
 
-#ifndef VZ8
 static void sak(void)
 {
 	ioctl(tty, TIOSAK);
 }
 
-static int get_tty_vz7(struct vzctl_env_handle *h, int ntty)
+static int get_tty(struct vzctl_env_handle *h, int ntty)
 {
 	int tty;
 	int dev;
@@ -126,10 +125,8 @@ static int get_tty_vz7(struct vzctl_env_handle *h, int ntty)
 	close(dev);
 	return tty;
 }
-#endif
 
-int vzcon_attach(struct vzctl_env_handle *h, int ntty, int tty_fd,
-	const char *tty_path)
+int vzcon_attach(struct vzctl_env_handle *h, int ntty)
 {
 	int ret;
 	int status;
@@ -139,15 +136,10 @@ int vzcon_attach(struct vzctl_env_handle *h, int ntty, int tty_fd,
 	const char enter = 13;
 	int after_enter = 0;
 
-	fprintf(stderr, "Attached to CT %s %s(type ESC . to detach)\n",
-			vzctl2_env_get_ctid(h), tty_path);
+	fprintf(stderr, "Attached to CT %s tty%d (type ESC . to detach)\n",
+			vzctl2_env_get_ctid(h), ntty);
 
-#ifdef VZ8
-	tty = tty_fd;
-#else
-	tty = get_tty_vz7(h, ntty);
-#endif
-
+	tty = get_tty(h, ntty);
 
 	signal(SIGCHLD, child_handler);
 	signal(SIGWINCH, winch);
@@ -202,10 +194,8 @@ int vzcon_attach(struct vzctl_env_handle *h, int ntty, int tty_fd,
 
 			switch (buf) {
 				case '.':
-#ifndef VZ8
 					if (ntty > 1)
 						sak();
-#endif
 					goto out;
 				case ',':
 					goto out;
@@ -226,47 +216,6 @@ err:
 			break;
 	raw_off();
 	fprintf(stderr, "\nDetached from CT %s\n", vzctl2_env_get_ctid(h));
-
-	return ret;
-}
-
-int vzcon_start_vz7(struct vzctl_env_handle *h, ctid_t ctid, int ntty,
-	char **tty_path)
-{
-	int ret;
-	char tty[256] = "";
-	char minor[64] = "";
-	char term[64];
-	char *env[] = {tty, term, minor, NULL};
-	char tty_path_buf[128];
-	char *p;
-
-
-	/* Skip setup on preconfigured tty1 & tty2 */
-	if (ntty < 3)
-		return 0;
-
-	if (!env_is_running(ctid)) {
-		fprintf(stderr, "Container is not running.");
-		return VZ_VE_NOT_RUNNING;
-	}
-
-	snprintf(tty_path_buf, sizeof(tty_path_buf), "/dev/tty%d", ntty);
-
-	snprintf(tty, sizeof(tty), "START_CONSOLE_ON_DEV=%s",
-			tty_path_buf + strlen("/dev/"));
-	p = getenv("TERM");
-	if (p)
-		snprintf(term, sizeof(term), "TERM=%s", p);
-
-	snprintf(minor, sizeof(minor), "START_CONSOLE_MINOR=%d", ntty);
-
-	ret = vzctl2_env_exec_action_script(h, "SET_CONSOLE", env, 0, 0);
-	if (ret)
-		fprintf(stderr, "Failed to start getty on %s", tty_path_buf);
-
-	if (!ret && tty_path)
-		*tty_path = strdup(tty_path_buf);
 
 	return ret;
 }
