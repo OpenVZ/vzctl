@@ -23,9 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-#ifndef VZ8
 #include <linux/vzcalluser.h>
-#endif
 #include <wait.h>
 #include <termios.h>
 #include <pty.h>
