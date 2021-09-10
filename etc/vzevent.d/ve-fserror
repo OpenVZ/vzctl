@@ -1,6 +1,6 @@
 #!/bin/bash
 # Copyright (c) 2017, Parallels International GmbH. All rights reserved.
-# Copyright (c) 2017-2019 Virtuozzo International GmbH. All rights reserved.
+# Copyright (c) 2017-2021 Virtuozzo International GmbH. All rights reserved.
 #
 ctid=
 SYSFSDEV=/sys/fs/cgroup/devices/machine.slice
@@ -23,10 +23,4 @@ done
 echo "`date --iso-8601=seconds` fserror : Container $ctid : fserror on $ID/$DEV" >> /var/log/vzctl.log
 [ -z "$ctid" ] && exit 0
 
-DEV="${ID%%p1}"
-read -r DELTA < /sys/class/block/$DEV/pdelta/0/image
 /usr/sbin/vzctl stop $ctid --fast >/dev/null 2>&1
-if [ $? -ne 0 -a $? -ne 9 ]; then
-	read -r DELTA_NEW < /sys/class/block/$DEV/pdelta/0/image
-	[ "$DELTA" = "$DELTA_NEW" ] && ploop umount -d /dev/$DEV
-fi
