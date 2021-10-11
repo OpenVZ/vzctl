@@ -637,6 +637,28 @@ static void print_config(struct Cveinfo *p, int index)
 	print_str(p->config, "%-32s");
 }
 
+static void print_type(struct Cveinfo *p, int index)
+{
+	const char *t;
+
+	switch (p->type) {
+	case VZCTL_ENV_TYPE_REGULAR:
+		t = "regular";
+		break;
+	case VZCTL_ENV_TYPE_TEMPORARY:
+		t = "temporary";
+		break;
+	case VZCTL_ENV_TYPE_TEMPLATE:
+		t = "template";
+		break;
+	default:
+		t = NULL;
+		break;
+	}
+	
+	print_str(t, "%-8s");
+}
+
 /* Sort functions */
 
 static inline int check_empty_param(const void *val1, const void *val2)
@@ -928,6 +950,7 @@ UBC_FIELD(swappages, SWAPP),
 {"netfilter", "NETFILTER", "%9s", 0, RES_NONE, print_netfilter, none_sort_fn},
 {"devnodes", "DEVNODES", "%-16s", 0, RES_NONE, print_devnodes, none_sort_fn},
 {"origin_sample", "ORIGIN_SAMPLE", "%-32s", 0, RES_NONE, print_config, none_sort_fn},
+{"type", "TYPE", "%-8s", 0, RES_NONE, print_type, none_sort_fn},
 };
 
 static void print_hostname(struct Cveinfo *p, int index)
@@ -1930,6 +1953,7 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 
 	if (vzctl2_env_get_param(h, "ORIGIN_SAMPLE",  &p) == 0 && p != NULL)
 		ve->config = strdup(p);
+	vzctl2_env_get_type(vzctl2_get_env_param(h), &ve->type);
 }
 
 static void parse_conf(ctid_t ctid, struct Cveinfo *ve)
