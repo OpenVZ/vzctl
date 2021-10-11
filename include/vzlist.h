@@ -117,6 +117,7 @@ struct Cveinfo {
 	char *nameserver;
 	char *searchdomain;
 	char *config;
+	vzctl_env_type type;
 };
 
 #define RES_NONE	0
