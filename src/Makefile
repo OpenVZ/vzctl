@@ -32,7 +32,7 @@ endif
    OBJS_vzctl = vzctl.o enter.o $(OBJS)
  OBJ_vzeventd = vzeventd.o
        OBJ_nd = ndsend.o
- OBJS_ubclogd = ubclogd.o timeutils.o
+ OBJS_ubclogd = timeutils.o
    OBJS_split = vzsplit.o
  OBJS_convert = vzcfgconvert.o config.o list.o
 OBJS_cfgscale = vzcfgscale.o mm.o $(OBJS)
@@ -42,7 +42,7 @@ OBJS_vztactl  = vztactl.o tc.o list.o util.o wrap.o
 OBJS_vznetstat= vznetstat.o tc.o
 OBJS_vzlist   = vzlist.o $(OBJS)
 ### Target names
-	PROGS = vzctl ubclogd vzsplit vzauth vzlist ndsend vzeventd
+	PROGS = vzctl vzsplit vzauth vzlist ndsend vzeventd
 
 ifneq (,$(wildcard /usr/include/linux/vzctl_netstat.h)) 
        PROGS += vztactl vznetstat
@@ -75,7 +75,7 @@ real-all: $(PROGS)
 	$(CC) -c $(CFLAGS) $(INC) $< -o $@
 
 vzeventd: $(OBJ_vzeventd)
-	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) -lvzctl2 -ludev $^ -o $@
+	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ $(LIB) -ludev -o $@
 
 ndsend: $(OBJ_nd)
 	$(CC) $(CFLAGS) $(INC) $(LDFLAGS) $^ -o $@
