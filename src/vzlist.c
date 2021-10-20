@@ -2117,7 +2117,7 @@ static char *get_real_ips(ctid_t ctid)
 {
 	struct vzctl_env_handle *h;
 	struct vzctl_net_info *info = NULL;
-	char *s;
+	char *s = NULL;
 	int err;
 
 	h = vzctl2_env_open(ctid, VZCTL_CONF_SKIP_PARSE, &err);

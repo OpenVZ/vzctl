@@ -56,8 +56,6 @@
 #define NETIF_CONFIGURE_MODE 74
 #define DISK_T		75
 
-struct CParam tmpparam;
-
 struct Cconfig
 {
 	char *name;	/* Name in config file	*/

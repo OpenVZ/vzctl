@@ -58,6 +58,7 @@ int handle_set_cmd_on_ha_cluster(int veid, const char *ve_private,
 		struct ha_params *config,
 		int save);
 struct CParam *gparam;
+extern struct CParam tmpparam;
 
 static void cleanup_callback(int sig)
 {
@@ -2099,9 +2100,8 @@ skip_eid:
 				.name = param->name,
 			};
 
-			if (!EMPTY_CTID(ctid)) {
-				SET_CTID(reg.ctid, ctid);
-			}
+			if (!EMPTY_CTID(ctid))
+				snprintf(reg.ctid, sizeof(reg.ctid), "%s", ctid);
 
 			ret = vzctl2_env_register(ve_private, &reg, reg_flags);
 			if (ret)

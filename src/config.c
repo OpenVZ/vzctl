@@ -47,7 +47,9 @@
 #include "tmplmn.h"
 #include "util.h"
 
+struct CParam tmpparam;
 long _PAGE_SIZE = 4096;
+
 struct Cconfig Config[] = {
 {"EXT_IP_ADDRESS", NULL, &tmpparam.ext_ipadd, NULL, PARAM_EXT_IP_ADD, IP_ADDR, 0, 0},
 {"", NULL, &tmpparam.ext_ipdel, NULL, PARAM_EXT_IP_DEL, IP_ADDR, 0, 0},
