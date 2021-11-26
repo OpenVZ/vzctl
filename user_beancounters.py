@@ -7,6 +7,7 @@
 
 import os
 import re
+import sys
 
 
 ve_uid_len = len('00000000-0000-0000-0000-000000000000')
@@ -318,11 +319,15 @@ def ve_print_beancounters(ve):
 
 
 if __name__ == '__main__':
-    virtual_environments = [f.path.split('/')[-1] for f in os.scandir('/sys/fs/cgroup/ve') if f.is_dir()]
+    if len(sys.argv) == 1:
+        virtual_environments = [f.path.split('/')[-1] for f in os.scandir('/sys/fs/cgroup/ve') if f.is_dir()]
+    else:
+        virtual_environments = sys.argv[1:]
 
     print('Version: 2.5')
     print(f'{"uid":>{ve_uid_len}}  {"resource":<12s} {"held":>20s} {"maxheld":>20s} {"barrier":>20s} {"limit":>20s} {"failcnt":>20s}')
 
     for ve in virtual_environments:
         ve_print_beancounters(ve)
-    ve_print_beancounters(None)
+    if len(sys.argv) == 1:
+        ve_print_beancounters(None)

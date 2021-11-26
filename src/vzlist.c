@@ -2011,8 +2011,8 @@ static int get_ub(ctid_t ctid)
 	FILE *fp;
 	struct Cubc ubc = {};
 
-	snprintf(buf, sizeof(buf), "/proc/bc/%s/resources", ctid);
-	if ((fp = fopen(buf, "r")) == NULL)
+	snprintf(buf, sizeof(buf), "/usr/sbin/user_beancounters.py %s", ctid);
+	if ((fp = popen(buf, "r")) == NULL)
 		return 1;
 
 	while (!feof(fp)) {
