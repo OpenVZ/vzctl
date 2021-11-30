@@ -32,12 +32,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <vzctl/libvzctl.h>
-#include <linux/vzctl_venet.h>
-#include <linux/vzctl_netstat.h>
+#include <nftables/libnftables.h>
 
 #include "tc.h"
-
-extern int __vzctlfd;
 
 int get_ipaddr(char *name, unsigned int *ip)
 {
@@ -53,109 +50,144 @@ int get_ipaddr(char *name, unsigned int *ip)
 
 int tc_set_classes(struct vz_tc_class_info *info, int length)
 {
-	struct vzctl_tc_classes classes;
-
-	classes.info = info;
-	classes.length = length;
-	if (ioctl(__vzctlfd, VZCTL_TC_SET_CLASS_TABLE, &classes))
-	{
-		fprintf(stderr, "Unable to set classes: %s\n", strerror(errno));
-		return ERR_IOCTL;
-	}
-	return 0;
+	fprintf(stderr, "Unable to set classes: %s\n", strerror(errno));
+	return ERR_IOCTL;
 }
 
 int tc_set_v6_classes(struct vz_tc_class_info_v6 *info, int length)
 {
-	struct vzctl_tc_classes_v6 classes;
+	fprintf(stderr, "Unable to set ipv6 classes: %s\n", strerror(errno));
+	return ERR_IOCTL;
+}
 
-	classes.info = info;
-	classes.length = length;
-	if (ioctl(__vzctlfd, VZCTL_TC_SET_CLASS_TABLE_V6, &classes))
-	{
-		if (errno == ENOTTY && length == 0)
-			return 0;
-		fprintf(stderr, "Unable to set ipv6 classes: %s\n", strerror(errno));
-		return ERR_IOCTL;
+static int run_nft_cmd(const char *cmd, char *out, int len)
+{
+	int ret = -1;
+	struct nft_ctx *nft;
+
+	if (!(nft = nft_ctx_new(NFT_CTX_DEFAULT)))
+		return -1;
+
+	if (nft_ctx_buffer_output(nft) || nft_ctx_buffer_error(nft))
+		goto out;
+
+	if (nft_run_cmd_from_buffer(nft, cmd))
+		goto err;
+
+	if (out && len) {
+		const char *p = nft_ctx_get_output_buffer(nft);
+		strncpy(out, p, len);
+		out[len - 1] = '\0';
 	}
-	return 0;
+
+	ret = 0;
+
+err:
+	nft_ctx_unbuffer_output(nft);
+	nft_ctx_unbuffer_error(nft);
+out:
+	nft_ctx_free(nft);
+
+	return ret;
 }
 
 int tc_get_classes(struct vz_tc_class_info *info, int length)
 {
-	struct vzctl_tc_classes classes;
-	int ret;
+	char out[4096];
+	char *p;
+        unsigned int class;
+	const char *prefix = "set net_class4_";
 
-	classes.info = info;
-	classes.length = length;
-	if ((ret = ioctl(__vzctlfd, VZCTL_TC_GET_CLASS_TABLE, &classes)) < 0)
-	{
+	if (run_nft_cmd("list sets netdev", out, sizeof(out))) {
 		fprintf(stderr, "Unable to get classes: %s\n", strerror(errno));
 		return ERR_IOCTL;
 	}
-	return ret;
+
+	p = out;
+	while (p) {
+		if ((p = strstr(p, prefix)) != NULL) {
+			if (sscanf(p + strlen(prefix), "%u_", &class) == 1 &&
+			    class < length)
+				info[class].cid = class;
+		}
+
+		if (p)
+			p++;
+	}
+
+	return 0;
 }
 
 int tc_get_v6_classes(struct vz_tc_class_info_v6 *info, int length)
 {
-	struct vzctl_tc_classes_v6 classes;
-	int ret;
+	char out[4096];
+	char *p;
+        unsigned int class;
+	const char *prefix = "set net_class6_";
 
-	classes.info = info;
-	classes.length = length;
-	if ((ret = ioctl(__vzctlfd, VZCTL_TC_GET_CLASS_TABLE_V6, &classes)) < 0)
-	{
-		if (errno == ENOTTY)
-			return 0;
-		fprintf(stderr, "Unable to get ipv6 classes: %s\n", strerror(errno));
+	if (run_nft_cmd("list sets netdev", out, sizeof(out))) {
+		fprintf(stderr, "Unable to get classes: %s\n", strerror(errno));
 		return ERR_IOCTL;
 	}
-	return ret;
+
+	p = out;
+	while (p) {
+		if ((p = strstr(p, prefix)) != NULL) {
+			if (sscanf(p + strlen(prefix), "%u_", &class) == 1 &&
+			    class < length)
+				info[class].cid = class;
+		}
+
+		if (p)
+			p++;
+	}
+
+	return 0;
 }
 
-int tc_get_stat(struct vzctl_tc_get_stat *stat)
+int tc_get_stat(ctid_t ctid, struct vzctl_tc_get_stat *stat, int v6)
 {
 	int ret;
+	struct vzctl_env_handle *h;
+	struct vzctl_tc_netstat tc_stat;
 
-	if ((ret = ioctl(__vzctlfd, VZCTL_TC_GET_STAT, stat)) < 0)
-	{
-		if (errno != ESRCH)
-		{
-			fprintf(stderr, "Unable to get Container %d statistics: %s\n",
-				stat->veid, strerror(errno));
-			return ERR_IOCTL;
-		}
-		ret = 0;
+	if (!(h = vzctl2_env_open(ctid, VZCTL_CONF_SKIP_PARSE, &ret))) {
+		fprintf(stderr, "Unable to get Container %s statistics: %s\n",
+			ctid, strerror(errno));
+		return ERR_IOCTL;
 	}
+
+	if (vzctl2_get_env_tc_netstat(h, &tc_stat, v6) < 0) {
+		vzctl2_env_close(h);
+		fprintf(stderr, "Unable to get Container %s statistics: %s\n",
+			ctid, strerror(errno));
+		return ERR_IOCTL;
+	}
+
+	vzctl2_env_close(h);
+
+	for (ret = 0; ret < stat->length && ret < TC_MAX_CLASSES; ret++) {
+		stat->incoming[ret] = tc_stat.incoming[ret];
+		stat->outgoing[ret] = tc_stat.outgoing[ret];
+		stat->incoming_pkt[ret] = tc_stat.incoming_pkt[ret];
+		stat->outgoing_pkt[ret] = tc_stat.outgoing_pkt[ret];
+	}
+
 	return ret;
 }
 
-int tc_get_v6_stat(struct vzctl_tc_get_stat *stat)
-{
-	int ret;
-
-	if ((ret = ioctl(__vzctlfd, VZCTL_TC_GET_STAT_V6, stat)) < 0)
-	{
-		if (errno != ESRCH)
-		{
-			fprintf(stderr, "Unable to get Container %d statistics: %s\n",
-				stat->veid, strerror(errno));
-			return ERR_IOCTL;
-		}
-		ret = 0;
-	}
-	return ret;
-}
 int tc_destroy_ve_stats(ctid_t ctid)
 {
 	int ret;
 	struct vzctl_env_handle *h;
 
-	if (!(h = vzctl2_env_open(ctid, 0, &ret)))
-		return ret;
+	if (!(h = vzctl2_env_open(ctid, VZCTL_CONF_SKIP_PARSE, &ret))) {
+		fprintf(stderr, "Reset failed: %s\n", strerror(errno));
+		return ERR_IOCTL;
+	}
 
-	ret = vzctl2_clear_ve_netstat(h);
-	if (ret) {
+	if (vzctl2_clear_ve_netstat(h) < 0) {
+		vzctl2_env_close(h);
 		fprintf(stderr, "Reset failed: %s\n", strerror(errno));
 		return ERR_IOCTL;
 	}
@@ -168,8 +200,7 @@ int tc_destroy_ve_stats(ctid_t ctid)
 
 int tc_destroy_all_stats(void)
 {
-	if (vzctl2_clear_all_ve_netstat())
-	{
+	if (vzctl2_clear_all_ve_netstat() < 0) {
 		fprintf(stderr, "Reset failed: %s\n", strerror(errno));
 		return ERR_IOCTL;
 	}
@@ -180,90 +211,63 @@ int tc_destroy_all_stats(void)
 
 int tc_get_class_num(void)
 {
-	int len;
-
-	if ((len = ioctl(__vzctlfd, VZCTL_TC_CLASS_NUM, NULL)) < 0)
-	{
-		if (errno == ENOTTY)
-			return 0;
-		fprintf(stderr, "Unable get classes count: %s\n",
-				strerror(errno));
-		return ERR_IOCTL;
-	}
-	return len;
+	return TC_MAX_CLASSES;
 }
 
 int tc_get_v6_class_num(void)
 {
-	int len;
-
-	if ((len = ioctl(__vzctlfd, VZCTL_TC_CLASS_NUM_V6, NULL)) < 0)
-	{
-		if (errno == ENOTTY)
-			return 0;
-		fprintf(stderr, "Unable to get v6 classes count: %s\n",
-				strerror(errno));
-		return ERR_IOCTL;
-	}
-	return len;
+	return TC_MAX_CLASSES;
 }
 
 int tc_get_base(int veid)
 {
-	return ioctl(__vzctlfd, VZCTL_TC_GET_BASE, veid);
+	return 0;
 }
 
 int tc_max_class(void)
 {
-	int len;
-
-	len = ioctl(__vzctlfd, VZCTL_TC_MAX_CLASS, NULL);
-	if (len < 0)
-	{
-		fprintf(stderr, "Unable get max classes: %s\n", strerror(errno));
-		return ERR_IOCTL;
-	}
-	return len;
-}
-
-int tc_get_stat_num(void)
-{
-	int len;
-
-	if ((len = ioctl(__vzctlfd, VZCTL_TC_STAT_NUM, NULL)) < 0)
-	{
-		fprintf(stderr, "Unable get Container count in accounting table: %s\n",
-			strerror(errno));
-		return ERR_IOCTL;
-	}
-	return len;
-}
-
-int tc_get_ve_list(struct vzctl_tc_get_stat_list *velist)
-{
-	int ret;
-
-	if ((ret = ioctl(__vzctlfd, VZCTL_TC_GET_STAT_LIST, velist)) < 0)
-	{
-		fprintf(stderr, "Unable to get Container list: %s\n",
-				strerror(errno));
-		return ERR_IOCTL;
-	}
-	velist->length = ret;
-	return ret;
+	return TC_MAX_CLASSES;
 }
 
 int get_ve_list(struct vzctl_tc_get_stat_list *velist)
 {
-	int len;
+	int len = 0;
+	int max = 512;
+	char out[4096];
+	char *p;
+	const char *prefix = "netdev ve_";
 
-	if ((len = tc_get_stat_num()) < 0)
-		return len;
-	if (!len )
-		return 0;
+	if (run_nft_cmd("list tables netdev", out, sizeof(out))) {
+		fprintf(stderr, "Unable to get Container list: %s\n",
+			strerror(errno));
+		return ERR_IOCTL;
+	}
+
 	velist->list = calloc(len, sizeof(int));
+
+	p = out;
+	while (p) {
+		if ((p = strstr(p, prefix)) != NULL) {
+			if (len == max - 1) {
+				max += 512;
+				velist->list = realloc(velist->list,
+						       max * sizeof(envid_t));
+			}
+
+			if (sscanf(p + strlen(prefix),
+				   (strspn(p + strlen(prefix), "0123456789abcdef") == 32) ?
+				   "%08x" : "%u",
+				   &velist->list[len]) == 1) {
+				velist->list[len] &= 0x7fffffff;
+				len++;
+			}
+		}
+
+		if (p)
+			p++;
+	}
+
 	velist->length = len;
-	if ((len = tc_get_ve_list(velist)) < 0)
-		return len;
+
 	return len;
 }

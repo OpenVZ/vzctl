@@ -31,15 +31,12 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
-#include <linux/vzctl_venet.h>
-#include <linux/vzctl_netstat.h>
 #include <errno.h>
 #include <vzctl/libvzctl.h>
 
 #include "tc.h"
 #define MAX_CLASSES	16
 
-int __vzctlfd;
 static int round = 0;
 
 enum env_type {
@@ -266,7 +263,8 @@ int get_stats(struct vzctl_tc_get_stat_list *velist, int class_mask, int type)
 	int i, ret = 0;
 	struct vzctl_tc_get_stat *stat;
 	struct vzctl_tc_get_stat *stat6;
-
+	struct uuidmap_t *map;
+	char id[64];
 
 	if (velist == NULL)
 		return 0;
@@ -282,11 +280,16 @@ int get_stats(struct vzctl_tc_get_stat_list *velist, int class_mask, int type)
 		clear_tc_stat(stat6);
 		stat->veid = velist->list[i];
 		stat6->veid = velist->list[i];
+		map = find_uuid_by_id(velist->list[i]);
+		if (map != NULL)
+			snprintf(id, sizeof(id), "%s", map->ctid);
+		else
+			snprintf(id, sizeof(id), "%u", stat->veid);
 
 		if (ipv4)
-			ret = tc_get_stat(stat);
+			ret = tc_get_stat(id, stat, 0);
 		if (ipv6)
-			ret = tc_get_v6_stat(stat6);
+			ret = tc_get_stat(id, stat6, 1);
 
 		if (ret < 0)
 			break;
@@ -411,12 +414,6 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 	}
-	if ((__vzctlfd = open(VZCTLDEV, O_RDWR)) < 0)
-	{
-		printf("Unable to open %s: %s\n", VZCTLDEV, strerror(errno));
-		return 7;
-	}
-
 
 	/* Disable logging */
 	vzctl2_set_log_enable(0);
