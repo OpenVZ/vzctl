@@ -1,8 +1,8 @@
 [Unit]
 Description=@PRODUCT_NAME_SHORT@ Container service
-After=vcmmd.service vstorage-fs.service
+After=vcmmd.service vstorage-fs.service vz-cgroup-dummy.service
 After=remote-fs.target
-Wants=vcmmd.service
+Wants=vcmmd.service vz-cgroup-dummy.service
 Wants=proc-sys-fs-binfmt_misc.mount
 
 [Service]

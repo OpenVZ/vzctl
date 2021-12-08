@@ -1,0 +1,21 @@
+[Unit]
+Description=@PRODUCT_NAME_SHORT@ dummy service to protect from cgroup removal
+# Systemd can sometimes remove cgroups of Containers, this service makes each
+# cgroup hierarchy present in "used" mask in systemd, and systemd does not
+# remove inside "used" hierarchies, so this protects us from cgroups
+# disappearing from under criu or any other cgroup user.
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/true
+AllowedCPUs=0-100
+CPUWeight=100
+IOWeight=100
+MemoryAccounting=yes
+TasksAccounting=yes
+DevicePolicy=closed
+Slice=machine.slice
+
+[Install]
+WantedBy=multi-user.target
