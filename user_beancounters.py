@@ -8,6 +8,7 @@
 import os
 import re
 import sys
+import errno
 
 
 ve_uid_len = len('00000000-0000-0000-0000-000000000000')
@@ -94,8 +95,11 @@ class Resource():
                             result = m.groups()[0]
                 else:
                     result = f.read().strip()
-        except FileNotFoundError:
-            pass
+        except OSError as e:
+            if e.errno == errno.ENOENT or e.errno == errno.ENODEV:
+                pass
+            else:
+                raise(e)
 
         return result
 
