@@ -29,7 +29,6 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <linux/vzctl_venet.h>
-#include <linux/vzctl_netstat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -39,8 +38,6 @@
 #include "tc.h"
 #include "util.h"
 #include "clist.h"
-
-int __vzctlfd;
 
 static int sort;
 static int ipv6;
@@ -509,11 +506,6 @@ int main(int argc, char **argv)
 	{
 		usage();
 		return 10;
-	}
-	if ((__vzctlfd = open(VZCTLDEV, O_RDWR)) < 0)
-	{
-		printf("Unable to open %s: %s\n", VZCTLDEV, strerror(errno));
-		return 7;
 	}
 	ret = parse_opt(argc, argv);
 	return (ret < 0) ? ret * -1 : ret;
