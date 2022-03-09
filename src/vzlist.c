@@ -2028,7 +2028,7 @@ static int get_ub(ctid_t ctid)
 	}
 	if (check_veid_restr(ctid))
 		update_ubc(ctid, &ubc);
-	fclose(fp);
+	pclose(fp);
 
 	return 0;
 }

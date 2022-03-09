@@ -39,14 +39,10 @@ OBJS_cfgscale = vzcfgscale.o mm.o $(OBJS)
 OBJS_vzauth   = vzauth.o
 OBJS_proxyctl = vzproxyctl.o
 OBJS_vztactl  = vztactl.o tc.o list.o util.o wrap.o
-OBJS_vznetstat= vznetstat.o tc.o
+OBJS_vznetstat= vznetstat.o tc.o util.o
 OBJS_vzlist   = vzlist.o $(OBJS)
 ### Target names
-	PROGS = vzctl vzsplit vzauth vzlist ndsend vzeventd vznetstat
-
-ifneq (,$(wildcard /usr/include/linux/vzctl_netstat.h)) 
-       PROGS += vztactl
-endif
+	PROGS = vzctl vzsplit vzauth vzlist ndsend vzeventd vznetstat vztactl
 	 LIB = $(LGCOV) -lpthread -lutil -luuid -lploop -lnftables -ldl -lvzctl2
       LIBDIR = /usr/lib64
 
