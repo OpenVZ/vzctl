@@ -239,6 +239,11 @@ start_env()
 {
 	local pid pids iter
 
+	if ! which prlctl >/dev/null 2>&1; then
+		echo "prlctl is missing, skip autostart"
+		return
+	fi
+
 	target=`readlink /etc/systemd/system/default.target`
 	if [ -n "$target" ]; then
 		target=`basename $target`
