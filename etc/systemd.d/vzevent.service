@@ -5,6 +5,7 @@ After=syslog.target network.target
 [Service]
 Type=forking
 PIDFile=/var/run/vzeventd.pid
+ExecStartPre=-/sbin/modprobe -q vzevent
 ExecStart=/usr/sbin/vzeventd
 KillMode=process
 Restart=on-failure
