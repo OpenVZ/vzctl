@@ -74,6 +74,7 @@ static char *host_pattern = NULL;
 static char *name_pattern = NULL;
 static char *desc_pattern = NULL;
 static char *netif_pattern = NULL;
+static char *f_order = NULL;
 //static int vzctlfd;
 static struct Cfield_order *g_field_order = NULL;
 static int last_field;
@@ -1779,11 +1780,11 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 			strncpy(dev.dev_name_ve, dev_param.dev_name_ve,
 						sizeof(dev.dev_name_ve)-1);
 		if (dev_param.gw)
-			dev.gw = strdup(dev_param.gw);
+			dev.gw = (char*) dev_param.gw;
 		if (dev_param.gw6)
-			dev.gw6 = strdup(dev_param.gw6);
+			dev.gw6 = (char*) dev_param.gw6;
 		if (dev_param.network)
-			dev.network = strdup(dev_param.network);
+			dev.network = (char*) dev_param.network;
 
 		add_veth_param(ve->veth, &dev);
 	}
@@ -2092,19 +2093,19 @@ static int _get_run_ve(int update)
 		if (!check_veid_restr(ctid) || strcmp(ctid, "0") == 0)
 			continue;
 		memset(&ve, 0, sizeof(struct Cveinfo));
-		if (res == 4) {
-			ve.configured_ip = invert_ip(ips);
-		} else if (res == 3)
-			ve.configured_ip = strdup("");
 		SET_CTID(ve.ctid, ctid);
-
 		vzctl_env_status_t status = {};
 		vzctl2_get_env_status(ctid, &status, ENV_STATUS_RUNNING);
 		ve.status = status.mask;
 		if (update)
 			update_ve(ctid, ve.ip, ve.status);
-		else
+		else {
+			if (res == 4) {
+				ve.configured_ip = invert_ip(ips);
+			} else if (res == 3)
+				ve.configured_ip = strdup("");
 			add_elem(&ve);
+		}
 	}
 	if (!update)
 		qsort(veinfo, n_veinfo, sizeof(struct Cveinfo), eid_sort_fn);
@@ -2389,6 +2390,16 @@ static void free_veinfo(void)
 	}
 }
 
+static void shutdown_app(void)
+{
+	free(host_pattern);
+	free(name_pattern);
+	free(desc_pattern);
+	free(netif_pattern);
+	free(f_order);
+	free_veinfo();
+}
+
 static struct option list_options[] =
 {
 	{"no-header",	no_argument, NULL, 'H'},
@@ -2411,8 +2422,7 @@ static struct option list_options[] =
 
 int main(int argc, char **argv)
 {
-	int ret;
-	char *f_order = NULL;
+	int ret = 0;
 	char *p;
 	ctid_t ctid;
 	int c, len;
@@ -2458,6 +2468,7 @@ int main(int argc, char **argv)
 			if ((g_sort_field = search_field(p)) < 0) {
 				fprintf(stderr, "%s is an invalid field name"
 					" for this query.\n", optarg);
+				shutdown_app();
 				return 1;
 			}
 			break;
@@ -2489,7 +2500,8 @@ int main(int argc, char **argv)
 			break;
 		default		:
 			usage();
-			return 1;
+			shutdown_app();
+			return ret;
 		}
 	}
 	if (optind < argc) {
@@ -2501,6 +2513,7 @@ int main(int argc, char **argv)
 			{
 				fprintf(stderr, "Container ID %s is invalid.\n",
 						argv[optind]);
+				shutdown_app();
 				return 1;
 			}
 			optind++;
@@ -2510,17 +2523,24 @@ int main(int argc, char **argv)
 		}
 		qsort(g_ve_list, n_ve_list, sizeof(ctid_t), eid_search_fn);
 	}
-	if (build_field_order(f_order))
+	if (build_field_order(f_order)) {
+		shutdown_app();
 		return 1;
+	}
+
 	if (getuid()) {
 		fprintf(stderr, "This program can be run by root only.\n");
+		shutdown_app();
 		return 1;
 	}
 	vzctl_set_log_enable(0);	/* Disable messages from lib */
-	if ((ret = collect()))
+	if ((ret = collect())) {
+		shutdown_app();
 		return ret;
+	}
 
 	print_ve();
-	free_veinfo();
-	return 0;
+
+	shutdown_app();
+	return ret;
 }
