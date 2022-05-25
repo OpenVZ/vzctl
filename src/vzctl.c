@@ -37,7 +37,6 @@
 #include <dirent.h>
 #include <sys/param.h>
 
-#include <ploop/libploop.h>
 #include <vzctl/libvzctl.h>
 
 #include "vzctl.h"
@@ -455,7 +454,10 @@ struct option_alternative option_alternatives[] =
 
 static struct option compact_options[] =
 {
-	{"defrag",	no_argument, NULL, PARAM_DEFRAG},
+	{"defrag",	no_argument, NULL, PARAM_COMPACT_DEFRAG},
+	{"dry",	no_argument, NULL, PARAM_COMPACT_DRY},
+	{"threshold",	required_argument, NULL, PARAM_COMPACT_THRESHOLD},
+	{"delta",	required_argument, NULL, PARAM_COMPACT_DELTA},
 	{ NULL, 0, NULL, 0 }
 };
 
@@ -994,8 +996,23 @@ int ParseCompactOptions(struct CParam *param, int argc, char **argv)
 			return VZ_INVALID_PARAMETER_VALUE;
 		switch (c)
 		{
-			case PARAM_DEFRAG	:
-				gparam->defrag = 1;
+			case PARAM_COMPACT_DEFRAG	:
+				gparam->compact_defrag = 1;
+				break;
+			case PARAM_COMPACT_DRY	:
+				gparam->compact_dry = 1;
+				break;
+			case PARAM_COMPACT_THRESHOLD:
+				if (parse_int(optarg, &gparam->compact_threshold)) {
+					fprintf(stderr, "Incorrect threshold number '%s' is specified\n", optarg);
+					return VZ_INVALID_PARAMETER_VALUE;
+				}
+				break;
+			case PARAM_COMPACT_DELTA:
+				if (parse_int(optarg, &gparam->compact_delta)) {
+					fprintf(stderr, "Incorrect delta number '%s' is specified\n", optarg);
+					return VZ_INVALID_PARAMETER_VALUE;
+				}
 				break;
 			default	:
 				ret = VZ_INVALID_PARAMETER_SYNTAX;
@@ -2418,8 +2435,16 @@ skip_eid:
 		}
 		case ACTION_COMPACT:
 		{
-			struct vzctl_compact_param compact_param;
-			compact_param.defrag = gparam->defrag;
+			static volatile int stop = 0;
+			static dev_t compact_dev;
+			struct vzctl_compact_param compact_param = {
+					.defrag = gparam->compact_defrag,
+					.threshold = gparam->compact_threshold,
+					.delta = gparam->compact_delta,
+					.dry = gparam->compact_dry,
+					.stop = (int *)&stop,
+					.compact_dev = &compact_dev,
+			};
 			ret = vzctl2_env_compact(h, &compact_param, sizeof(compact_param));
 			break;
 		}
@@ -2431,8 +2456,12 @@ skip_eid:
 	if (skiplock != YES)
 		vzctl2_env_unlock(h, lckfd);
 END:
+
+	if (!h)
+		vzctl2_env_close(h);
 	vzctl_set_log_quiet(1);
-	logger(3, 0, "Command line: %s [%d]",
-			makecmdline(++argv_orig), ret);
+	char *commandLine = makecmdline(++argv_orig);
+	logger(3, 0, "Command line: %s [%d]", commandLine, ret);
+	free(commandLine);
 	exit(ret);
 }

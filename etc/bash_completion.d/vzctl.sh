@@ -50,6 +50,7 @@ _vzctl()
 	local vzctl_create_opts="--ostemplate --config --private --root \
 		--ipadd --hostname --name --description --skip_app_templates \
 		--encryption-keyid"
+	local vzctl_compact_opts="--defrag --dry --threshold --delta"
 	local vzctl_set_opts="--save --onboot \
 		--numproc --oomguarpages \
 		--lockedpages --privvmpages --shmpages \
@@ -248,7 +249,7 @@ _vzctl()
 				COMPREPLY=( $( compgen -W "$ids" -- $cur ) )
 				;;
 			*)
-				if [[ "${prev:0:2}" != "--" || "$prev" = "--save" ]]; then
+				if [[ "${prev:0:2}" != "--" || "$prev" = "--save" || "$prev" = "--dry" || "$prev" = "--defrag" ]]; then
 					# List options
 					local cmd=${COMP_WORDS[1]}
 					if [ ${cmd:0:2} = "--" ] ; then
@@ -289,7 +290,7 @@ _vzctl()
 						COMPREPLY=( $( compgen -W "$vzctl_console_opts" -- $cur ) )
 						;;
 					compact)
-						COMPREPLY=( $( compgen -W "--defrag" -- $cur ) )
+						COMPREPLY=( $( compgen -W "$vzctl_compact_opts" -- $cur ) )
 						;;
 
 					*)
