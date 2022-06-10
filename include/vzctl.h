@@ -354,9 +354,12 @@
 #define PARAM_ENC_REENCRYPT	436
 #define PARAM_ENC_WIPE		437
 #define PARAM_RECREATE		438
-#define PARAM_DEFRAG		439
+#define PARAM_COMPACT_DEFRAG	439
 #define PARAM_CLOUD_INIT	440
 #define PARAM_REPAIR		441
+#define PARAM_COMPACT_DRY	442
+#define PARAM_COMPACT_THRESHOLD	443
+#define PARAM_COMPACT_DELTA	444
 
 /* parsing template for getopt, based on PARAM values */
 #define PARAM_LINE "e:p:s:f:t:i:r:v:g:c:l:m:z:k:a:b:u:w:d:n:x:hS"
@@ -499,7 +502,6 @@ struct CParam
 	int skip_ve_setup;
 	int wait;
 	int resetub;
-	int defrag;
 
 /* Host parameters */
 	unsigned long *class_id;
@@ -558,6 +560,11 @@ struct CParam
 	int disk_op;
 	struct vzctl_disk_param *disk_param;
 	int no_hdd;
+/* Compact */
+	int compact_defrag;
+	int compact_threshold;
+	int compact_dry;
+	int compact_delta;
 
 /* NAME */
 	char *name;

@@ -139,7 +139,7 @@ vzctl \fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR]
 .PP
 vzctl \fBunregister\fR \fIctid\fR|\fIname\fR
 .PP
-vzctl \fBcompact\fR \fIctid\fR|\fIname\fR [\fB--defrag\fR]
+vzctl \fBcompact\fR \fIctid\fR|\fIname\fR [\fB--defrag\fR] [\fB--dry\fR] [\fB--threshold\fR  \fIvalue\fR] [\fB--delta\fR  \fIvalue\fR]
 .PP
 vzctl \fB--help\fR | \fB--version\fR
 .SH DESCRIPTION
@@ -732,13 +732,24 @@ In case ctid is 0, display actions and events for all CTs. Valid only on 2.6
 kernel.
 .IP "\fBconvert\fR \fIctid\fR" 4
 In @PRODUCT_NAME_SHORT@, Containers use the new layout. The \fBconvert\fR command converts a Container from the old layout to a new one.
-.IP "\fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR" 4
+.IP "\fBregister\fR \fIpath\fR \fIctid\fR [\fB--force\fR]" 4
 Register the Container using the configuration file \fIpath\fR/ve.conf and having ID \fIctid\fR.
 If the \fB--force\fR option is specified, all validation checks will be skipped.
 .IP "\fBunregister\fR \fIctid\fR|\fIname\fR" 4
 Unregister the specified Container.
-.IP "\fBcompact\fR <\fIctid\fR> [\fB--defrag\fR]" 4
+.IP "\fBcompact\fR <\fIctid\fR> [\fB--defrag\fR] [\fB--dry\fR] [\fB--threshold\fR  \fIvalue\fR] [\fB--delta\fR  \fIvalue\fR]" 4
+.RS
 Compact container image.
+.IP "\fB--defrag\fR" 4
+Defragment file system
+.IP "\fB--dry\fR" 4
+Print the actions that would be executed, but do not execute them.
+.IP "\fB--threshold <value>\fR" 4
+Start compacting if unused space is greater than specified THRESHOLD in percent to ploop size
+.IP "\fB--delta <value>\fR" 4
+Reduce disk space to be compacted by DELTA percent of the ploop size
+.SS
+.PP
 .TP
 \fBContainer action scripts\fR
 .RS
