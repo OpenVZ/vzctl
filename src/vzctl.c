@@ -38,6 +38,7 @@
 #include <sys/param.h>
 
 #include <vzctl/libvzctl.h>
+#include <ploop/libploop.h>
 
 #include "vzctl.h"
 #include "config.h"
