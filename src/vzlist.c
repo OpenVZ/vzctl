@@ -1654,9 +1654,12 @@ void update_ubc(ctid_t ctid, const struct Cubc *ubc)
 static int fill_cpulimit(struct vzctl_cpulimit_param *c, struct Ccpu *cpu)
 {
 	static struct vzctl_cpuinfo info;
+	static int filled = 0;
 
-	if (vzctl2_get_cpuinfo(&info))
+	if (!filled && vzctl2_get_cpuinfo(&info))
 		return -1;
+
+	filled = 1;
 
 	if (c->type == VZCTL_CPULIMIT_PCT) {
 		cpu->limit[0] = c->limit;
