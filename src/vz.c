@@ -389,7 +389,6 @@ fprintf(stdout,
 "   [--bindmount_del <dst|all>] [--name <name>]\n"
 "   [--netdev_add <name> [--netdev_del <name>]\n"
 "   [--iptables <name>] [--disabled <yes|no>] [--ioprio <N>]\n"
-"   [--netfilter <disabled|stateless|stateful|full>]\n"
 "   [--iolimit <bytes/sec>] [--iopslimit <op/sec>] [--features name:on|off]\n"
 "   [--mount_opts <opt[,opt]>] [--ha_enable <yes|no>] [--ha_prio <N>]\n"
 "   [UBC parameters] [--ostemplate <name>] [--distribution <name>]\n"

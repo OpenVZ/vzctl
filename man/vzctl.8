@@ -88,7 +88,6 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB--pci_add\fR \fI[domain:]bus:slot.func\fR]
 [\fB--pci_del\fR \fIn[domain:]bus:slot.func\fR]
 [\fB--iptables\fR \fIname\fR[\fB,\fR...]]
-[\fB--netfilter\fR \fImode\fR]
 [\fB--disabled\fR \fByes\fR|\fBno\fR]
 [\fB--applyconfig\fR \fIname\fR]
 [\fB--setmode\fR \fBrestart\fR|\fBignore\fR]
@@ -488,18 +487,6 @@ You can use the following values for \fIname\fR:
 \fBip_conntrack_irc\fR, \fBipt_conntrack\fR, \fBipt_state\fR,
 \fBipt_helper\fR, \fBiptable_nat\fR, \fBip_nat_ftp\fR, \fBip_nat_irc\fR,
 \fBipt_owner\fR.
-.TP
-\fB--netfilter\fR \fImode\fR
-Restrict access to iptables modules inside the Container.
-The following modes are available:
-.br
-\fBdisabled\fR	-- no modules are allowed.
-.br
-\fBstateless\fR	-- (default) all modules except NAT and conntracks are allowed.
-.br
-\fBstateful\fR	-- all modules except NAT are allowed.
-.br
-\fBfull\fR	-- all modules are allowed.
 .TP
 \fBNetwork devices  control parameters\fR
 .IP "\fB--netdev_add\fR \fIname\fR"

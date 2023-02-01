@@ -108,7 +108,6 @@ struct Cveinfo {
 	int mm;
 	int ha_enable;
 	unsigned long *ha_prio;
-	char *netfilter;
 	char *uuid;
 	char *devnodes;
 	int autostop;

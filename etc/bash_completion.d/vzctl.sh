@@ -64,7 +64,7 @@ _vzctl()
 		--capability --devices  --devnodes \
 		--netdev_add --netdev_del \
 		--netif_add --netif_del \
-		--netfilter --disabled --applyconfig --setmode \
+		--disabled --applyconfig --setmode \
 		--bootorder --ha_enable --ha_prio --encryption-keyid \
 		--reencrypt --wipe"
 	local vzctl_snapshot_create_opts="--id --name --description"
@@ -74,7 +74,6 @@ _vzctl()
 	local vzctl_console_opts="-s --start 1 2"
 
 
-	local netfilter_names="disabled stateless stateful full"
 	local cap_names="chown dac_override dac_read_search fowner fsetid kill
 		setgid setuid setpcap linux_immutable net_bind_service
 		net_broadcast net_admin net_raw ipc_lock ipc_owner
@@ -130,9 +129,6 @@ _vzctl()
 
 				configs=${configs/.conf-sample/}
 				COMPREPLY=( $( compgen -W "$configs" -- $cur ) )
-				;;
-			--netfilter)
-				COMPREPLY=( $( compgen -W "$netfilter_names" -- $cur ) )
 				;;
 			--netdev*)
 				local devs=`ip addr show | awk '/^[0-9]/ && /UP/ && !/venet/ && !/lo/ \

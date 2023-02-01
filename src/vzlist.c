@@ -79,7 +79,7 @@ static char *f_order = NULL;
 static struct Cfield_order *g_field_order = NULL;
 static int last_field;
 static char *default_field_order = "veid,numproc,status,configured_ip,hostname";
-static char *default_json_field_order = "ctid,private,root,hostname,name,smart_name,description,ostemplate,distribution,ip,configured_ip,nameserver,searchdomain,status,numproc,kmemsize,lockedpages,privvmpages,shmpages,numproc,physpages,vmguarpages,oomguarpages,numtcpsock,numflock,numpty,numsiginfo,tcpsndbuf,tcprcvbuf,othersockbuf,dgramrcvbuf,numothersock,dcachesize,numfile,numiptent,swappages,diskspace,diskinodes,laverage,uptime,cpulimit,cpuunits,cpus,ioprio,iolimit,iopslimit,onboot,bootorder,layout,features,disabled,netfilter";
+static char *default_json_field_order = "ctid,private,root,hostname,name,smart_name,description,ostemplate,distribution,ip,configured_ip,nameserver,searchdomain,status,numproc,kmemsize,lockedpages,privvmpages,shmpages,numproc,physpages,vmguarpages,oomguarpages,numtcpsock,numflock,numpty,numsiginfo,tcpsndbuf,tcprcvbuf,othersockbuf,dgramrcvbuf,numothersock,dcachesize,numfile,numiptent,swappages,diskspace,diskinodes,laverage,uptime,cpulimit,cpuunits,cpus,ioprio,iolimit,iopslimit,onboot,bootorder,layout,features,disabled";
 static char *default_compat_field_order = "status,configured_ip,smart_name";
 static char *default_nm_field_order = "ctid,numproc,status,configured_ip,name";
 static char *default_netif_field_order = "ctid,status,host_ifname,configured_ip,hostname";
@@ -497,11 +497,6 @@ static void print_ha_prio(struct Cveinfo *p, int index)
 	else
 		p_outbuffer += snprintf(p_outbuffer, e_buf-p_outbuffer,
 				"%10lu", p->ha_prio[index]);
-}
-
-static void print_netfilter(struct Cveinfo *p, int index)
-{
-	print_str(p->netfilter, "%-9s");
 }
 
 static void print_devnodes(struct Cveinfo *p, int index)
@@ -948,7 +943,6 @@ UBC_FIELD(swappages, SWAPP),
 {"ha_enable", "HA_ENABLE", "%-9s", 0, RES_HA_ENABLE, print_ha_enable, none_sort_fn},
 {"ha_prio", "HA_PRIO", "%10s", 0, RES_HA_PRIO, print_ha_prio, ha_prio_sort_fn},
 
-{"netfilter", "NETFILTER", "%9s", 0, RES_NONE, print_netfilter, none_sort_fn},
 {"devnodes", "DEVNODES", "%-16s", 0, RES_NONE, print_devnodes, none_sort_fn},
 {"origin_sample", "ORIGIN_SAMPLE", "%-32s", 0, RES_NONE, print_config, none_sort_fn},
 {"type", "TYPE", "%-8s", 0, RES_NONE, print_type, none_sort_fn},
@@ -1919,9 +1913,6 @@ static void merge_conf(struct Cveinfo *ve, struct vzctl_env_handle *h)
 		ve->ha_prio = x_malloc(sizeof(*ve->ha_prio));
 		*ve->ha_prio = ul;
 	}
-
-	if (vzctl2_env_get_netfilter(vzctl2_get_env_param(h), &u) == 0)
-		ve->netfilter = strdup(nf2str(u));
 
 	if (vzctl2_env_get_uuid(vzctl2_get_env_param(h), &p) == 0 && p != NULL)
 		ve->uuid = strdup(p);
