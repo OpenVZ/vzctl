@@ -222,7 +222,6 @@ static struct option set_options[] =
 	{"config_customized", required_argument, NULL, VZCTL_PARAM_CONFIG_CUSTOMIZE},
 	{"origin_sample", required_argument, NULL, VZCTL_PARAM_CONFIG_SAMPLE},
 
-	{"iptables",	required_argument, NULL, VZCTL_PARAM_IPTABLES},
 	{"netdev_add",	required_argument, NULL, VZCTL_PARAM_NETDEV},
 		{"netdev-add",	required_argument, NULL, VZCTL_PARAM_NETDEV},
 	{"netdev_del",	required_argument, NULL, VZCTL_PARAM_NETDEV_DEL},

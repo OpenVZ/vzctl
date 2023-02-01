@@ -87,7 +87,6 @@ vzctl [\fB--quiet\fR | \fB--verbose\fR] \fBset\fR \fIctid\fR [\fB--save\fR]
 [\fB--netdev_del\fR \fIname\fR]
 [\fB--pci_add\fR \fI[domain:]bus:slot.func\fR]
 [\fB--pci_del\fR \fIn[domain:]bus:slot.func\fR]
-[\fB--iptables\fR \fIname\fR[\fB,\fR...]]
 [\fB--disabled\fR \fByes\fR|\fBno\fR]
 [\fB--applyconfig\fR \fIname\fR]
 [\fB--setmode\fR \fBrestart\fR|\fBignore\fR]
@@ -166,8 +165,7 @@ in case \fB--setmode\fR option specified apply logic for parameters that can't
 be applied or tunning CT will be changed, if \fBrestart\fR - restart CT,
 if \fBignore\fR - ignore error.
 Parameters that can not be applied runtime are
-\fBquotaugidlimit\fR, \fBbindmount\fR, \fBfeatures\fR,
-and \fBiptables\fR.
+\fBquotaugidlimit\fR, \fBbindmount\fR, \fBfeatures\fR.
 
 The following options can be used with \fBset\fR command.
 .TP
@@ -472,10 +470,6 @@ the default settings to a Container.
 Defines the NUMA node on the physical server to use for executing the processes
 running in the Container. A node mask can be a single number or a range separated by commas (0,2,3-10).
 \fB--nodemask\fR must be used with the \fB--cpumask\fR option.
-.TP
-\fB--iptables\fR \fIname\fR[\fB,\fR...]
-Restrict access to iptable modules inside CT (by default modules defined in
-the \fBIPTABLES\fR variable in the global configuration file
 .BR vz.conf (5)
 are accessible inside CT). Multiple comma-separated values can be specified.
 
@@ -961,8 +955,6 @@ Error changing password
 Error adding IP address
 .IP 78
 IP address already in use
-.IP 106
-Error setting iptables parameter
 .IP 135
 Error setting meminfo parameter
 .IP 137
