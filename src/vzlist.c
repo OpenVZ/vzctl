@@ -1666,22 +1666,6 @@ static int fill_cpulimit(struct vzctl_cpulimit_param *c, struct Ccpu *cpu)
 	return 0;
 }
 
-static const char *nf2str(unsigned nf)
-{
-	switch(nf) {
-	case VZCTL_NF_DISABLED:
-		return "disabled";
-	case VZCTL_NF_STATELESS:
-		return "stateless";
-	case VZCTL_NF_STATEFUL:
-		return "stateful";
-	case VZCTL_NF_FULL:
-		return "full";
-	default:
-		return "-";
-	}
-}
-
 void merge_ub(struct vzctl_env_handle *h, int id, unsigned long *ub)
 {
 	struct vzctl_2UL_res res;
