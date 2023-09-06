@@ -28,7 +28,7 @@ mount_cgroup_v1()
 {
 	[ -d "$1/$2" ] || mkdir "$1/$2"
 
-	if ! df "$1/$2" | grep -qs "^cgroup\s"; then
+	if df "$1/$2" | grep -qs "^cgroup\s"; then
 		return
 	fi
 
